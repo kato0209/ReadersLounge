@@ -1,0 +1,36 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile
+    working_dir: "/readers-lounge"
+    volumes:
+      - ./go.mod:/readers-lounge/go.mod
+      - ./go.sum:/readers-lounge/go.sum
+      - ./backend:/readers-lounge/backend
+    ports:
+      - "8080:8080"
+    environment:
+      - PGHOST=developer
+      - PGDATABASE=readers_lounge_db
+      - PGUSER=root
+      - PGPASSWORD=p@ssword
+      - PGSSLMODE=disable
+  db:
+    image: postgres:15.3
+    restart: always
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=p@ssword
+      - POSTGRES_DB=readers_lounge_db
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db/data/postgresql:/var/lib/postgresql/data
+      - ./db/data/logs:/var/log
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d readers_lounge_db"]
+      interval: 5s
+      timeout: 30s
+      retries: 5
