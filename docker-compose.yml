@@ -11,7 +11,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - PGHOST=developer
+      - PGHOST=db
       - PGDATABASE=readers_lounge_db
       - PGUSER=root
       - PGPASSWORD=p@ssword
@@ -34,3 +34,15 @@ services:
       interval: 5s
       timeout: 30s
       retries: 5
+  migration:
+    build:
+      context: ./db
+    working_dir: /migration
+    environment:
+      - GOOSE_DRIVER=${GOOSE_DRIVER:-postgres}
+      - GOOSE_DBSTRING=${GOOSE_DBSTRING:-host=db user=root dbname=readers_lounge_db password=p@ssword}
+    volumes:
+      - ./db/migration:/migration
+    depends_on:
+      db:
+        condition: service_healthy
