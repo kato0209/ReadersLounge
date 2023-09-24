@@ -1,81 +1,44 @@
 openapi: 3.1.0
 info:
   version: 1.0.0
-  title: Sample API
-  description: >-
-    A sample API that uses a sample-site as an example to demonstrate features in
-    the OpenAPI 3.0 specification
+  title: ReadersLounge API
+  description: ReadersLounge API
 servers:
-  - url: "http://localhost:8083"
+  - url: "http://localhost:8080"
 paths:
-  /users:
-    get:
-      description: >
-        Returns all users
-      operationId: findUsers
-      parameters:
-        - name: tags
-          in: query
-          description: tags to filter by
-          required: false
-          style: form
-          schema:
-            type: array
-            items:
-              type: string
-        - name: limit
-          in: query
-          description: maximum number of results to return
-          required: false
-          schema:
-            type: integer
-            format: int32
+  /signup:
+    post:
+      summary:  create new user
+      operationId: signup
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                identifier:
+                  type: string
+                credential:
+                  type: string
+        required: true
       responses:
         "200":
-          description: user response
+          description: OK
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/User"
+                type: object
+                properties:
+                  identifier:
+                    type: string
+                  credential:
+                    type: string
+                  
         default:
           description: unexpected error
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-components:
-  schemas:
-    User:
-      type: "object"
-      required:
-        - "name"
-      properties:
-        id:
-          type: "integer"
-          format: "int64"
-          example: 100
-        name:
-          type: "string"
-          example: "Taro"
-        status:
-          type: "string"
-          description: "user status"
-          enum:
-            - "pending"
-            - "active"
-            - "inactive"
-    Error:
-      type: "object"
-      properties:
-        code:
-          type: "integer"
-          format: "int32"
-        type:
-          type: "string"
-        message:
-          type: "string"
-externalDocs:
-  description: "Find out more about Swagger"
-  url: "http://swagger.io"
