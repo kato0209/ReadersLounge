@@ -1,0 +1,6 @@
+package: controllers
+generate:
+  models: true
+output: controllers/openapi/models/models.gen.go
+output-options:
+  skip-prune: true

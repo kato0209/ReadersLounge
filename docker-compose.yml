@@ -3,10 +3,8 @@ services:
     build:
       context: .
       dockerfile: ./backend/Dockerfile
-    working_dir: "/readers-lounge"
+    working_dir: "/readers-lounge/backend"
     volumes:
-      - ./go.mod:/readers-lounge/go.mod
-      - ./go.sum:/readers-lounge/go.sum
       - ./backend:/readers-lounge/backend
     ports:
       - "8080:8080"
@@ -56,6 +54,7 @@ services:
     working_dir: "/readers-lounge/frontend"
     volumes:
       - ./frontend:/readers-lounge/frontend
+      - node_modules:/readers-lounge/frontend/node_modules
     ports:
       - "5173:5173"
     environment:
@@ -85,3 +84,5 @@ services:
     command: mock -h 0.0.0.0 /openapi.yml
     volumes:
       - ./openapi.yml:/openapi.yml
+volumes:
+  node_modules:

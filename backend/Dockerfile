@@ -1,6 +1,6 @@
-FROM --platform=$BUILDPLATFORM golang:1.20.5 as builder
-WORKDIR /readers-lounge
-COPY go.mod go.sum ./
+FROM --platform=$BUILDPLATFORM golang:1.21.1 as builder
+WORKDIR /readers-lounge/backend
+COPY ./backend/go.mod ./backend/go.sum ./
 RUN go mod download
 RUN --mount=type=bind,source=./backend,target=./backend \
     --mount=type=cache,target=/go/pkg/mod \
