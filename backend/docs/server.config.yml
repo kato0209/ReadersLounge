@@ -1,4 +1,4 @@
-package: controllers
+package: openapi
 generate:
   echo-server: true
   embedded-spec: true
