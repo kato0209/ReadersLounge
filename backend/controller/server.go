@@ -1,20 +1,16 @@
-package controllers
+package controller
 
 import (
+	"backend/usecase"
 	"net/http"
-
-	"github.com/labstack/echo/v4"
 )
 
 type Server struct {
+	uu usecase.IUserUsecase
 }
 
-func NewServer() *Server {
-	return &Server{}
-}
-
-func (s *Server) Signup(ctx echo.Context) error {
-	return ctx.JSON(http.StatusOK, "Signup successful")
+func NewServer(uu usecase.IUserUsecase) *Server {
+	return &Server{uu}
 }
 
 func handleError(w http.ResponseWriter, err error) {

@@ -1,4 +1,4 @@
-openapi: 3.1.0
+openapi: 3.0.0
 info:
   version: 1.0.0
   title: ReadersLounge API
@@ -14,14 +14,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                username:
-                  type: string
-                identifier:
-                  type: string
-                credential:
-                  type: string
+              $ref: "#/components/schemas/ReqSignupBody"
         required: true
       responses:
         "200":
@@ -29,10 +22,22 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  identifier:
-                    type: string
-                  credential:
-                    type: string
+                $ref: "#/components/schemas/ResSignupBody"
+components:
+  schemas:
+    ReqSignupBody:
+      properties:
+        username:
+          type: string
+        identifier:
+          type: string
+        credential:
+          type: string
+    ResSignupBody:
+      properties:
+        identifier:
+          type: string
+        credential:
+          type: string
+    
                   

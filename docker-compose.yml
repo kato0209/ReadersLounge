@@ -60,7 +60,7 @@ services:
       - REACT_APP_API_URL=http://localhost:8080
 
   swagger-editor:
-    image: swaggerapi/swagger-editor
+    image: swaggerapi/swagger-editor:latest
     container_name: "swagger-editor"
     ports:
       - "8081:8080"
