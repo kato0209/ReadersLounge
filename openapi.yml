@@ -6,6 +6,17 @@ info:
 servers:
   - url: "http://localhost:8080"
 paths:
+  /csrftoken:
+    get:
+      summary: get csrf token
+      operationId: csrftoken
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResCsrfToken"
   /signup:
     post:
       summary:  create new user
@@ -23,8 +34,51 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ResSignupBody"
+  /login:
+    post:
+      summary: login
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReqLoginBody"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResLoginBody"
+  /logout:
+    post:
+      summary: logout
+      operationId: logout
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResLogoutBody"
+      
 components:
+  securitySchemes:
+    X-CSRF-TOKEN:
+      type: apiKey
+      name: X-CSRF-TOKEN
+      in: header
   schemas:
+    ResCsrfToken:
+      properties:
+        csrf_token:
+          type: string
     ReqSignupBody:
       properties:
         username:
@@ -35,9 +89,24 @@ components:
           type: string
     ResSignupBody:
       properties:
-        identifier:
+        user_id:
+          type: integer
+    ReqLoginBody:
+      properties:
+          identifier:
+            type: string
+          credential:
+            type: string
+    ResLoginBody:
+      properties:
+        user_id:
+          type: integer
+    ResLogoutBody:
+      properties:
+        message:
           type: string
-        credential:
-          type: string
+      
+security:
+  - X-CSRF-TOKEN: []
     
                   

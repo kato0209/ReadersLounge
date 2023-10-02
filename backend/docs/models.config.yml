@@ -1,6 +1,6 @@
-package: models
+package: openapi
 generate:
   models: true
-output: controller/openapi/models/models.gen.go
+output: controller/openapi/models.gen.go
 output-options:
   skip-prune: true

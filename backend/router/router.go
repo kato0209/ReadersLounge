@@ -11,18 +11,20 @@ import (
 func NewRouter() *echo.Echo {
 	e := echo.New()
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"http://localhost:3000", os.Getenv("FE_URL")},
+		AllowOrigins: []string{"http://localhost:3000", "http://localhost:8082", "http://localhost:8081", os.Getenv("FE_URL")},
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept,
 			echo.HeaderAccessControlAllowHeaders, echo.HeaderXCSRFToken},
-		AllowMethods:     []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete},
+		AllowMethods:     []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
 		AllowCredentials: true,
 	}))
 	e.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
-		CookiePath:     "/",
-		CookieDomain:   os.Getenv("API_DOMAIN"),
+		CookiePath: "/",
+		//CookieDomain: os.Getenv("API_DOMAIN"),
+		CookieDomain: "localhost",
+		//CookieHTTPOnly: true,
+		//CookieSameSite: http.SameSiteNoneMode,
 		CookieHTTPOnly: true,
-		CookieSameSite: http.SameSiteNoneMode,
-		//CookieSameSite: http.SameSiteDefaultMode,
+		CookieSameSite: http.SameSiteDefaultMode,
 		//CookieMaxAge:   60,
 	}))
 

@@ -15,7 +15,5 @@ type User struct {
 }
 
 type UserResponse struct {
-	UserID     int
-	Identifier string
-	Credential string
+	UserID int
 }

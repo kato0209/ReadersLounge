@@ -8,6 +8,7 @@ import (
 	"backend/router"
 	"backend/usecase"
 
+	_ "github.com/lib/pq"
 	"golang.org/x/exp/slog"
 )
 
@@ -28,6 +29,7 @@ func main() {
 	userRepository := repository.NewUserRepository(db)
 	userUsecase := usecase.NewUserUsecase(userRepository)
 	server := controller.NewServer(userUsecase)
+
 	openapi.RegisterHandlers(e, server)
 
 	e.Logger.Fatal(e.Start(":8080"))

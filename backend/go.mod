@@ -7,6 +7,8 @@ require (
 	github.com/getkin/kin-openapi v0.118.0
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/labstack/echo/v4 v4.11.1
+	github.com/lib/pq v1.2.0
+	github.com/pkg/errors v0.9.1
 	golang.org/x/crypto v0.13.0
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9
 )
@@ -29,7 +31,6 @@ require (
 	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
 	github.com/perimeterx/marshmallow v1.1.4 // indirect
-	github.com/pkg/errors v0.9.1 // indirect
 	github.com/rogpeppe/go-internal v1.9.0 // indirect
 	github.com/stretchr/testify v1.8.4 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect

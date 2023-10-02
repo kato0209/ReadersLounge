@@ -23,20 +23,43 @@ func NewUserRepository(db *sqlx.DB) IUserRepository {
 
 func (ur *userRepository) CreateUser(ctx echo.Context, user *models.User) error {
 	c := ctx.Request().Context()
+	var userID int64
 	if err := db.Tx(c, ur.db, func(tx *sqlx.Tx) error {
-		"""
-		err := tx.QueryRowContext(c, `
-		INSERT INTO users (name, book_id)
-		VALUES ($1, $2)
-		RETURNING comment_id;
+
+		if err := tx.QueryRowContext(c, "INSERT INTO users DEFAULT VALUES RETURNING user_id;").Scan(&userID); err != nil {
+			return errors.WithStack(err)
+		}
+		_, err := tx.ExecContext(
+			c,
+			`
+			INSERT INTO user_details (user_id, name, profile_text, profile_image)
+			VALUES ($1, $2, $3, $4);
 		`,
-			authorID,
-			bookID,
-		).Scan(&CommentID)
+			userID,
+			user.Name,
+			user.ProfileText,
+			user.ProfileImage,
+		)
 		if err != nil {
 			return errors.WithStack(err)
 		}
-		"""
+
+		_, err = tx.ExecContext(
+			c,
+			`
+			INSERT INTO user_auths (user_id, identity_type, identifier, credential)
+			VALUES ($1, $2, $3, $4);
+		`,
+			userID,
+			user.IdentityType,
+			user.Identifier,
+			user.Credential,
+		)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+		return nil
+
 	}); err != nil {
 		return errors.WithStack(err)
 	}

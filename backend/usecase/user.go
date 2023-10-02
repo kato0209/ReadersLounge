@@ -26,14 +26,12 @@ func (uu *userUsecase) Signup(ctx echo.Context, user models.User) (models.UserRe
 	if err != nil {
 		return models.UserResponse{}, err
 	}
-	newUser := models.User{Identifier: user.Identifier, Credential: string(hash)}
+	newUser := models.User{Name: user.Name, IdentityType: user.IdentityType, Identifier: user.Identifier, Credential: string(hash)}
 	if err := uu.ur.CreateUser(ctx, &newUser); err != nil {
 		return models.UserResponse{}, err
 	}
 	resUser := models.UserResponse{
-		UserID:     newUser.UserID,
-		Identifier: newUser.Identifier,
-		Credential: newUser.Credential,
+		UserID: newUser.UserID,
 	}
 	return resUser, nil
 }
