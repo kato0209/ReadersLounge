@@ -2,6 +2,8 @@ package controller
 
 import (
 	"net/http"
+	"os"
+	"time"
 
 	"backend/controller/openapi"
 	"backend/models"
@@ -34,9 +36,40 @@ func (s *Server) Signup(ctx echo.Context) error {
 }
 
 func (s *Server) Login(ctx echo.Context) error {
-	return nil
+	reqLoginBody := openapi.ReqLoginBody{}
+	if err := ctx.Bind(&reqLoginBody); err != nil {
+		return ctx.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	tokenString, err := s.uu.Login(ctx, models.User{})
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+	cookie := new(http.Cookie)
+	cookie.Name = "jwt_token"
+	cookie.Value = tokenString
+	cookie.Expires = time.Now().Add(24 * time.Hour)
+	cookie.Path = "/"
+	cookie.Domain = os.Getenv("API_DOMAIN")
+	//cookie.Secure = true
+	cookie.HttpOnly = true
+	//cookie.SameSite = http.SameSiteDefaultMode
+	cookie.SameSite = http.SameSiteNoneMode
+	ctx.SetCookie(cookie)
+
+	return ctx.NoContent(http.StatusOK)
 }
 
 func (s *Server) Logout(ctx echo.Context) error {
-	return nil
+	cookie := new(http.Cookie)
+	cookie.Name = "jwt_token"
+	cookie.Value = ""
+	cookie.Expires = time.Now()
+	cookie.Path = "/"
+	cookie.Domain = os.Getenv("API_DOMAIN")
+	//cookie.Secure = true
+	cookie.HttpOnly = true
+	cookie.SameSite = http.SameSiteNoneMode
+	ctx.SetCookie(cookie)
+	return ctx.NoContent(http.StatusOK)
 }

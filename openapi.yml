@@ -47,10 +47,6 @@ paths:
       responses:
         "200":
           description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ResLoginBody"
   /logout:
     post:
       summary: logout
@@ -63,10 +59,6 @@ paths:
       responses:
         "200":
           description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ResLogoutBody"
       
 components:
   securitySchemes:
@@ -97,14 +89,6 @@ components:
             type: string
           credential:
             type: string
-    ResLoginBody:
-      properties:
-        user_id:
-          type: integer
-    ResLogoutBody:
-      properties:
-        message:
-          type: string
       
 security:
   - X-CSRF-TOKEN: []

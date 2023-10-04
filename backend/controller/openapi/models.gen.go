@@ -25,16 +25,6 @@ type ResCsrfToken struct {
 	CsrfToken *string `json:"csrf_token,omitempty"`
 }
 
-// ResLoginBody defines model for ResLoginBody.
-type ResLoginBody struct {
-	UserId *int `json:"user_id,omitempty"`
-}
-
-// ResLogoutBody defines model for ResLogoutBody.
-type ResLogoutBody struct {
-	Message *string `json:"message,omitempty"`
-}
-
 // ResSignupBody defines model for ResSignupBody.
 type ResSignupBody struct {
 	UserId *int `json:"user_id,omitempty"`

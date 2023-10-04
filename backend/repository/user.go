@@ -3,6 +3,7 @@ package repository
 import (
 	"backend/db"
 	"backend/models"
+	"database/sql"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
@@ -11,6 +12,7 @@ import (
 
 type IUserRepository interface {
 	CreateUser(ctx echo.Context, user *models.User) error
+	GetUserByIdentifier(user *models.User, identifier string) error
 }
 
 type userRepository struct {
@@ -61,6 +63,28 @@ func (ur *userRepository) CreateUser(ctx echo.Context, user *models.User) error 
 		return nil
 
 	}); err != nil {
+		return errors.WithStack(err)
+	}
+	return nil
+}
+
+func (ur *userRepository) GetUserByIdentifier(user *models.User, identifier string) error {
+	if err := ur.db.Get(
+		user,
+		`
+		select
+			users.user_id,
+			ua.identifier,
+			ua.credential
+		from users
+		inner join user_auths ua using (user_id)
+		where ua.identifier = $1
+		`,
+		identifier,
+	); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return errors.WithStack(errors.New("user is not found"))
+		}
 		return errors.WithStack(err)
 	}
 	return nil

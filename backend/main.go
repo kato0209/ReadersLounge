@@ -7,15 +7,22 @@ import (
 	"backend/repository"
 	"backend/router"
 	"backend/usecase"
+	"fmt"
 
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"golang.org/x/exp/slog"
 )
 
 func main() {
 
+	err := godotenv.Load(".env")
+	if err != nil {
+		fmt.Printf(".env is not found")
+	}
+
 	e := router.NewRouter()
-	_, err := openapi.GetSwagger()
+	_, err = openapi.GetSwagger()
 	if err != nil {
 		slog.Error("swagger error", "error", err)
 	}
