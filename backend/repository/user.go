@@ -25,12 +25,13 @@ func NewUserRepository(db *sqlx.DB) IUserRepository {
 
 func (ur *userRepository) CreateUser(ctx echo.Context, user *models.User) error {
 	c := ctx.Request().Context()
-	var userID int64
+	var userID int
 	if err := db.Tx(c, ur.db, func(tx *sqlx.Tx) error {
 
 		if err := tx.QueryRowContext(c, "INSERT INTO users DEFAULT VALUES RETURNING user_id;").Scan(&userID); err != nil {
 			return errors.WithStack(err)
 		}
+		user.UserID = userID
 		_, err := tx.ExecContext(
 			c,
 			`
@@ -78,7 +79,7 @@ func (ur *userRepository) GetUserByIdentifier(user *models.User, identifier stri
 			ua.credential
 		from users
 		inner join user_auths ua using (user_id)
-		where ua.identifier = $1
+		where ua.identifier = $1 ;
 		`,
 		identifier,
 	); err != nil {

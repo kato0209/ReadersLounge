@@ -2,6 +2,7 @@ services:
   backend:
     build:
       context: ./backend
+      dockerfile: "Dockerfile.dev"
     working_dir: "/readers-lounge/backend"
     volumes:
       - ./backend:/readers-lounge/backend

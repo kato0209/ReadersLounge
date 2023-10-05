@@ -41,7 +41,10 @@ func (s *Server) Login(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, err.Error())
 	}
 
-	tokenString, err := s.uu.Login(ctx, models.User{})
+	tokenString, err := s.uu.Login(ctx, models.User{
+		Identifier: *reqLoginBody.Identifier,
+		Credential: *reqLoginBody.Credential,
+	})
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
