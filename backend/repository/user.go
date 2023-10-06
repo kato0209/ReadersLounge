@@ -12,7 +12,7 @@ import (
 
 type IUserRepository interface {
 	CreateUser(ctx echo.Context, user *models.User) error
-	GetUserByIdentifier(user *models.User, identifier string) error
+	GetUserByIdentifier(ctx echo.Context, user *models.User, identifier string) error
 }
 
 type userRepository struct {
@@ -69,8 +69,10 @@ func (ur *userRepository) CreateUser(ctx echo.Context, user *models.User) error 
 	return nil
 }
 
-func (ur *userRepository) GetUserByIdentifier(user *models.User, identifier string) error {
-	if err := ur.db.Get(
+func (ur *userRepository) GetUserByIdentifier(ctx echo.Context, user *models.User, identifier string) error {
+	c := ctx.Request().Context()
+	if err := ur.db.GetContext(
+		c,
 		user,
 		`
 		select

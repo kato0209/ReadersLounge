@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"os"
 
+	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -26,6 +27,11 @@ func NewRouter() *echo.Echo {
 		CookieHTTPOnly: true,
 		CookieSameSite: http.SameSiteDefaultMode,
 		//CookieMaxAge:   60,
+	}))
+	p := e.Group("/posts")
+	p.Use(echojwt.WithConfig(echojwt.Config{
+		SigningKey:  []byte(os.Getenv("SECRET")),
+		TokenLookup: "cookie:jwt_token",
 	}))
 
 	return e

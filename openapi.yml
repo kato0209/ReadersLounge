@@ -8,6 +8,7 @@ servers:
 paths:
   /csrftoken:
     get:
+      security: []
       summary: get csrf token
       operationId: csrftoken
       responses:
@@ -19,6 +20,8 @@ paths:
                 $ref: "#/components/schemas/ResCsrfToken"
   /signup:
     post:
+      security:
+        - X-CSRF-TOKEN: []
       summary:  create new user
       operationId: signup
       requestBody:
@@ -36,6 +39,8 @@ paths:
                 $ref: "#/components/schemas/ResSignupBody"
   /login:
     post:
+      security:
+        - X-CSRF-TOKEN: []
       summary: login
       operationId: login
       requestBody:
@@ -49,6 +54,8 @@ paths:
           description: OK
   /logout:
     post:
+      security:
+        - X-CSRF-TOKEN: []
       summary: logout
       operationId: logout
       requestBody:
@@ -59,6 +66,21 @@ paths:
       responses:
         "200":
           description: OK
+  /posts:
+    get:
+      security:
+        - X-CSRF-TOKEN: []
+        - jwtAuth: []
+      summary: posts
+      operationId: posts
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+          
       
 components:
   securitySchemes:
@@ -66,6 +88,10 @@ components:
       type: apiKey
       name: X-CSRF-TOKEN
       in: header
+    jwtAuth:
+      type: apiKey
+      name: jwtAuth
+      in: cookie
   schemas:
     ResCsrfToken:
       properties:
@@ -89,8 +115,55 @@ components:
             type: string
           credential:
             type: string
-      
-security:
-  - X-CSRF-TOKEN: []
+    User:
+      type: object
+      properties:
+        user_id:
+          type: integer
+        name:
+          type: string
+        profile_image:
+          type: string
+    Post:
+      type: object
+      properties:
+        post_id:
+          type: integer
+        user:
+          $ref: "#/components/schemas/User"
+        content:
+          type: string
+        rating:
+          type: integer
+        image:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        book:
+          $ref: "#/components/schemas/Book"
+    Book:
+      type: object
+      properties:
+        book_id:
+          type: integer
+        ISBNcode:
+          type: string
+        title:
+          type: string
+        author:
+          type: string
+        price:
+          type: string
+        publisher:
+          type: string
+        published_at:
+          type: string
+          format: date-time
+        item_url:
+          type: string
+        image:
+          type: string
+        
     
                   

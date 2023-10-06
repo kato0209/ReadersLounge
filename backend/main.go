@@ -35,7 +35,9 @@ func main() {
 
 	userRepository := repository.NewUserRepository(db)
 	userUsecase := usecase.NewUserUsecase(userRepository)
-	server := controller.NewServer(userUsecase)
+	postRepository := repository.NewPostRepository(db)
+	postUsecase := usecase.NewPostUsecase(postRepository)
+	server := controller.NewServer(userUsecase, postUsecase)
 
 	openapi.RegisterHandlers(e, server)
 

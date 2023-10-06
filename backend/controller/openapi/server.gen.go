@@ -27,6 +27,9 @@ type ServerInterface interface {
 	// logout
 	// (POST /logout)
 	Logout(ctx echo.Context) error
+	// posts
+	// (GET /posts)
+	Posts(ctx echo.Context) error
 	// create new user
 	// (POST /signup)
 	Signup(ctx echo.Context) error
@@ -40,8 +43,6 @@ type ServerInterfaceWrapper struct {
 // Csrftoken converts echo context to params.
 func (w *ServerInterfaceWrapper) Csrftoken(ctx echo.Context) error {
 	var err error
-
-	ctx.Set(X_CSRF_TOKENScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.Csrftoken(ctx)
@@ -67,6 +68,17 @@ func (w *ServerInterfaceWrapper) Logout(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.Logout(ctx)
+	return err
+}
+
+// Posts converts echo context to params.
+func (w *ServerInterfaceWrapper) Posts(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(JwtAuthScopes, []string{})
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.Posts(ctx)
 	return err
 }
 
@@ -112,6 +124,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.GET(baseURL+"/csrftoken", wrapper.Csrftoken)
 	router.POST(baseURL+"/login", wrapper.Login)
 	router.POST(baseURL+"/logout", wrapper.Logout)
+	router.GET(baseURL+"/posts", wrapper.Posts)
 	router.POST(baseURL+"/signup", wrapper.Signup)
 
 }
@@ -119,15 +132,18 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/7RUwW7bMAz9FYPb0a297VLotgUbUKRYh6SHAUVQaDbtqLMllaI3GIX/faCctEnhtEOR",
-	"nmKFeuR7j6TuoXCtdxYtB1D3EIo1tjp+LvDuwtXGfnFlL2dPziOxwRgtCEu0bHQjJ+49goLAZGwNQwom",
-	"BiuDNBEehlSyL01tO3/89Cl0AcnqFg/WDrNA1ZX7jXaidKDqhrexafhz1KX4jSl3wMYy1kiCHlIIWHRk",
-	"uF+K1SPk58lsufh2cnU5//pdzsaCgjXqEglSGJXsX0q3ubU3c+xHYsZWTuAlhoKMZ+MkzyLmCReuszUm",
-	"n3+cC9hwgwdif5DCiPxwmp/m4qfzaLU3oOBT/CsFr3kdqWdi14NbNbL8iB1ayp+XoGD2cCMFwuCdDaPs",
-	"j3keDXeW0Uag9r4xRYRmt8HZx5GUr/eEFSh4lz3ObLYZ2Gyvp9GNfRcu5xDN79pWUw9KqCbCPeENJIWs",
-	"kXmPHXVhQkhchyjirsPA2/Yfif/OtkX+UsUQlqCYOhymvXtB5Choq811/Kw4ib9e3WYg3a9bLHgz66+j",
-	"LDwi5xDX7DDncQ3friM7a/7/LTnWOD8t/oJvBaFmTCz+TeQFgr23BtT101fmejWs5ALJvsd4R408O8xe",
-	"ZVnjCt2sXWB1lp/lMKyGfwEAAP//9v28fysGAAA=",
+	"H4sIAAAAAAAC/7RWXU/rRhD9K9G0jwan7QvyG6BWQiBABKRKCEUbexIvsXeW3XFRhPzfq1nngyTrwL0X",
+	"nrLx7HycM2fGfoOcaksGDXvI3sDnJdYqHM+I5vJrHVl0rDE8vRidXedUoJx5YREy8Oy0mUGbgGq4JBc1",
+	"TYjmY128s2nDOEMnRl2rWTyiZqzHjauiRut0HnezzaTSvsRirFguTMnVcoJCMR6xrhGSfq84AtZcxbK1",
+	"60g0ecac5e4ted7nbrJk9HeHU8jgt3TDfbokPg2stwnkZBgNRyvJHSr+QWz9FFvy3NsZp1iuRW2N75g6",
+	"BOdB7kQpusOXK5ppc0bFYp+q3GGBhrWKd14H41RHW9V20Ud6Zhr79eE74EbV2Jvbn3s3vac5mkhq76Zj",
+	"Xtni7odKl+Q97RLvh2VTtp16qpURoqmucNwvj0P59traJuAxb5zmxUgU0GX/9+h8dPfP0f3N5d/X8l8b",
+	"yKBEVaCDZFnb9qV1YGX1JS6kjudXPm24XPvnRHONG/+Vfc9VitJmSuJZoM+dtqxJQtyFEvwVNWaGg9Pb",
+	"C1hPedT2Hzrfef5xPDweSlVk0SirIYO/wqMErOIyoE6l0+tGzzAMqzRFSfqLAjI4X99IwKG3ZHzH2J/D",
+	"YdDKZgkoayudB9f02ZPZLOuPRnBLjoGNbRZuLrf6BtnjUwK+qWvlFpBJ4QNBMuBlgATSSgY3qGy557Zh",
+	"hbkOkF4a9LzS8Rehebc2AhrJoh0WkLFrsI0z+RHkXZE+PrVbLHSIV+Cp4YPoxf7z8Hdnqv0+TFJoACVQ",
+	"fK9Ob4P1GzUa3pef0ubbZhHs4ukwBDg+LND+HnUL9vsk+m6Bf16jXzXtu8l/VSfd58bA4Oug8av3jEcn",
+	"6zC4h+8zKJltlqYV5aoqyXN2MjwZQvvU/h8AAP//D7CDamQKAAA=",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file
