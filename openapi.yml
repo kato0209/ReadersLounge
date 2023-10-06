@@ -90,7 +90,7 @@ components:
       in: header
     jwtAuth:
       type: apiKey
-      name: jwtAuth
+      name: jwt_token
       in: cookie
   schemas:
     ResCsrfToken:

@@ -11,5 +11,5 @@ type Book struct {
 	Publisher   string    `db:"publisher"`
 	PublishedAt time.Time `db:"published_at"`
 	ItemURL     string    `db:"item_url"`
-	Image       string    `db:"book_image"`
+	Image       string    `db:"image"`
 }

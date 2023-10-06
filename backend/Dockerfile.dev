@@ -1,20 +1,7 @@
-FROM --platform=$BUILDPLATFORM golang:1.21.1 as development
+FROM golang:1.21.1 as development
 WORKDIR /readers-lounge/backend
 COPY go.mod go.sum ./
 RUN go mod download
 
-RUN --mount=type=bind,source=./,target=./ \
-    --mount=type=cache,target=/go/pkg/mod \
-    --mount=type=cache,target=/root/.cache/go-build \
-    CGO_ENABLED=0 GOOS=linux go build -mod=readonly -o /main main.go
-
 RUN go install github.com/cosmtrek/air@v1.42.0
-
-FROM alpine:latest as go
-COPY --from=development /go/bin/air /usr/local/bin/
-COPY --from=development /main /
-RUN apk update && \
-    apk upgrade && \
-    apk add bash git postgresql-client && \
-    rm -rf /var/cache/apk/*
 ENTRYPOINT ["air"]

@@ -21,7 +21,6 @@ func main() {
 		fmt.Printf(".env is not found")
 	}
 
-	e := router.NewRouter()
 	_, err = openapi.GetSwagger()
 	if err != nil {
 		slog.Error("swagger error", "error", err)
@@ -39,7 +38,7 @@ func main() {
 	postUsecase := usecase.NewPostUsecase(postRepository)
 	server := controller.NewServer(userUsecase, postUsecase)
 
-	openapi.RegisterHandlers(e, server)
+	e := router.NewRouter(server)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }

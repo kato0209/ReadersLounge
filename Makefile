@@ -19,3 +19,6 @@ migrate/new:
 
 migrate/up:
 	$(DOCKER_COMPOSE) run --rm migration up
+
+seed:
+	$(DOCKER_COMPOSE) exec db psql -U $(POSTGRES_USER) -d $(DATABASE) -a -f /seed/seed.sql

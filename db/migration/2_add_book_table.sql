@@ -1,11 +1,11 @@
 -- +goose Up
 CREATE TABLE IF NOT EXISTS books (
     book_id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    ISBNcode char(30) NOT NULL,
+    ISBNcode char(100) NOT NULL,
     title char(100) NOT NULL,
-    author char(30) NOT NULL,
-    price char(30) NOT NULL,
-    publisher char(50) NOT NULL,
+    author char(100) NOT NULL,
+    price char(100) NOT NULL,
+    publisher char(100) NOT NULL,
     published_at date NOT NULL,
     item_url char(255) NOT NULL,
     image char(255) NOT NULL

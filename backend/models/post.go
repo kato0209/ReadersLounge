@@ -5,7 +5,7 @@ type Post struct {
 	User      User
 	Content   string `db:"content"`
 	Rating    int    `db:"rating"`
-	Image     string `db:"post_image"`
+	Image     string `db:"image"`
 	CreatedAt string `db:"created_at"`
 	Book      Book
 }

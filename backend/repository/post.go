@@ -25,13 +25,13 @@ func (pr *postRepository) GetAllPosts(ctx echo.Context, posts *[]models.Post) er
 	query := `
 		SELECT
 			p.post_id AS post_id,
-			p.content AS content,
-			p.rating AS rating,
-			p.image AS post_image,
+			pd.content AS content,
+			pd.rating AS rating,
+			pd.image AS post_image,
 			p.created_at AS created_at,
 			u.user_id AS user_id,
-			u.name AS name,
-			u.profile_image AS profile_image,
+			ud.name AS name,
+			ud.profile_image AS profile_image,
 			b.book_id AS book_id,
 			b.ISBNcode AS ISBNcode,
 			b.title AS title,
@@ -48,12 +48,32 @@ func (pr *postRepository) GetAllPosts(ctx echo.Context, posts *[]models.Post) er
 		INNER JOIN
 			users AS u ON u.user_id = p.user_id
 		INNER JOIN 
-			user_auths AS ua ON u.user_id = ua.user_id
+			user_details AS ud ON u.user_id = ud.user_id
 		INNER JOIN
 			books AS b ON p.book_id = b.book_id
 	`
-	if err := pr.db.SelectContext(c, posts, query); err != nil {
+	rows, err := pr.db.QueryContext(c, query)
+	if err != nil {
 		return errors.WithStack(err)
 	}
+	defer rows.Close()
+
+	for rows.Next() {
+		post := models.Post{}
+		book := models.Book{}
+		user := models.User{}
+		post.Book = book
+		post.User = user
+
+		err := rows.Scan(post) //kokoko
+		if err != nil {
+			return errors.WithStack(err)
+		}
+		*posts = append(*posts, post)
+	}
+	if err := rows.Err(); err != nil {
+		return errors.WithStack(err)
+	}
+
 	return nil
 }
