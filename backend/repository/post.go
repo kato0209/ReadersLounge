@@ -65,7 +65,25 @@ func (pr *postRepository) GetAllPosts(ctx echo.Context, posts *[]models.Post) er
 		post.Book = book
 		post.User = user
 
-		err := rows.Scan(post) //kokoko
+		err := rows.Scan(
+			&post.PostID,
+			&post.Content,
+			&post.Rating,
+			&post.Image,
+			&post.CreatedAt,
+			&post.User.UserID,
+			&post.User.Name,
+			&post.User.ProfileImage,
+			&post.Book.BookID,
+			&post.Book.ISBNcode,
+			&post.Book.Title,
+			&post.Book.Author,
+			&post.Book.Price,
+			&post.Book.Publisher,
+			&post.Book.PublishedAt,
+			&post.Book.Image,
+			&post.Book.ItemURL,
+		)
 		if err != nil {
 			return errors.WithStack(err)
 		}
