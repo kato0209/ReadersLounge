@@ -3,6 +3,7 @@ package usecase
 import (
 	"backend/models"
 	"backend/repository"
+	"backend/validator"
 	"os"
 	"time"
 
@@ -19,13 +20,17 @@ type IUserUsecase interface {
 
 type userUsecase struct {
 	ur repository.IUserRepository
+	uv validator.IUserValidator
 }
 
-func NewUserUsecase(ur repository.IUserRepository) IUserUsecase {
-	return &userUsecase{ur}
+func NewUserUsecase(ur repository.IUserRepository, uv validator.IUserValidator) IUserUsecase {
+	return &userUsecase{ur, uv}
 }
 
 func (uu *userUsecase) Signup(ctx echo.Context, user models.User) (models.UserResponse, error) {
+	if err := uu.uv.SignupValidator(user); err != nil {
+		return models.UserResponse{}, errors.WithStack(err)
+	}
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(user.Credential), 10)
 	if err != nil {
@@ -42,6 +47,9 @@ func (uu *userUsecase) Signup(ctx echo.Context, user models.User) (models.UserRe
 }
 
 func (uu *userUsecase) Login(ctx echo.Context, user models.User) (string, error) {
+	if err := uu.uv.LoginValidator(user); err != nil {
+		return "", errors.WithStack(err)
+	}
 
 	storedUser := models.User{}
 	if err := uu.ur.GetUserByIdentifier(ctx, &storedUser, user.Identifier); err != nil {

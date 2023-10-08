@@ -7,6 +7,7 @@ import (
 	"backend/repository"
 	"backend/router"
 	"backend/usecase"
+	"backend/validator"
 	"fmt"
 
 	"github.com/joho/godotenv"
@@ -33,7 +34,8 @@ func main() {
 	defer db.Close()
 
 	userRepository := repository.NewUserRepository(db)
-	userUsecase := usecase.NewUserUsecase(userRepository)
+	userValidator := validator.NewUserValidator()
+	userUsecase := usecase.NewUserUsecase(userRepository, userValidator)
 	postRepository := repository.NewPostRepository(db)
 	postUsecase := usecase.NewPostUsecase(postRepository)
 	server := controller.NewServer(userUsecase, postUsecase)

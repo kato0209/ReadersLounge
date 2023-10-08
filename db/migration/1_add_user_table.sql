@@ -18,8 +18,8 @@ CREATE TABLE IF NOT EXISTS user_auths (
     id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     user_id integer NOT NULL,
     identity_type char(100) NOT NULL,
-    identifier char(255) NOT NULL,
-    credential char(255) NOT NULL,
+    identifier char(100) NOT NULL,
+    credential char(100) NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     UNIQUE (identifier)
 );
