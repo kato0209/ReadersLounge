@@ -76,3 +76,11 @@ func (s *Server) Logout(ctx echo.Context) error {
 	ctx.SetCookie(cookie)
 	return ctx.NoContent(http.StatusOK)
 }
+
+func (s *Server) SignupWithGoogle(ctx echo.Context) error {
+	return nil
+}
+
+func (s *Server) GoogleSignupCallback(ctx echo.Context, params openapi.GoogleSignupCallbackParams) error {
+	return nil
+}

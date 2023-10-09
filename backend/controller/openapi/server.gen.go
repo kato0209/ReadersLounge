@@ -8,16 +8,24 @@ import (
 	"compress/gzip"
 	"encoding/base64"
 	"fmt"
+	"net/http"
 	"net/url"
 	"path"
 	"strings"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/labstack/echo/v4"
+	"github.com/oapi-codegen/runtime"
 )
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
+	// Google Sign-Up Callback
+	// (GET /auth/google/callback)
+	GoogleSignupCallback(ctx echo.Context, params GoogleSignupCallbackParams) error
+	// signup with Google
+	// (GET /auth/google/signup)
+	SignupWithGoogle(ctx echo.Context) error
 	// get csrf token
 	// (GET /csrftoken)
 	Csrftoken(ctx echo.Context) error
@@ -38,6 +46,48 @@ type ServerInterface interface {
 // ServerInterfaceWrapper converts echo contexts to parameters.
 type ServerInterfaceWrapper struct {
 	Handler ServerInterface
+}
+
+// GoogleSignupCallback converts echo context to params.
+func (w *ServerInterfaceWrapper) GoogleSignupCallback(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(StateScopes, []string{})
+
+	ctx.Set(Google_authScopes, []string{"email", "profile", "openid"})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GoogleSignupCallbackParams
+	// ------------- Required query parameter "state" -------------
+
+	err = runtime.BindQueryParameter("form", true, true, "state", ctx.QueryParams(), &params.State)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter state: %s", err))
+	}
+
+	// ------------- Required query parameter "code" -------------
+
+	err = runtime.BindQueryParameter("form", true, true, "code", ctx.QueryParams(), &params.Code)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter code: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.GoogleSignupCallback(ctx, params)
+	return err
+}
+
+// SignupWithGoogle converts echo context to params.
+func (w *ServerInterfaceWrapper) SignupWithGoogle(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(X_CSRF_TOKENScopes, []string{})
+
+	ctx.Set(Google_authScopes, []string{"email", "profile", "openid"})
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.SignupWithGoogle(ctx)
+	return err
 }
 
 // Csrftoken converts echo context to params.
@@ -74,6 +124,8 @@ func (w *ServerInterfaceWrapper) Logout(ctx echo.Context) error {
 // Posts converts echo context to params.
 func (w *ServerInterfaceWrapper) Posts(ctx echo.Context) error {
 	var err error
+
+	ctx.Set(X_CSRF_TOKENScopes, []string{})
 
 	ctx.Set(JwtAuthScopes, []string{})
 
@@ -121,6 +173,8 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 		Handler: si,
 	}
 
+	router.GET(baseURL+"/auth/google/callback", wrapper.GoogleSignupCallback)
+	router.GET(baseURL+"/auth/google/signup", wrapper.SignupWithGoogle)
 	router.GET(baseURL+"/csrftoken", wrapper.Csrftoken)
 	router.POST(baseURL+"/login", wrapper.Login)
 	router.POST(baseURL+"/logout", wrapper.Logout)
@@ -132,18 +186,24 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
+	"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",
+	"fx7L1f3qnwAAAP//Jn7DA+4OAAA=",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

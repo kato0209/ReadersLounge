@@ -52,6 +52,49 @@ paths:
       responses:
         "200":
           description: OK
+  /auth/google/signup:
+    get:
+      security:
+        - X-CSRF-TOKEN: []
+        - google_auth:
+          - email
+          - profile
+          - openid
+      summary: signup with Google
+      operationId: SignupWithGoogle
+      responses:
+        "302":
+          description: redirect to Google auth server login
+      tags:
+        - oidc
+  /auth/google/callback:
+    get:
+      security:
+          - state: []
+          - google_auth:
+            - email
+            - profile
+            - openid
+      summary: Google Sign-Up Callback
+      operationId: GoogleSignupCallback
+      parameters:
+        - name: state
+          in: query
+          required: true
+          description: State parameter for CSRF protection
+          schema:
+            type: string
+        - name: code
+          in: query
+          required: true
+          description: Authorization code returned by Google auth server
+          schema:
+            type: string
+      responses:
+        "200":
+          description: callback for Google auth server
+      tags:
+        - oidc
   /logout:
     post:
       security:
@@ -91,6 +134,20 @@ components:
     jwtAuth:
       type: apiKey
       name: jwt_token
+      in: cookie
+    google_auth:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.google.com/o/oauth2/v2/auth
+          tokenUrl: https://oauth2.googleapis.com/token
+          scopes:
+            openid: OpenID Connect
+            email: email address
+            profile: basic profile information
+    state:
+      type: apiKey
+      name: state
       in: cookie
   schemas:
     ResCsrfToken:

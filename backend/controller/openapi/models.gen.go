@@ -9,7 +9,9 @@ import (
 
 const (
 	X_CSRF_TOKENScopes = "X_CSRF_TOKEN.Scopes"
+	Google_authScopes  = "google_auth.Scopes"
 	JwtAuthScopes      = "jwtAuth.Scopes"
+	StateScopes        = "state.Scopes"
 )
 
 // Book defines model for Book.
@@ -64,6 +66,15 @@ type User struct {
 	Name         *string `json:"name,omitempty"`
 	ProfileImage *string `json:"profile_image,omitempty"`
 	UserId       *int    `json:"user_id,omitempty"`
+}
+
+// GoogleSignupCallbackParams defines parameters for GoogleSignupCallback.
+type GoogleSignupCallbackParams struct {
+	// State State parameter for CSRF protection
+	State string `form:"state" json:"state"`
+
+	// Code Authorization code returned by Google auth server
+	Code string `form:"code" json:"code"`
 }
 
 // LogoutJSONBody defines parameters for Logout.
