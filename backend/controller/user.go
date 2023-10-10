@@ -1,12 +1,15 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"time"
 
 	"backend/controller/openapi"
 	"backend/models"
+
+	"backend/auth/oidc"
 
 	"github.com/labstack/echo/v4"
 )
@@ -78,9 +81,81 @@ func (s *Server) Logout(ctx echo.Context) error {
 }
 
 func (s *Server) SignupWithGoogle(ctx echo.Context) error {
-	return nil
+	client := oidc.NewGoogleOidcClient()
+
+	state, err := oidc.RandomState()
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+	cookie := new(http.Cookie)
+	cookie.Name = "state"
+	cookie.Value = state
+	cookie.Expires = time.Now().Add(24 * time.Hour)
+	cookie.Path = "/"
+	cookie.Domain = os.Getenv("API_DOMAIN")
+	//cookie.Secure = true
+	cookie.HttpOnly = true
+	//cookie.SameSite = http.SameSiteDefaultMode
+	cookie.SameSite = http.SameSiteNoneMode
+	ctx.SetCookie(cookie)
+
+	redirectUrl := client.AuthUrl(
+		"code",
+		[]string{"openid", "email", "profile"},
+		fmt.Sprintf(
+			"%s://%s:%s//auth/google/callback",
+			os.Getenv("API_PROTOCOL"),
+			os.Getenv("API_DOMAIN"),
+			os.Getenv("API_PORT"),
+		),
+		state,
+	)
+	return ctx.Redirect(http.StatusMovedPermanently, redirectUrl)
 }
 
 func (s *Server) GoogleSignupCallback(ctx echo.Context, params openapi.GoogleSignupCallbackParams) error {
-	return nil
+	cookieState, err := ctx.Cookie("state")
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	params = openapi.GoogleSignupCallbackParams{}
+	if err := ctx.Bind(&params); err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	if params.State != cookieState.Value {
+		err = fmt.Errorf("state parameter does not match for query: %s, cookie: %s", params.State, cookieState)
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	// 認可コードを取り出しトークンエンドポイントに投げることでid_tokenを取得できる
+	client := oidc.NewGoogleOidcClient()
+	tokenResp, err := client.PostTokenEndpoint(
+		params.Code,
+		fmt.Sprintf(
+			"%s://%s:%s/auth/google/callback",
+			os.Getenv("API_PROTOCOL"),
+			os.Getenv("API_DOMAIN"),
+			os.Getenv("API_PORT"),
+		),
+		"authorization_code",
+	)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	// JWKsエンドポイントから公開鍵を取得しid_token(JWT)の署名を検証。改竄されていないことを確認する
+	idToken, err := oidc.NewIdToken(tokenResp.IdToken, oidc.Google)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	if err = idToken.Validate(client.JwksEndpoint, client.ClientId); err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	//cookieの設定
+
+	return ctx.NoContent(http.StatusOK)
 }

@@ -4,6 +4,7 @@ go 1.21.1
 
 require (
 	github.com/cockroachdb/errors v1.11.1
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/getkin/kin-openapi v0.118.0
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible

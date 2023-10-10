@@ -3,7 +3,6 @@ package controller
 import (
 	"backend/controller/openapi"
 	"backend/models"
-	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -27,7 +26,6 @@ func (s *Server) Posts(ctx echo.Context) error {
 			Name:         &post.User.Name,
 			ProfileImage: &post.User.ProfileImage,
 		}
-		fmt.Println(post.User.ProfileImage)
 		resBook := openapi.Book{
 			BookId:      &post.Book.BookID,
 			ISBNcode:    &post.Book.ISBNcode,
@@ -49,8 +47,6 @@ func (s *Server) Posts(ctx echo.Context) error {
 			Book:      &resBook,
 		})
 	}
-	fmt.Println(*resPosts[0].User.Name)
-	fmt.Println(*resPosts[0].User.ProfileImage)
 
 	return ctx.JSON(http.StatusCreated, resPosts)
 }
