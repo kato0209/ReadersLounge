@@ -90,44 +90,46 @@ func (s *Server) SignupWithGoogle(ctx echo.Context) error {
 	cookie := new(http.Cookie)
 	cookie.Name = "state"
 	cookie.Value = state
-	cookie.Expires = time.Now().Add(24 * time.Hour)
-	cookie.Path = "/"
-	cookie.Domain = os.Getenv("API_DOMAIN")
-	//cookie.Secure = true
-	cookie.HttpOnly = true
-	//cookie.SameSite = http.SameSiteDefaultMode
-	cookie.SameSite = http.SameSiteNoneMode
 	ctx.SetCookie(cookie)
 
 	redirectUrl := client.AuthUrl(
 		"code",
 		[]string{"openid", "email", "profile"},
 		fmt.Sprintf(
-			"%s://%s:%s//auth/google/callback",
+			"%s://%s:%s/auth/google/callback",
 			os.Getenv("API_PROTOCOL"),
 			os.Getenv("API_DOMAIN"),
 			os.Getenv("API_PORT"),
 		),
 		state,
 	)
+	fmt.Println(redirectUrl)
+	for _, cookie := range ctx.Cookies() {
+		fmt.Println(cookie.Name)
+		fmt.Println(cookie.Value)
+	}
 	return ctx.Redirect(http.StatusMovedPermanently, redirectUrl)
 }
 
 func (s *Server) GoogleSignupCallback(ctx echo.Context, params openapi.GoogleSignupCallbackParams) error {
-	cookieState, err := ctx.Cookie("state")
-	if err != nil {
-		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	fmt.Println("GoogleSignupCallback")
+	for _, cookie := range ctx.Cookies() {
+		fmt.Println(cookie.Name)
+		fmt.Println(cookie.Value)
 	}
+	cookieState, _ := ctx.Cookie("state")
+	fmt.Println(cookieState)
 
 	params = openapi.GoogleSignupCallbackParams{}
 	if err := ctx.Bind(&params); err != nil {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	if params.State != cookieState.Value {
-		err = fmt.Errorf("state parameter does not match for query: %s, cookie: %s", params.State, cookieState)
-		return ctx.JSON(http.StatusInternalServerError, err.Error())
-	}
+	/*
+		if params.State != cookieState.Value {
+			err := fmt.Errorf("state parameter does not match for query: %s, cookie: %s", params.State, cookieState)
+			return ctx.JSON(http.StatusInternalServerError, err.Error())
+		}*/
 
 	// 認可コードを取り出しトークンエンドポイントに投げることでid_tokenを取得できる
 	client := oidc.NewGoogleOidcClient()
@@ -154,6 +156,7 @@ func (s *Server) GoogleSignupCallback(ctx echo.Context, params openapi.GoogleSig
 	if err = idToken.Validate(client.JwksEndpoint, client.ClientId); err != nil {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
+	fmt.Println(idToken.Payload)
 
 	//cookieの設定
 
