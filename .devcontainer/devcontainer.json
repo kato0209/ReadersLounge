@@ -1,0 +1,28 @@
+{
+    "name": "ReadersLoungeFrontendDevcontainer",
+    "dockerComposeFile": ["../docker-compose.yml"],
+    "service": "frontend",
+    "workspaceFolder": "/readers-lounge/frontend",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "dbaeumer.vscode-eslint",
+                "dsznajder.es7-react-js-snippets",
+                "eamodio.gitlens",
+                "ecmel.vscode-html-css",
+                "esbenp.prettier-vscode",
+                "formulahendry.auto-close-tag",
+                "formulahendry.auto-rename-tag",
+                "GitHub.copilot",
+                "GitHub.copilot-chat",
+                "ms-azuretools.vscode-docker",
+                "MS-CEINTL.vscode-language-pack-ja",
+                "octref.vetur",
+                "PKief.material-icon-theme",
+                "redhat.vscode-yaml",
+                "ritwickdey.LiveServer",
+                "zxh404.vscode-proto3"
+            ]
+        }
+    }
+}
