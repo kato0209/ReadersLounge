@@ -7,11 +7,40 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import ReadersLoungeLogo from '../../assets/images/ReadersLounge-logo-book.png';
+import { DefaultApi } from '../../openapi/api';
+import { Configuration } from '../../openapi';
+import axios from 'axios';
 
 export default function SignUp() {
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
+
+        if(!import.meta.env.VITE_API_URL){
+            console.error('環境変数BACKEND_API_URLが設定されていません');
+            process.exit();
+        }
+
+        let csrfToken = '';
+        axios.get(`${import.meta.env.VITE_API_URL}/csrftoken`)
+            .then((results) => {
+                csrfToken = results.data.csrf_token;
+            })
+            .catch((error) => {
+                console.log(error.status);
+            });
+        const config = new Configuration({
+            basePath: import.meta.env.VITE_API_URL,
+            apiKey: csrfToken,
+        });
+
+        const apiInstance = new DefaultApi(config);
+        try {
+            const csrfResponse = await apiInstance.csrftoken();
+            console.log(csrfResponse.data.csrf_token);
+        } catch (error) {
+            console.error(error);
+        }
         console.log({
             email: data.get('email'),
             password: data.get('password'),
