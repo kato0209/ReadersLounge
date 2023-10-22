@@ -57,7 +57,7 @@ func (s *Server) Login(ctx echo.Context) error {
 	cookie.Expires = time.Now().Add(24 * time.Hour)
 	cookie.Path = "/"
 	cookie.Domain = os.Getenv("API_DOMAIN")
-	//cookie.Secure = true
+	cookie.Secure = true
 	cookie.HttpOnly = true
 	//cookie.SameSite = http.SameSiteDefaultMode
 	cookie.SameSite = http.SameSiteNoneMode
@@ -73,7 +73,7 @@ func (s *Server) Logout(ctx echo.Context) error {
 	cookie.Expires = time.Now()
 	cookie.Path = "/"
 	cookie.Domain = os.Getenv("API_DOMAIN")
-	//cookie.Secure = true
+	cookie.Secure = true
 	cookie.HttpOnly = true
 	cookie.SameSite = http.SameSiteNoneMode
 	ctx.SetCookie(cookie)

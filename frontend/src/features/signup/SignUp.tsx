@@ -7,43 +7,45 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import ReadersLoungeLogo from '../../assets/images/ReadersLounge-logo-book.png';
-import { DefaultApi } from '../../openapi/api';
-import { Configuration } from '../../openapi';
 import { ReqSignupBody } from '../../openapi/models';
-import axios from 'axios';
+import { apiInstance } from '../../lib/api/apiInstance';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+const SignupSchema = z.object({
+    email: z.string().nonempty('メールアドレスは必須です').email('有効なメールアドレスを入力してください'),
+    username: z.string().nonempty('ユーザー名は必須です'),
+    password: z.string()
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,100}$/,
+        '半角英小文字大文字数字をそれぞれ1種類以上含む8文字以上100文字以下のパスワードを設定して下さい'
+      ),
+    confirmationPassword: z.string().nonempty('パスワードの再入力は必須です'),
+})
+.refine(data => data.password === data.confirmationPassword, {
+    path: ['confirmationPassword'],
+    message: 'パスワードが一致しません',
+});
+
+type FormData = z.infer<typeof SignupSchema>;
 
 export default function SignUp() {
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        const data = new FormData(event.currentTarget);
+    const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
+        resolver: zodResolver(SignupSchema),
+    });
 
-        if(!import.meta.env.VITE_API_URL){
-            console.error('環境変数BACKEND_API_URLが設定されていません');
-            process.exit();
-        }
+    const onSubmit = async (data: FormData) => {
 
-        let csrfToken = '';
-        try {
-            const results = await axios.get(`${import.meta.env.VITE_API_URL}/csrftoken`);
-            csrfToken = results.data.csrf_token;
-            console.log(csrfToken);
-        } catch (error) {
-            console.error(error);
-        }
-        
-        const config = new Configuration({
-            basePath: import.meta.env.VITE_API_URL,
-            apiKey: csrfToken,
-        });
-        const apiInstance = new DefaultApi(config);
         const reqSignupBody: ReqSignupBody = {
-            identifier: data.get('email') as string,
-            username: data.get('username') as string,
-            credential: data.get('password') as string,
+            identifier: data.email,
+            username: data.username,
+            credential: data.password,
         };
         try {
-            const res = await apiInstance.signup(reqSignupBody);
-            console.log(res);
+            const api = await apiInstance;
+            const res = await api.signup(reqSignupBody);
+            console.log(res.data.user_id);
         } catch (error) {
             console.error(error);
         }
@@ -66,10 +68,11 @@ export default function SignUp() {
                 <Typography component="h1" variant="h5" sx={{ mt: 1 }}>
                     Sign up
                 </Typography>
-                <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
+                <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1 }}>
                     <Grid container spacing={2}>
                         <Grid item xs={12}>
                             <TextField
+                                {...register("email")}
                                 required
                                 fullWidth
                                 id="email"
@@ -77,18 +80,22 @@ export default function SignUp() {
                                 name="email"
                                 autoComplete="email"
                             />
+                            {errors.email && <span style={{ color: 'red' }}>{errors.email.message}</span>}
                         </Grid>
                         <Grid item xs={12}>
                             <TextField
+                                {...register("username")}
                                 required
                                 fullWidth
                                 name="username"
                                 label="ユーザー名"
                                 id="username"
                             />
+                            {errors.username && <span style={{ color: 'red' }}>{errors.username.message}</span>}
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             <TextField
+                                {...register("password")}
                                 required
                                 fullWidth
                                 name="password"
@@ -97,17 +104,20 @@ export default function SignUp() {
                                 id="password"
                                 autoComplete="new-password"
                             />
+                            {errors.password && <span style={{ color: 'red' }}>{errors.password.message}</span>}
                         </Grid>
                         <Grid item xs={12} sm={6}>
                             <TextField
+                                {...register("confirmationPassword")}
                                 required
                                 fullWidth
-                                name="password2"
+                                name="confirmationPassword"
                                 label="パスワード(再入力)"
                                 type="password"
-                                id="password2"
+                                id="confirmationPassword"
                                 autoComplete="new-password"
                             />
+                            {errors.confirmationPassword && <span style={{ color: 'red' }}>{errors.confirmationPassword.message}</span>}
                         </Grid>
                     </Grid>
                     <Button
@@ -120,7 +130,7 @@ export default function SignUp() {
                     </Button>
                     <Grid container justifyContent="flex-end">
                         <Grid item>
-                            <Link href="#" variant="body2">
+                            <Link href="../login" variant="body2">
                                 アカウントをお持ちの方はこちら
                             </Link>
                         </Grid>

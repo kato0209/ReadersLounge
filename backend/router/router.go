@@ -21,14 +21,14 @@ func NewRouter(server *controller.Server) *echo.Echo {
 		AllowCredentials: true,
 	}))
 	e.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
-		CookiePath: "/",
-		//CookieDomain: os.Getenv("API_DOMAIN"),
-		CookieDomain: "localhost",
-		//CookieHTTPOnly: true,
+		CookiePath:   "/",
+		CookieDomain: os.Getenv("API_DOMAIN"),
+		//CookieDomain: "localhost",
 		//CookieSameSite: http.SameSiteNoneMode,
 		CookieHTTPOnly: true,
+		//CookieSecure:   false,
 		CookieSameSite: http.SameSiteDefaultMode,
-		//CookieMaxAge:   60,
+		CookieMaxAge:   60,
 	}))
 
 	openapi.RegisterHandlers(e, server)
