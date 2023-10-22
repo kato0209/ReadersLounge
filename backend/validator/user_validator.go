@@ -31,8 +31,7 @@ func (uv *userValidator) SignupValidator(user models.User) error {
 		validation.Field(
 			&user.Credential,
 			validation.Required.Error("password is required"),
-			validation.Match(regexp.MustCompile(`\A(?=.*?[a-z])(?=.*?[A-Z])(?=.*?\d)[a-zA-Z\d]{8,100}\Z`)).
-				Error("Please set a password of at least 8 characters and no more than 100 characters, including at least one each of lower and upper case alphabetical and numeric characters."),
+			validation.By(passwordValidator),
 		),
 		validation.Field(
 			&user.Name,
@@ -53,8 +52,21 @@ func (uv *userValidator) LoginValidator(user models.User) error {
 		validation.Field(
 			&user.Credential,
 			validation.Required.Error("password is required"),
-			validation.Match(regexp.MustCompile(`\A(?=.*?[a-z])(?=.*?[A-Z])(?=.*?\d)[a-zA-Z\d]{8,100}\Z`)).
-				Error("Please set a password of at least 8 characters and no more than 100 characters, including at least one each of lower and upper case alphabetical and numeric characters."),
+			validation.By(passwordValidator),
 		),
 	)
+}
+
+func passwordValidator(value interface{}) error {
+	password, _ := value.(string)
+
+	hasLower := regexp.MustCompile(`[a-z]`).MatchString(password)
+	hasUpper := regexp.MustCompile(`[A-Z]`).MatchString(password)
+	hasDigit := regexp.MustCompile(`\d`).MatchString(password)
+
+	if !hasLower || !hasUpper || !hasDigit || len(password) < 8 || len(password) > 100 {
+		return validation.NewError("invalid_password", "Please set a password of at least 8 characters and no more than 100 characters, including at least one each of lower and upper case alphabetical and numeric characters.")
+	}
+
+	return nil
 }

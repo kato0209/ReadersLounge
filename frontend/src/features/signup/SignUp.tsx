@@ -9,6 +9,7 @@ import Container from '@mui/material/Container';
 import ReadersLoungeLogo from '../../assets/images/ReadersLounge-logo-book.png';
 import { DefaultApi } from '../../openapi/api';
 import { Configuration } from '../../openapi';
+import { ReqSignupBody } from '../../openapi/models';
 import axios from 'axios';
 
 export default function SignUp() {
@@ -22,29 +23,30 @@ export default function SignUp() {
         }
 
         let csrfToken = '';
-        axios.get(`${import.meta.env.VITE_API_URL}/csrftoken`)
-            .then((results) => {
-                csrfToken = results.data.csrf_token;
-            })
-            .catch((error) => {
-                console.log(error.status);
-            });
+        try {
+            const results = await axios.get(`${import.meta.env.VITE_API_URL}/csrftoken`);
+            csrfToken = results.data.csrf_token;
+            console.log(csrfToken);
+        } catch (error) {
+            console.error(error);
+        }
+        
         const config = new Configuration({
             basePath: import.meta.env.VITE_API_URL,
             apiKey: csrfToken,
         });
-
         const apiInstance = new DefaultApi(config);
+        const reqSignupBody: ReqSignupBody = {
+            identifier: data.get('email') as string,
+            username: data.get('username') as string,
+            credential: data.get('password') as string,
+        };
         try {
-            const csrfResponse = await apiInstance.csrftoken();
-            console.log(csrfResponse.data.csrf_token);
+            const res = await apiInstance.signup(reqSignupBody);
+            console.log(res);
         } catch (error) {
             console.error(error);
         }
-        console.log({
-            email: data.get('email'),
-            password: data.get('password'),
-        });
     };
 
     return (
