@@ -12,11 +12,12 @@ import { apiInstance } from '../../lib/api/apiInstance';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { AxiosError } from 'axios' ;
 
 const SignupSchema = z.object({
     email: z.string().nonempty('メールアドレスは必須です').email('有効なメールアドレスを入力してください'),
     username: z.string().nonempty('ユーザー名は必須です'),
-    password: z.string()
+    password: z.string().nonempty('パスワードは必須です')
       .regex(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,100}$/,
         '半角英小文字大文字数字をそれぞれ1種類以上含む8文字以上100文字以下のパスワードを設定して下さい'
@@ -31,7 +32,7 @@ const SignupSchema = z.object({
 type FormData = z.infer<typeof SignupSchema>;
 
 export default function SignUp() {
-    const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
+    const { register, handleSubmit, setError, formState: { errors } } = useForm<FormData>({
         resolver: zodResolver(SignupSchema),
     });
 
@@ -46,8 +47,18 @@ export default function SignUp() {
             const api = await apiInstance;
             const res = await api.signup(reqSignupBody);
             console.log(res.data.user_id);
-        } catch (error) {
-            console.error(error);
+        } catch (error: unknown) {
+            if (error instanceof AxiosError) {
+                console.log(error);
+                if (error.response && error.response.data && error.response.data === 'email already exists') {
+                    setError('email', {
+                        type: 'manual',
+                        message: 'このメールアドレスは既に使用されています。',
+                    });
+                }
+            } else {
+                console.error(error);
+            }
         }
     };
 
