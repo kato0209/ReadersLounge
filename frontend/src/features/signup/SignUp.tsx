@@ -6,13 +6,13 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import ReadersLoungeLogo from '../../assets/images/ReadersLounge-logo-book.png';
 import { ReqSignupBody } from '../../openapi/models';
 import { apiInstance } from '../../lib/api/apiInstance';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AxiosError } from 'axios' ;
+import LogoTitle from '../../components/Logo/LogoTitle';
 
 const SignupSchema = z.object({
     email: z.string().nonempty('メールアドレスは必須です').email('有効なメールアドレスを入力してください'),
@@ -71,11 +71,8 @@ export default function SignUp() {
                     flexDirection: 'column',
                     alignItems: 'center',
                 }}
-            >
-                <img src={ReadersLoungeLogo}/>
-                <Typography component="h1" variant="h3" style={{ color: '#FF7E73' }}>
-                    ReadersLounge
-                </Typography>
+            >  
+                <LogoTitle />
                 <Typography component="h1" variant="h5" sx={{ mt: 1 }}>
                     Sign up
                 </Typography>
