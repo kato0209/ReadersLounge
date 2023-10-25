@@ -13,6 +13,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AxiosError } from 'axios' ;
 import LogoTitle from '../../components/Logo/LogoTitle';
+import { useErrorHandler } from 'react-error-boundary';
 
 const SignupSchema = z.object({
     email: z.string().nonempty('メールアドレスは必須です').email('有効なメールアドレスを入力してください'),
@@ -35,6 +36,7 @@ export default function SignUp() {
     const { register, handleSubmit, setError, formState: { errors } } = useForm<FormData>({
         resolver: zodResolver(SignupSchema),
     });
+    const errorHandler = useErrorHandler();
 
     const onSubmit = async (data: FormData) => {
 
@@ -49,7 +51,6 @@ export default function SignUp() {
             console.log(res.data.user_id);
         } catch (error: unknown) {
             if (error instanceof AxiosError) {
-                console.log(error);
                 if (error.response && error.response.data && error.response.data === 'email already exists') {
                     setError('email', {
                         type: 'manual',
@@ -57,7 +58,7 @@ export default function SignUp() {
                     });
                 }
             } else {
-                console.error(error);
+                errorHandler(error);
             }
         }
     };
@@ -138,7 +139,7 @@ export default function SignUp() {
                     </Button>
                     <Grid container justifyContent="flex-end">
                         <Grid item>
-                            <Link href="../login" variant="body2">
+                            <Link href="/login" variant="body2">
                                 アカウントをお持ちの方はこちら
                             </Link>
                         </Grid>
