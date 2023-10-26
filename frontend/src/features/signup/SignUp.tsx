@@ -1,5 +1,4 @@
 import * as React from 'react';
-import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
@@ -14,6 +13,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { AxiosError } from 'axios' ;
 import LogoTitle from '../../components/Logo/LogoTitle';
 import { useErrorHandler } from 'react-error-boundary';
+import SubmitButton from '../../components/Button/SubmitButton';
 
 const SignupSchema = z.object({
     email: z.string().nonempty('メールアドレスは必須です').email('有効なメールアドレスを入力してください'),
@@ -56,6 +56,8 @@ export default function SignUp() {
                         type: 'manual',
                         message: 'このメールアドレスは既に使用されています。',
                     });
+                } else {
+                    errorHandler(error);
                 }
             } else {
                 errorHandler(error);
@@ -129,14 +131,7 @@ export default function SignUp() {
                             {errors.confirmationPassword && <span style={{ color: 'red' }}>{errors.confirmationPassword.message}</span>}
                         </Grid>
                     </Grid>
-                    <Button
-                        type="submit"
-                        fullWidth
-                        variant="contained"
-                        sx={{ mt: 3, mb: 2, backgroundColor: '#FF7E73', '&:hover': { backgroundColor: '#E56A67' } }}
-                    >
-                        Sign Up
-                    </Button>
+                    <SubmitButton content="SIGN UP" />
                     <Grid container justifyContent="flex-end">
                         <Grid item>
                             <Link href="/login" variant="body2">

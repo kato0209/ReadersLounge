@@ -1,23 +1,63 @@
 import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import LogoTitle from '../../components/Logo/LogoTitle';
+import SubmitButton from '../../components/Button/SubmitButton';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { useErrorHandler } from 'react-error-boundary';
+import { ReqLoginBody } from '../../openapi/models';
+import { apiInstance } from '../../lib/api/apiInstance';
+import { AxiosError } from 'axios';
+
+
+const LoginSchema = z.object({
+  email: z.string().nonempty('メールアドレスは必須です'),
+  password: z.string().nonempty('パスワードは必須です')
+});
+
+type FormData = z.infer<typeof LoginSchema>;
 
 export default function Login() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+  const { register, handleSubmit, setError, formState: { errors } } = useForm<FormData>({
+    resolver: zodResolver(LoginSchema),
+});
+
+const errorHandler = useErrorHandler();
+
+const onSubmit = async (data: FormData) => {
+
+  const reqLoginBody: ReqLoginBody = {
+    identifier: data.email,
+    credential: data.password,
   };
+
+  try {
+    const api = await apiInstance;
+    const res = await api.login(reqLoginBody);
+    console.log(res);
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      if (error.response && error.response.status === 500) {
+          setError('password', {
+              type: 'manual',
+              message: 'メールアドレスまたはパスワードが間違っています',
+          });
+      } else {
+          errorHandler(error);
+      }
+    } else {
+        errorHandler(error);
+    }
+  }
+  
+
+};
 
   return (
       <Container component="main" maxWidth="xs">
@@ -29,52 +69,41 @@ export default function Login() {
             alignItems: 'center',
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Sign in
+          <LogoTitle />
+          <Typography component="h1" variant="h5" sx={{ mt: 1 }}>
+            Login
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ mt: 1 }}>
             <TextField
-              margin="normal"
+              {...register("email")}
               required
               fullWidth
               id="email"
-              label="Email Address"
+              label="メールアドレス"
               name="email"
               autoComplete="email"
               autoFocus
             />
+            {errors.email && <span style={{ color: 'red' }}>{errors.email.message}</span>}
             <TextField
+              {...register("password")}
               margin="normal"
               required
               fullWidth
               name="password"
-              label="Password"
+              label="パスワード"
               type="password"
               id="password"
               autoComplete="current-password"
             />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              Sign In
-            </Button>
-            <Grid container>
-              <Grid item xs>
-                <Link href="#" variant="body2">
-                  Forgot password?
-                </Link>
-              </Grid>
-              <Grid item>
-                <Link href="#" variant="body2">
-                  {"Don't have an account? Sign Up"}
-                </Link>
-              </Grid>
+            {errors.password && <span style={{ color: 'red' }}>{errors.password.message}</span>}
+            <SubmitButton content="LOGIN" />
+            <Grid container justifyContent="flex-end">
+                <Grid item>
+                    <Link href="/signup" variant="body2">
+                        アカウント作成はこちら
+                    </Link>
+                </Grid>
             </Grid>
           </Box>
         </Box>
