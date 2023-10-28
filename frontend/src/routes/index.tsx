@@ -1,16 +1,23 @@
-import { useRoutes } from 'react-router-dom';
-
 import { publicRoutes } from './public';
-import Home from '../features/home/Home';
+import { useRoutes } from 'react-router-dom';
+import { protectedRoutes } from './protected';
+import PageNotFound from '../components/Error/PageNotFound';
+import AuthProvider from '../lib/auth/auth';
 
 export const AppRoutes = () => {
 
-    const commonRoutes = [{ path: '/', element: <Home /> }];
-
-    //const routes = auth.user ? protectedRoutes : publicRoutes;
-    const routes = publicRoutes;
-
-    const element = useRoutes([...routes, ...commonRoutes]);
+    const element = useRoutes([
+        ...publicRoutes,
+        ...protectedRoutes.map(route => ({
+            ...route,
+            element: (
+                <AuthProvider>
+                    {route.element}
+                </AuthProvider>
+            )
+        })),
+        { path: '*', element: <PageNotFound /> }
+    ]);
 
     return <>{element}</>;
 };

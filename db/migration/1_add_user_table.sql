@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS user_details (
     profile_text char(255),
     profile_image char(255) NOT NULL DEFAULT 'https://res.cloudinary.com/dvh5ehszr/image/upload/v1689442197/media/default_img.png',
     updated_at date,
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
 );
 
 CREATE TABLE IF NOT EXISTS user_auths (
@@ -20,6 +20,6 @@ CREATE TABLE IF NOT EXISTS user_auths (
     identity_type char(100) NOT NULL,
     identifier char(100) NOT NULL,
     credential char(100) NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
     UNIQUE (identifier)
 );
