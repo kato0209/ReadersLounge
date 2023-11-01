@@ -156,7 +156,6 @@ func (s *Server) GoogleSignupCallback(ctx echo.Context, params openapi.GoogleSig
 	if err = idToken.Validate(client.JwksEndpoint, client.ClientId); err != nil {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
-	fmt.Println(idToken.Payload)
 
 	//cookieの設定
 
