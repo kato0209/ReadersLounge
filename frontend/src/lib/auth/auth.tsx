@@ -5,7 +5,7 @@ type AuthUserContextType = {
     isAuthenticated: boolean;
     user: User | null;
     login: (user:User, callback:() => void) => void;
-    logout: (callback:() => void) => void;
+    logout: () => void;
 };
 
 const AuthUserContext = React.createContext<AuthUserContextType>({} as AuthUserContextType);
@@ -15,21 +15,24 @@ type AuthRouteProps = {
 };
 
 export const AuthProvider: React.FC<AuthRouteProps> = ({ children }) => {
+    const localIsAuthenticated = Boolean(localStorage.getItem('isAuthenticated'));
     const [user, setUser] = React.useState<User | null>(null);
-    const [isAuthenticated, setIsAuthenticated] = React.useState<boolean>(false);
+    const [isAuthenticated, setIsAuthenticated] = React.useState<boolean>(localIsAuthenticated);
 
     const login = (newUser: User, callback: () => void) => {
+        localStorage.setItem('isAuthenticated', 'true');
         setUser(newUser);
         setIsAuthenticated(true);
+        console.log(isAuthenticated);
         callback();
     }
 
-    const logout = (callback: () => void) => {
+    const logout = () => {
+        console.log('logout');
+        localStorage.setItem('isAuthenticated', 'false');
         setUser(null);
         setIsAuthenticated(false);
-        callback();
     }
-
 
     const value:AuthUserContextType = { isAuthenticated, user, login, logout };
     return (

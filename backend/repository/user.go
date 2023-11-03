@@ -78,9 +78,12 @@ func (ur *userRepository) GetUserByIdentifier(ctx echo.Context, user *models.Use
 		select
 			users.user_id,
 			ua.identifier,
-			ua.credential
+			ua.credential,
+			ud.name,
+			ud.profile_image
 		from users
 		inner join user_auths ua using (user_id)
+		inner join user_details ud using (user_id)
 		where ua.identifier = $1 ;
 		`,
 		identifier,

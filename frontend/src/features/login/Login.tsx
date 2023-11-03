@@ -14,7 +14,9 @@ import { useErrorHandler } from 'react-error-boundary';
 import { ReqLoginBody } from '../../openapi/models';
 import { apiInstance } from '../../lib/api/apiInstance';
 import { AxiosError } from 'axios';
-
+import { useAuthUserContext } from '../../lib/auth/auth';
+import { User } from '../../openapi';
+import { useNavigate } from 'react-router-dom';
 
 const LoginSchema = z.object({
   email: z.string().nonempty('メールアドレスは必須です'),
@@ -28,7 +30,9 @@ export default function Login() {
     resolver: zodResolver(LoginSchema),
 });
 
+const navigate = useNavigate();
 const errorHandler = useErrorHandler();
+const { isAuthenticated, login } = useAuthUserContext();
 
 const onSubmit = async (data: FormData) => {
 
@@ -40,7 +44,15 @@ const onSubmit = async (data: FormData) => {
   try {
     const api = await apiInstance;
     const res = await api.login(reqLoginBody);
-    console.log(res);
+    console.log(isAuthenticated);
+    const user: User = {
+      user_id: res.data.user_id,
+      name: res.data.name,
+      profile_image: res.data.profile_image,
+    }
+    login(user, () => {
+      navigate('/');
+    });
   } catch (error: unknown) {
     if (error instanceof AxiosError) {
       if (error.response && error.response.status === 500) {

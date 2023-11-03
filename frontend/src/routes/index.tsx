@@ -8,6 +8,8 @@ import { useAuthUserContext } from '../lib/auth/auth';
 export const AppRoutes = () => {
 
     const { isAuthenticated } = useAuthUserContext();
+    console.log('AppRoutes');
+    console.log(isAuthenticated);
 
     const element = useRoutes([
         ...publicRoutes,

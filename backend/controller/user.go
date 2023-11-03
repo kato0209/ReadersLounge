@@ -44,13 +44,20 @@ func (s *Server) Login(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, err.Error())
 	}
 
-	tokenString, err := s.uu.Login(ctx, models.User{
+	tokenString, user, err := s.uu.Login(ctx, models.User{
 		Identifier: *reqLoginBody.Identifier,
 		Credential: *reqLoginBody.Credential,
 	})
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
+
+	resUser := openapi.User{
+		UserId:       &user.UserID,
+		Name:         &user.Name,
+		ProfileImage: &user.ProfileImage,
+	}
+
 	cookie := new(http.Cookie)
 	cookie.Name = "jwt_token"
 	cookie.Value = tokenString
@@ -63,7 +70,7 @@ func (s *Server) Login(ctx echo.Context) error {
 	//cookie.SameSite = http.SameSiteNoneMode
 	ctx.SetCookie(cookie)
 
-	return ctx.NoContent(http.StatusOK)
+	return ctx.JSON(http.StatusOK, resUser)
 }
 
 func (s *Server) Logout(ctx echo.Context) error {

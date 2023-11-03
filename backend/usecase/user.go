@@ -15,7 +15,7 @@ import (
 
 type IUserUsecase interface {
 	Signup(ctx echo.Context, user models.User) (models.UserResponse, error)
-	Login(ctx echo.Context, user models.User) (string, error)
+	Login(ctx echo.Context, user models.User) (string, models.User, error)
 }
 
 type userUsecase struct {
@@ -53,18 +53,18 @@ func (uu *userUsecase) Signup(ctx echo.Context, user models.User) (models.UserRe
 	return resUser, nil
 }
 
-func (uu *userUsecase) Login(ctx echo.Context, user models.User) (string, error) {
+func (uu *userUsecase) Login(ctx echo.Context, user models.User) (string, models.User, error) {
 	if err := uu.uv.LoginValidator(user); err != nil {
-		return "", errors.WithStack(err)
+		return "", models.User{}, errors.WithStack(err)
 	}
 
 	storedUser := models.User{}
 	if err := uu.ur.GetUserByIdentifier(ctx, &storedUser, user.Identifier); err != nil {
-		return "", errors.WithStack(err)
+		return "", models.User{}, errors.WithStack(err)
 	}
 	err := bcrypt.CompareHashAndPassword([]byte(storedUser.Credential), []byte(user.Credential))
 	if err != nil {
-		return "", errors.WithStack(err)
+		return "", models.User{}, errors.WithStack(err)
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id": storedUser.UserID,
@@ -72,7 +72,12 @@ func (uu *userUsecase) Login(ctx echo.Context, user models.User) (string, error)
 	})
 	tokenString, err := token.SignedString([]byte(os.Getenv("JWT_SECRET")))
 	if err != nil {
-		return "", errors.WithStack(err)
+		return "", models.User{}, errors.WithStack(err)
 	}
-	return tokenString, nil
+	resUser := models.User{
+		UserID:       storedUser.UserID,
+		Name:         storedUser.Name,
+		ProfileImage: storedUser.ProfileImage,
+	}
+	return tokenString, resUser, nil
 }
