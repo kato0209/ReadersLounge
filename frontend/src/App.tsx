@@ -3,16 +3,16 @@ import { AppRoutes } from './routes'
 import { BrowserRouter } from 'react-router-dom'
 import { ErrorBoundary } from 'react-error-boundary'
 import ErrorFallback from './components/Error/ErrorFallback'
-import { CookiesProvider } from 'react-cookie';
+import { AuthProvider } from './lib/auth/auth'
 
 function App() {
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <CookiesProvider>
+      <AuthProvider>
         <BrowserRouter>
           <AppRoutes />
         </BrowserRouter>
-      </CookiesProvider>
+      </AuthProvider>
     </ErrorBoundary>
   )
 }

@@ -23,7 +23,6 @@ const createApiInstance = async (): Promise<DefaultApi> => {
         if (results && results.data && results.data.csrf_token) {
             resCsrfToken.csrf_token = results.data.csrf_token;
             config.apiKey = resCsrfToken.csrf_token;
-            console.log(config)
             return new DefaultApi(config);
         } else {
             throw new Error('Failed to retrieve CSRF token from API.');

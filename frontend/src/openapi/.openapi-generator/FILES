@@ -6,7 +6,6 @@ api/oidc-api.ts
 base.ts
 common.ts
 configuration.ts
-git_push.sh
 index.ts
 models/book.ts
 models/index.ts

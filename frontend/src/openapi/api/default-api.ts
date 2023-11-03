@@ -31,6 +31,8 @@ import { ReqSignupBody } from '../models';
 import { ResCsrfToken } from '../models';
 // @ts-ignore
 import { ResSignupBody } from '../models';
+// @ts-ignore
+import { User } from '../models';
 /**
  * DefaultApi - axios parameter creator
  * @export
@@ -244,7 +246,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async login(reqLoginBody: ReqLoginBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async login(reqLoginBody: ReqLoginBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<User>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.login(reqLoginBody, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -306,7 +308,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        login(reqLoginBody: ReqLoginBody, options?: any): AxiosPromise<void> {
+        login(reqLoginBody: ReqLoginBody, options?: any): AxiosPromise<User> {
             return localVarFp.login(reqLoginBody, options).then((request) => request(axios, basePath));
         },
         /**
