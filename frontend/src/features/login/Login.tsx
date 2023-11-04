@@ -32,7 +32,7 @@ export default function Login() {
 
 const navigate = useNavigate();
 const errorHandler = useErrorHandler();
-const { isAuthenticated, login } = useAuthUserContext();
+const { login } = useAuthUserContext();
 
 const onSubmit = async (data: FormData) => {
 
@@ -44,7 +44,6 @@ const onSubmit = async (data: FormData) => {
   try {
     const api = await apiInstance;
     const res = await api.login(reqLoginBody);
-    console.log(isAuthenticated);
     const user: User = {
       user_id: res.data.user_id,
       name: res.data.name,

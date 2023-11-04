@@ -1,5 +1,6 @@
 import React from 'react';
 import { User } from '../../openapi';
+import { useCookies } from 'react-cookie';
 
 type AuthUserContextType = {
     isAuthenticated: boolean;
@@ -15,23 +16,19 @@ type AuthRouteProps = {
 };
 
 export const AuthProvider: React.FC<AuthRouteProps> = ({ children }) => {
-    const localIsAuthenticated = Boolean(localStorage.getItem('isAuthenticated'));
+    const [cookies, setCookie, removeCookie] = useCookies(['isAuthenticated']);
     const [user, setUser] = React.useState<User | null>(null);
-    const [isAuthenticated, setIsAuthenticated] = React.useState<boolean>(localIsAuthenticated);
+    const isAuthenticated = Boolean(cookies.isAuthenticated);
 
     const login = (newUser: User, callback: () => void) => {
-        localStorage.setItem('isAuthenticated', 'true');
+        setCookie('isAuthenticated', 'true', { path: '/', secure: true, sameSite: 'strict' });
         setUser(newUser);
-        setIsAuthenticated(true);
-        console.log(isAuthenticated);
         callback();
     }
 
     const logout = () => {
-        console.log('logout');
-        localStorage.setItem('isAuthenticated', 'false');
+        removeCookie('isAuthenticated', { path: '/' });
         setUser(null);
-        setIsAuthenticated(false);
     }
 
     const value:AuthUserContextType = { isAuthenticated, user, login, logout };
