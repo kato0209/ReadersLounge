@@ -11,9 +11,9 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AxiosError } from 'axios' ;
-import LogoTitle from '../../components/Logo/LogoTitle';
 import { useErrorHandler } from 'react-error-boundary';
 import SubmitButton from '../../components/Button/SubmitButton';
+import PortalLogo from '../../components/Logo/PortalLogo';
 
 const SignupSchema = z.object({
     email: z.string().nonempty('メールアドレスは必須です').email('有効なメールアドレスを入力してください'),
@@ -75,7 +75,7 @@ export default function SignUp() {
                     alignItems: 'center',
                 }}
             >  
-                <LogoTitle />
+                <PortalLogo />
                 <Typography component="h1" variant="h5" sx={{ mt: 1 }}>
                     Sign up
                 </Typography>

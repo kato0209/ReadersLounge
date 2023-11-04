@@ -5,7 +5,6 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import LogoTitle from '../../components/Logo/LogoTitle';
 import SubmitButton from '../../components/Button/SubmitButton';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -17,6 +16,7 @@ import { AxiosError } from 'axios';
 import { useAuthUserContext } from '../../lib/auth/auth';
 import { User } from '../../openapi';
 import { useNavigate } from 'react-router-dom';
+import PortalLogo from '../../components/Logo/PortalLogo';
 
 const LoginSchema = z.object({
   email: z.string().nonempty('メールアドレスは必須です'),
@@ -80,7 +80,7 @@ const onSubmit = async (data: FormData) => {
             alignItems: 'center',
           }}
         >
-          <LogoTitle />
+          <PortalLogo />
           <Typography component="h1" variant="h5" sx={{ mt: 1 }}>
             Login
           </Typography>

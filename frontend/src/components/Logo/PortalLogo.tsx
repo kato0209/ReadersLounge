@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Typography } from '@mui/material';
 import ReadersLoungeLogo from '../../assets/images/ReadersLounge-logo-book.png';
 
-function LogoTitle() {
+function PortalLogo() {
     return (
         <Box>
             <img src={ReadersLoungeLogo} alt="ReadersLounge Logo"/>
@@ -13,4 +13,4 @@ function LogoTitle() {
     );
 }
 
-export default LogoTitle;
+export default PortalLogo;
