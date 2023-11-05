@@ -20,8 +20,10 @@ export const AuthProvider: React.FC<AuthRouteProps> = ({ children }) => {
     const [user, setUser] = React.useState<User | null>(null);
     const isAuthenticated = Boolean(cookies.isAuthenticated);
 
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
     const login = (newUser: User, callback: () => void) => {
-        setCookie('isAuthenticated', 'true', { path: '/', secure: true, sameSite: 'strict' });
+        setCookie('isAuthenticated', 'true', { path: '/', secure: true, sameSite: 'strict', expires: tomorrow });
         setUser(newUser);
         callback();
     }
