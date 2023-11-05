@@ -8,8 +8,9 @@ import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
-
-
+import { FaBookOpen } from 'react-icons/fa';
+import useLogout from '../../features/logout/logout';
+import { Link } from 'react-router-dom';
 
 
 export default function AppHeader() {
@@ -22,6 +23,9 @@ export default function AppHeader() {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const handleLogout = useLogout();
+  
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -36,39 +40,54 @@ export default function AppHeader() {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Photos
-          </Typography>
-            <div>
-              <IconButton
-                size="large"
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleMenu}
-                color="inherit"
-              >
-                <AccountCircle />
-              </IconButton>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorEl}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                open={Boolean(anchorEl)}
-                onClose={handleClose}
-              >
-                <MenuItem onClick={handleClose}>Profile</MenuItem>
-                <MenuItem onClick={handleClose}>My account</MenuItem>
-              </Menu>
-            </div>
+          <Box 
+            component={Link} 
+            to="/" 
+            sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              color: 'inherit',
+              '&:hover': {
+                color: '#f0f0f0'
+              },
+              }}
+          >
+            <FaBookOpen/>
+            <Typography variant="h6" component="div" sx={{ ml: 0.5 }}>
+              ReadersLounge
+            </Typography>
+          </Box>
+          <div style={{ flexGrow: 1 }}></div>
+          <>
+            <IconButton
+              size="large"
+              aria-label="account of current user"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              onClick={handleMenu}
+              color="inherit"
+            >
+              <AccountCircle />
+            </IconButton>
+            <Menu
+              id="menu-appbar"
+              anchorEl={anchorEl}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              open={Boolean(anchorEl)}
+              onClose={handleClose}
+            >
+              <MenuItem onClick={handleClose}>Profile</MenuItem>
+              <MenuItem onClick={handleLogout}>ログアウト</MenuItem>
+            </Menu>
+          </>
         </Toolbar>
       </AppBar>
     </Box>
