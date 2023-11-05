@@ -5,6 +5,7 @@ import PageNotFound from '../components/Error/PageNotFound';
 import { Navigate } from 'react-router-dom';
 import { useAuthUserContext } from '../lib/auth/auth';
 import AppHeader from '../components/Header/AppHeader';
+import Box from '@mui/material/Box';
 
 export const AppRoutes = () => {
 
@@ -15,10 +16,10 @@ export const AppRoutes = () => {
         ...protectedRoutes.map(route => ({
             ...route,
             element: isAuthenticated ? (
-                <>
+                <Box sx={{ pt: '3rem' }}>
                     <AppHeader />
                     {route.element}
-                </>
+                </Box>
             ) : <Navigate to="/login" />
         })),
         { path: '*', element: <PageNotFound /> }
