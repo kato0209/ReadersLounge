@@ -32,6 +32,8 @@ type idTokenPayload interface {
 	validateExp() error
 	validate(clientId string) error
 	GetSub() string
+	GetName() string
+	GetPicture() string
 	// GetEmail はGoogleでのみ動作する
 	GetEmail() (string, error)
 }

@@ -2,7 +2,6 @@
 .npmignore
 api.ts
 api/default-api.ts
-api/oidc-api.ts
 base.ts
 common.ts
 configuration.ts

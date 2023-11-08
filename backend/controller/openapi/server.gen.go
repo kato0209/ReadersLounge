@@ -20,12 +20,6 @@ import (
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
-	// Google Sign-Up Callback
-	// (GET /auth/google/callback)
-	GoogleSignupCallback(ctx echo.Context, params GoogleSignupCallbackParams) error
-	// signup with Google
-	// (GET /auth/google/signup)
-	SignupWithGoogle(ctx echo.Context) error
 	// get csrf token
 	// (GET /csrftoken)
 	Csrftoken(ctx echo.Context) error
@@ -35,6 +29,9 @@ type ServerInterface interface {
 	// logout
 	// (POST /logout)
 	Logout(ctx echo.Context) error
+	// Callback for Google OAuth
+	// (GET /oauth/google/callback)
+	GoogleOauthCallback(ctx echo.Context, params GoogleOauthCallbackParams) error
 	// posts
 	// (GET /posts)
 	Posts(ctx echo.Context) error
@@ -46,48 +43,6 @@ type ServerInterface interface {
 // ServerInterfaceWrapper converts echo contexts to parameters.
 type ServerInterfaceWrapper struct {
 	Handler ServerInterface
-}
-
-// GoogleSignupCallback converts echo context to params.
-func (w *ServerInterfaceWrapper) GoogleSignupCallback(ctx echo.Context) error {
-	var err error
-
-	ctx.Set(StateScopes, []string{})
-
-	ctx.Set(Google_authScopes, []string{"email", "profile", "openid"})
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params GoogleSignupCallbackParams
-	// ------------- Required query parameter "state" -------------
-
-	err = runtime.BindQueryParameter("form", true, true, "state", ctx.QueryParams(), &params.State)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter state: %s", err))
-	}
-
-	// ------------- Required query parameter "code" -------------
-
-	err = runtime.BindQueryParameter("form", true, true, "code", ctx.QueryParams(), &params.Code)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter code: %s", err))
-	}
-
-	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.GoogleSignupCallback(ctx, params)
-	return err
-}
-
-// SignupWithGoogle converts echo context to params.
-func (w *ServerInterfaceWrapper) SignupWithGoogle(ctx echo.Context) error {
-	var err error
-
-	ctx.Set(X_CSRF_TOKENScopes, []string{})
-
-	ctx.Set(Google_authScopes, []string{"email", "profile", "openid"})
-
-	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.SignupWithGoogle(ctx)
-	return err
 }
 
 // Csrftoken converts echo context to params.
@@ -118,6 +73,35 @@ func (w *ServerInterfaceWrapper) Logout(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.Logout(ctx)
+	return err
+}
+
+// GoogleOauthCallback converts echo context to params.
+func (w *ServerInterfaceWrapper) GoogleOauthCallback(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(X_CSRF_TOKENScopes, []string{})
+
+	ctx.Set(Google_authScopes, []string{"email", "profile"})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GoogleOauthCallbackParams
+	// ------------- Required query parameter "state" -------------
+
+	err = runtime.BindQueryParameter("form", true, true, "state", ctx.QueryParams(), &params.State)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter state: %s", err))
+	}
+
+	// ------------- Required query parameter "code" -------------
+
+	err = runtime.BindQueryParameter("form", true, true, "code", ctx.QueryParams(), &params.Code)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter code: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.GoogleOauthCallback(ctx, params)
 	return err
 }
 
@@ -173,11 +157,10 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 		Handler: si,
 	}
 
-	router.GET(baseURL+"/auth/google/callback", wrapper.GoogleSignupCallback)
-	router.GET(baseURL+"/auth/google/signup", wrapper.SignupWithGoogle)
 	router.GET(baseURL+"/csrftoken", wrapper.Csrftoken)
 	router.POST(baseURL+"/login", wrapper.Login)
 	router.POST(baseURL+"/logout", wrapper.Logout)
+	router.GET(baseURL+"/oauth/google/callback", wrapper.GoogleOauthCallback)
 	router.GET(baseURL+"/posts", wrapper.Posts)
 	router.POST(baseURL+"/signup", wrapper.Signup)
 
@@ -186,24 +169,22 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/7xXX0/jOBD/KpbvHgPpsS+rvEHvjxCrBcGiOwmhynWmqSGxjT0B9VC/+2nskDatw+1y",
-	"cE9NMjP2/H7zt89cmsYaDRo9L565l0toRHg8Meaefq0zFhwqCF9Pr06+SlMCPePKAi+4R6d0xdcZFy0u",
-	"jUuK5sbcz1S5JVMaoQJHQtWIKn2iQmhmrauTQuuUTJvZdl4rv4RyJpAUFsY19MRLgXCAqgGejVulEaDC",
-	"OnXbuj/JzO9AIuleGI/73M07Rn92sOAF/ynfcJ93xOeB9XXGpdEIGpOeSAcCfxDbOMXWeByNjBNIaklZ",
-	"6yNTr8G5Jp0kRZfw8MVUSp+YcrVPlXRQgkYl0pFXQbhQyVCt4+lXqtKtff/jI3AtGhi920+9W3wz96AT",
-	"V3u3mOGLLG3+mut0+Ui4yPq6C8rQaMRbKiGzUDXMxtPjtfv2wrrOuAfZOoWrK8qAePtfB9Ory98Pvp2f",
-	"/faV3pXmBV+CKMHxrPNtqNQfLKw6gxX5URlT1TCjFhOyvjZP4fDYc9TfApXR064zDT5eU/vgS0TrizwX",
-	"UppWoz+MBx5K0+QmN2RxlD8e5eGCjHtpbPQeGqHogPDLRFk68J5n3FjQxAs/t6BPf2VTozWR0JPKCz4X",
-	"XknWvTOlY60qo0NDoSQYOhfd6FwTVvngXsyWbbqDGp1x94THHSOBVWnMvYINq3dP2CVbglKPAmHUNEr3",
-	"zMgNAkJ2JXjplA2ACn4ZIuq/mFZXwI4vTnnfNJOyR3A+Wv5yODmckEfEqbCKF/xT+JRxK3AZwhACk0dm",
-	"cinqei5k6KYVhDZI6R6oPaWY/BH0Yh1NX5TpNCcaQHCeFze7/l8RYNarsIVxjHKS4ocgg1YWuXpowa32",
-	"qXLw0CoHJS/QtZB10zQ5M3YvP97OWEYTljnA1mko2XzFIh5GHDAP7jFUTsqVMJt/xJNbUvbWaB/T/Wgy",
-	"2Q/tC9+Bk4Qv24UfmO1S6+aWkA5K96YrqE2Z9KV0S874tmmEW/UxZBTEg2vLtsKIoqIAcqNKyW/p8kF2",
-	"+BD20dyIWfGnwmW8ge8w8GlytM+Ag1I5kMjQJAhgNY2yfRqGne8/sRFBsSeFS9b7nSCC5ks/XpL4p71G",
-	"OvRbq4ewtlYymOZ33ujNivhvg38wBEPTGPJ5frbL1gBtBcgICdv0vjxyTLOt266GsMI20aU+eHyZnu+E",
-	"ZmtZCWiGBbb+QCa7Feo7GEzk24DUTZISl6bFV8kk+dvZ3F0M1uvv6TNvwkSOBlAExY+m/UWQfmCgwtL/",
-	"1kBlz5tZvosx4goQN60tHbfY2z6uCrY20/+5DIZr8bvUQ/wfxTQ8sbYvstjQ437Q9stZkee1kaJeGo/F",
-	"58nnCV/frv8JAAD//yCOvcA9DwAA",
+	"H4sIAAAAAAAC/8xXUW/jNgz+K4a2R1+ddS8Hv7XFNhQ9XIvmCgwoikCRmUSNLakS3SIr/N8HUo4TJ3a3",
+	"29phT7FNUiQ/kp+YV6Fs5awBg0HkryKoFVSSH8+tXdOv89aBRw389XJ6/lXZAugZNw5ELgJ6bZaiSYWs",
+	"cWX9oGhu7Xqmiz2ZNghL8CTUlVwOn6gRqlnty0Gh81oNm7l6XuqwgmImkRQW1lf0JAqJ8Al1BSIdtxrO",
+	"ADWWQ96a7iQ7fwSFpHtjAx5jN28R/dHDQuTih2yHfdYCnzHqTSqUNQgGByNRHiR+Z27jEDsbcLQyXiKp",
+	"DcrqEJF6K5070hmE6BaevtilNue22BxDpTwUYFDL4cprFi70YKmaePpUL03t3v/4mLiRFYz6DhfBL77Z",
+	"NZgB18EvZriVDZu/FTo5HykXWd+1RekbjURLI2QXuoTZeHu85e+orE0qAqjaa9xMqQOi998/XUxvf/30",
+	"7frql6/0ro3IxQpkAV6kbWx9pe5g6fQVbCiOpbXLEmZEMdz1pX3hwyPn6D8kamsuWmbqfbwj+hArRBfy",
+	"LJNK2dpgOIkHnihbZTazZHGaPZ9m7CAVQVkXo4dKajqAfxNZFB5CEB10IhdzGbRK2vdEmziR2hqmDSp1",
+	"P4TorA1AOh04iNgT+6CyGp3x+IJnbd6MnbJ2rWGH3eMLti01AFxAiTBqGqVHZhQGJUJ2BQTlteOEcnHL",
+	"dQtfbG2WkJzdXIqOGgdlz+BDtPzpZHIyoYisAyOdFrn4mT+lwklcMdgZjUc3HUtghqNOZjwvC5GLi04j",
+	"FR6CsybEQp1OJjxgO+aUzpVasWn2GKzZ3XB/xVu9GWY0+ihcX/WaXeT3D6kIdVVJvxE5BZ5QJsmuqFlJ",
+	"bMej2V4O/bSYDDmlpxoCbof/nbLZ41rOhrxoD4XI0dfQfCCS7Q3wNxA8JIr7h6YHagRwi6Wt8U0wSf7P",
+	"0TzktWYEonfIiQLlpHjes8gKmZJlOZdqPToGv7HeNdlcbHVpkLysAMEHdt4Pb0qznnQqycL6hIIj6kJQ",
+	"rJVGmniqwW+OWaLfNukxYLul6ND52T4lJ7RCJh6w9gaKZL5JYjoJpZME8M98NQyFwsvn90Ty8H9t7vS1",
+	"f6ndt1fN7mo5aJZtnblwLWDXfDFw/9AohNF+uWHpB2LBO++/wKK75A5nJObFKQZejMbnPi5OH8eie4vZ",
+	"f0yj/a3wXfg0/o1IDLwkddfHcfYie9Td1pJnWWmVLFc2YP558nkimofmzwAAAP//+ANoBjwOAAA=",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

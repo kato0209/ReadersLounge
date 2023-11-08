@@ -219,6 +219,57 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * 
+         * @summary Callback for signup with Google
+         * @param {string} state State parameter for CSRF protection
+         * @param {string} code Authorization code returned by Google auth server
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        signupWithGoogle: async (state: string, code: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'state' is not null or undefined
+            assertParamExists('signupWithGoogle', 'state', state)
+            // verify required parameter 'code' is not null or undefined
+            assertParamExists('signupWithGoogle', 'code', code)
+            const localVarPath = `/oauth/google/signup`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication X-CSRF-TOKEN required
+            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
+
+            // authentication google_auth required
+            // oauth required
+            await setOAuthToObject(localVarHeaderParameter, "google_auth", ["email", "profile"], configuration)
+
+            if (state !== undefined) {
+                localVarQueryParameter['state'] = state;
+            }
+
+            if (code !== undefined) {
+                localVarQueryParameter['code'] = code;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -282,6 +333,18 @@ export const DefaultApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.signup(reqSignupBody, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
+        /**
+         * 
+         * @summary Callback for signup with Google
+         * @param {string} state State parameter for CSRF protection
+         * @param {string} code Authorization code returned by Google auth server
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async signupWithGoogle(state: string, code: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.signupWithGoogle(state, code, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
     }
 };
 
@@ -339,6 +402,17 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         signup(reqSignupBody: ReqSignupBody, options?: any): AxiosPromise<ResSignupBody> {
             return localVarFp.signup(reqSignupBody, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Callback for signup with Google
+         * @param {string} state State parameter for CSRF protection
+         * @param {string} code Authorization code returned by Google auth server
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        signupWithGoogle(state: string, code: string, options?: any): AxiosPromise<void> {
+            return localVarFp.signupWithGoogle(state, code, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -406,6 +480,19 @@ export class DefaultApi extends BaseAPI {
      */
     public signup(reqSignupBody: ReqSignupBody, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).signup(reqSignupBody, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Callback for signup with Google
+     * @param {string} state State parameter for CSRF protection
+     * @param {string} code Authorization code returned by Google auth server
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public signupWithGoogle(state: string, code: string, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).signupWithGoogle(state, code, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

@@ -15,9 +15,11 @@ type googleIdTokenPayload struct {
 	// クライアントID
 	Aud string `json:"aud"`
 	// ID Provider内でのID。メアドではなくこちらがユーザー識別子となる
-	Sub   string `json:"sub"`
-	Email string `json:"email"`
-	Exp   int64  `json:"exp"`
+	Sub     string `json:"sub"`
+	Email   string `json:"email"`
+	Exp     int64  `json:"exp"`
+	Name    string `json:"name"`
+	Picture string `json:"picture"`
 }
 
 // Validate はpayloadの中身を検証
@@ -78,6 +80,14 @@ func (payload googleIdTokenPayload) validateExp() error {
 
 func (payload googleIdTokenPayload) GetSub() string {
 	return payload.Sub
+}
+
+func (payload googleIdTokenPayload) GetName() string {
+	return payload.Name
+}
+
+func (payload googleIdTokenPayload) GetPicture() string {
+	return payload.Picture
 }
 
 // GetEmail はid_tokenからメールアドレスを取得する

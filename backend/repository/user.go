@@ -32,20 +32,23 @@ func (ur *userRepository) CreateUser(ctx echo.Context, user *models.User) error 
 			return errors.WithStack(err)
 		}
 		user.UserID = userID
-		_, err := tx.ExecContext(
+
+		var profileImage string
+		err := tx.QueryRowContext(
 			c,
 			`
 			INSERT INTO user_details (user_id, name, profile_text, profile_image)
-			VALUES ($1, $2, $3, $4);
+			VALUES ($1, $2, $3, $4) RETURNING profile_image;
 		`,
 			userID,
 			user.Name,
 			user.ProfileText,
 			user.ProfileImage,
-		)
+		).Scan(&profileImage)
 		if err != nil {
 			return errors.WithStack(err)
 		}
+		user.ProfileImage = profileImage
 
 		_, err = tx.ExecContext(
 			c,

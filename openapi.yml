@@ -56,32 +56,15 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
-
-  /auth/google/signup:
+  /oauth/google/callback:
     get:
       security:
         - X-CSRF-TOKEN: []
         - google_auth:
           - email
           - profile
-          - openid
-      summary: signup with Google
-      operationId: SignupWithGoogle
-      responses:
-        "302":
-          description: redirect to Google auth server login
-      tags:
-        - oidc
-  /auth/google/callback:
-    get:
-      security:
-          - state: []
-          - google_auth:
-            - email
-            - profile
-            - openid
-      summary: Google Sign-Up Callback
-      operationId: GoogleSignupCallback
+      summary: Callback for Google OAuth
+      operationId: google_oauth_callback
       parameters:
         - name: state
           in: query
@@ -97,9 +80,11 @@ paths:
             type: string
       responses:
         "200":
-          description: callback for Google auth server
-      tags:
-        - oidc
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
   /logout:
     post:
       security:
@@ -147,7 +132,6 @@ components:
           authorizationUrl: https://accounts.google.com/o/oauth2/v2/auth
           tokenUrl: https://oauth2.googleapis.com/token
           scopes:
-            openid: OpenID Connect
             email: email address
             profile: basic profile information
     state:
