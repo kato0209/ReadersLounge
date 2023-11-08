@@ -2,7 +2,7 @@ import { DefaultApi } from '../../openapi/api';
 import { Configuration } from '../../openapi';
 import { ResCsrfToken } from '../../openapi/models';
 
-const BASE_API_URL = import.meta.env.VITE_API_URL;
+const BASE_API_URL = import.meta.env.VITE_API_URL as string;
 
 if (!BASE_API_URL) {
     throw new Error('Environment variable VITE_API_URL is not set.');

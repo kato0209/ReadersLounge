@@ -14,6 +14,7 @@ import { AxiosError } from 'axios' ;
 import { useErrorHandler } from 'react-error-boundary';
 import SubmitButton from '../../components/Button/SubmitButton';
 import PortalLogo from '../../components/Logo/PortalLogo';
+import GoogleAuth from '../../components/OAuth/GoogleAuth';
 
 const SignupSchema = z.object({
     email: z.string().nonempty('メールアドレスは必須です').email('有効なメールアドレスを入力してください'),
@@ -139,6 +140,10 @@ export default function SignUp() {
                             </Link>
                         </Grid>
                     </Grid>
+                    <Typography component="h1" variant="h5" sx={{ mt: 2, mb: 1 }}>
+                        Sign up with another provider
+                    </Typography>
+                    <GoogleAuth />
                 </Box>
             </Box>
         </Container>

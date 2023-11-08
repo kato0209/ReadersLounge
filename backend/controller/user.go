@@ -120,11 +120,6 @@ func (s *Server) SignupWithGoogle(ctx echo.Context) error {
 }
 
 func (s *Server) GoogleSignupCallback(ctx echo.Context, params openapi.GoogleSignupCallbackParams) error {
-	fmt.Println("GoogleSignupCallback")
-	for _, cookie := range ctx.Cookies() {
-		fmt.Println(cookie.Name)
-		fmt.Println(cookie.Value)
-	}
 	cookieState, _ := ctx.Cookie("state")
 	fmt.Println(cookieState)
 
