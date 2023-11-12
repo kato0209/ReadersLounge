@@ -59,10 +59,10 @@ paths:
   /oauth/google/callback:
     get:
       security:
-        - X-CSRF-TOKEN: []
         - google_auth:
           - email
           - profile
+        - state: []
       summary: Callback for Google OAuth
       operationId: google_oauth_callback
       parameters:
@@ -79,12 +79,8 @@ paths:
           schema:
             type: string
       responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/User"
+        "302":
+          description: Redirect to Home
   /logout:
     post:
       security:
@@ -99,6 +95,20 @@ paths:
       responses:
         "200":
           description: OK
+  /user:
+    get:
+      security:
+        - X-CSRF-TOKEN: []
+        - jwtAuth: []
+      summary: get user
+      operationId: user
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
   /posts:
     get:
       security:

@@ -11,6 +11,7 @@ const (
 	X_CSRF_TOKENScopes = "X_CSRF_TOKEN.Scopes"
 	Google_authScopes  = "google_auth.Scopes"
 	JwtAuthScopes      = "jwtAuth.Scopes"
+	StateScopes        = "state.Scopes"
 )
 
 // Book defines model for Book.

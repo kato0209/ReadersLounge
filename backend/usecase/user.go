@@ -87,7 +87,7 @@ func (uu *userUsecase) GoogleOAuthCallback(ctx echo.Context, code string) (strin
 	tokenResp, err := client.PostTokenEndpoint(
 		code,
 		fmt.Sprintf(
-			"%s://%s:%s/oauth/google/signup",
+			"%s://%s:%s/oauth/google/callback",
 			os.Getenv("API_PROTOCOL"),
 			os.Getenv("API_DOMAIN"),
 			os.Getenv("API_PORT"),
@@ -97,12 +97,10 @@ func (uu *userUsecase) GoogleOAuthCallback(ctx echo.Context, code string) (strin
 	if err != nil {
 		return "", models.User{}, errors.WithStack(err)
 	}
-
 	idToken, err := oidc.NewIdToken(tokenResp.IdToken, oidc.Google)
 	if err != nil {
 		return "", models.User{}, errors.WithStack(err)
 	}
-
 	if err = idToken.Validate(client.JwksEndpoint, client.ClientId); err != nil {
 		return "", models.User{}, errors.WithStack(err)
 	}
@@ -118,7 +116,6 @@ func (uu *userUsecase) GoogleOAuthCallback(ctx echo.Context, code string) (strin
 		Identifier:   email,
 		Credential:   "",
 	}
-
 	storedUser := models.User{}
 	err = uu.ur.GetUserByIdentifier(ctx, &storedUser, user.Identifier)
 	if err == nil {

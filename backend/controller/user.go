@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"time"
@@ -99,6 +100,7 @@ func (s *Server) GoogleOauthCallback(ctx echo.Context, params openapi.GoogleOaut
 		Name:         &user.Name,
 		ProfileImage: &user.ProfileImage,
 	}
+	fmt.Println(resUser)
 
 	cookie := new(http.Cookie)
 	cookie.Name = "jwt_token"
@@ -112,5 +114,10 @@ func (s *Server) GoogleOauthCallback(ctx echo.Context, params openapi.GoogleOaut
 	//cookie.SameSite = http.SameSiteNoneMode
 	ctx.SetCookie(cookie)
 
-	return ctx.JSON(http.StatusOK, resUser)
+	return ctx.Redirect(http.StatusMovedPermanently, os.Getenv("FRONTEND_URL"))
+}
+
+func (s *Server) User(ctx echo.Context) error {
+	user := models.User{}
+	return ctx.JSON(http.StatusOK, user)
 }
