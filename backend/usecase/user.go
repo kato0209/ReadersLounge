@@ -19,6 +19,7 @@ type IUserUsecase interface {
 	Signup(ctx echo.Context, user models.User) (models.User, error)
 	Login(ctx echo.Context, user models.User) (string, models.User, error)
 	GoogleOAuthCallback(ctx echo.Context, code string) (string, models.User, error)
+	GetUserByUserID(ctx echo.Context, userID int) (models.User, error)
 }
 
 type userUsecase struct {
@@ -139,4 +140,12 @@ func (uu *userUsecase) GoogleOAuthCallback(ctx echo.Context, code string) (strin
 	} else {
 		return "", models.User{}, errors.WithStack(err)
 	}
+}
+
+func (uu *userUsecase) GetUserByUserID(ctx echo.Context, userID int) (models.User, error) {
+	resUser := models.User{}
+	if err := uu.ur.GetUserByUserID(ctx, &resUser, userID); err != nil {
+		return models.User{}, errors.WithStack(err)
+	}
+	return resUser, nil
 }

@@ -8,6 +8,7 @@ import (
 
 	"backend/controller/openapi"
 	"backend/models"
+	"backend/utils"
 
 	"github.com/labstack/echo/v4"
 )
@@ -118,6 +119,21 @@ func (s *Server) GoogleOauthCallback(ctx echo.Context, params openapi.GoogleOaut
 }
 
 func (s *Server) User(ctx echo.Context) error {
-	user := models.User{}
-	return ctx.JSON(http.StatusOK, user)
+	userID, err := utils.ExtractUserID(ctx)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	loginUser, err := s.uu.GetUserByUserID(ctx, userID)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	resUser := openapi.User{
+		UserId:       &loginUser.UserID,
+		Name:         &loginUser.Name,
+		ProfileImage: &loginUser.ProfileImage,
+	}
+
+	return ctx.JSON(http.StatusOK, resUser)
 }

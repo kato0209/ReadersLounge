@@ -13,6 +13,7 @@ import (
 type IUserRepository interface {
 	CreateUser(ctx echo.Context, user *models.User) error
 	GetUserByIdentifier(ctx echo.Context, user *models.User, identifier string) error
+	GetUserByUserID(ctx echo.Context, user *models.User, userID int) error
 }
 
 type userRepository struct {
@@ -38,7 +39,15 @@ func (ur *userRepository) CreateUser(ctx echo.Context, user *models.User) error 
 			c,
 			`
 			INSERT INTO user_details (user_id, name, profile_text, profile_image)
-			VALUES ($1, $2, $3, $4) RETURNING profile_image;
+			VALUES (
+				$1, 
+				$2, 
+				$3, 
+				CASE 
+					WHEN $4 = '' THEN DEFAULT 
+					ELSE $4
+				END
+			) RETURNING profile_image;
 		`,
 			userID,
 			user.Name,
@@ -96,5 +105,27 @@ func (ur *userRepository) GetUserByIdentifier(ctx echo.Context, user *models.Use
 		}
 		return errors.WithStack(err)
 	}
+	return nil
+}
+
+func (ur *userRepository) GetUserByUserID(ctx echo.Context, user *models.User, userID int) error {
+	c := ctx.Request().Context()
+	if err := ur.db.GetContext(
+		c,
+		user,
+		`
+		select
+			users.user_id,
+			ud.name,
+			ud.profile_image
+		from users
+		inner join user_details ud using (user_id)
+		where users.user_id = $1 ;
+		`,
+		userID,
+	); err != nil {
+		return errors.WithStack(err)
+	}
+
 	return nil
 }
