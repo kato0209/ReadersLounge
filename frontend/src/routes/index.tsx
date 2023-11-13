@@ -12,6 +12,8 @@ import { User } from '../openapi';
 
 export const AppRoutes = () => {
 
+    const { isAuthenticated, login } = useAuthUserContext();
+
     const fetchUserData = async () => {
         try {
             const api = await apiInstance;
@@ -21,16 +23,23 @@ export const AppRoutes = () => {
             name: res.data.name,
             profile_image: res.data.profile_image,
             }
-            console.log(user)
+            login(user);
         } catch (error) {
             console.log("not authenticated")
+            console.log(error);
         }
     };
 
-    React.useEffect(() => {
+    const isProtectedRoute = protectedRoutes.some(route => route.path === location.pathname);
+    if (isProtectedRoute && !isAuthenticated) {
+        console.log(isAuthenticated)
         fetchUserData();
-    }, []);
-    const { isAuthenticated } = useAuthUserContext();
+    } else {
+        console.log("auth not required")
+    }
+
+    console.log("isAuthenticated")
+    console.log(isAuthenticated)
 
     const element = useRoutes([
         ...publicRoutes,
@@ -45,6 +54,5 @@ export const AppRoutes = () => {
         })),
         { path: '*', element: <PageNotFound /> }
     ]);
-
     return <>{element}</>;
 };

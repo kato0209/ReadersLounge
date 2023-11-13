@@ -49,9 +49,8 @@ const onSubmit = async (data: FormData) => {
       name: res.data.name,
       profile_image: res.data.profile_image,
     }
-    login(user, () => {
-      navigate('/');
-    });
+    login(user);
+    navigate('/');
   } catch (error: unknown) {
     if (error instanceof AxiosError) {
       if (error.response && error.response.status === 500) {
