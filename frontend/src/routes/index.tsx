@@ -13,35 +13,41 @@ import { User } from '../openapi';
 export const AppRoutes = () => {
 
     const { isAuthenticated, login } = useAuthUserContext();
+    const [isAuthChecked, setIsAuthChecked] = React.useState(false);
 
     const fetchUserData = async () => {
         try {
             const api = await apiInstance;
             const res = await api.user();
             const user: User = {
-            user_id: res.data.user_id,
-            name: res.data.name,
-            profile_image: res.data.profile_image,
-            }
+                user_id: res.data.user_id,
+                name: res.data.name,
+                profile_image: res.data.profile_image,
+            };
             login(user);
         } catch (error) {
-            console.log("not authenticated")
+            console.log("not authenticated");
             console.log(error);
+        } finally {
+            setIsAuthChecked(true);
         }
     };
 
-    const isProtectedRoute = protectedRoutes.some(route => route.path === location.pathname);
-    if (isProtectedRoute && !isAuthenticated) {
-        console.log(isAuthenticated)
-        fetchUserData();
-    } else {
-        console.log("auth not required")
-    }
+    React.useEffect(() => {
+        const isProtectedRoute = protectedRoutes.some(route => route.path === location.pathname);
+        if (isProtectedRoute){
+            if (!isAuthenticated && !isAuthChecked) {
+                console.log("fetching user data")
+                fetchUserData();
+            }
+        } else {
+            if (!isAuthChecked) {
+                setIsAuthChecked(true);
+            }
+        }
+    }, []);
 
-    console.log("isAuthenticated")
-    console.log(isAuthenticated)
-
-    const element = useRoutes([
+    const routes = useRoutes([
         ...publicRoutes,
         ...protectedRoutes.map(route => ({
             ...route,
@@ -54,5 +60,10 @@ export const AppRoutes = () => {
         })),
         { path: '*', element: <PageNotFound /> }
     ]);
-    return <>{element}</>;
+
+    if (!isAuthChecked) {
+        return <div>Loading...</div>;
+    }
+
+    return <>{routes}</>;
 };
