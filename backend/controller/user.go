@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 	"time"
@@ -19,7 +18,7 @@ func (s *Server) Signup(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, err.Error())
 	}
 
-	userRes, err := s.uu.Signup(ctx, models.User{
+	err := s.uu.Signup(ctx, models.User{
 		Name:         *reqSignupBody.Username,
 		ProfileText:  "",
 		IdentityType: "EmailPassword",
@@ -30,11 +29,7 @@ func (s *Server) Signup(ctx echo.Context) error {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	resSignupBody := openapi.ResSignupBody{
-		UserId: &userRes.UserID,
-	}
-
-	return ctx.JSON(http.StatusCreated, resSignupBody)
+	return ctx.NoContent(http.StatusCreated)
 }
 
 func (s *Server) Login(ctx echo.Context) error {
@@ -91,17 +86,10 @@ func (s *Server) GoogleOauthCallback(ctx echo.Context, params openapi.GoogleOaut
 
 	// stateの検証
 
-	tokenString, user, err := s.uu.GoogleOAuthCallback(ctx, params.Code)
+	tokenString, err := s.uu.GoogleOAuthCallback(ctx, params.Code)
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
-
-	resUser := openapi.User{
-		UserId:       &user.UserID,
-		Name:         &user.Name,
-		ProfileImage: &user.ProfileImage,
-	}
-	fmt.Println(resUser)
 
 	cookie := new(http.Cookie)
 	cookie.Name = "jwt_token"
@@ -115,7 +103,7 @@ func (s *Server) GoogleOauthCallback(ctx echo.Context, params openapi.GoogleOaut
 	//cookie.SameSite = http.SameSiteNoneMode
 	ctx.SetCookie(cookie)
 
-	return ctx.Redirect(http.StatusMovedPermanently, os.Getenv("FRONTEND_URL"))
+	return ctx.Redirect(http.StatusMovedPermanently, os.Getenv("FE_URL"))
 }
 
 func (s *Server) User(ctx echo.Context) error {

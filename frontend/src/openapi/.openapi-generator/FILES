@@ -12,5 +12,4 @@ models/post.ts
 models/req-login-body.ts
 models/req-signup-body.ts
 models/res-csrf-token.ts
-models/res-signup-body.ts
 models/user.ts

@@ -16,9 +16,9 @@ import (
 )
 
 type IUserUsecase interface {
-	Signup(ctx echo.Context, user models.User) (models.User, error)
+	Signup(ctx echo.Context, user models.User) error
 	Login(ctx echo.Context, user models.User) (string, models.User, error)
-	GoogleOAuthCallback(ctx echo.Context, code string) (string, models.User, error)
+	GoogleOAuthCallback(ctx echo.Context, code string) (string, error)
 	GetUserByUserID(ctx echo.Context, userID int) (models.User, error)
 }
 
@@ -31,30 +31,29 @@ func NewUserUsecase(ur repository.IUserRepository, uv validator.IUserValidator) 
 	return &userUsecase{ur, uv}
 }
 
-func (uu *userUsecase) Signup(ctx echo.Context, user models.User) (models.User, error) {
+func (uu *userUsecase) Signup(ctx echo.Context, user models.User) error {
 	if err := uu.uv.SignupValidator(user); err != nil {
-		return models.User{}, errors.WithStack(err)
+		return errors.WithStack(err)
 	}
 	existingUser := models.User{}
 	err := uu.ur.GetUserByIdentifier(ctx, &existingUser, user.Identifier)
 	if err == nil {
-		return models.User{}, errors.WithStack(errors.New("email already exists"))
+		return errors.WithStack(errors.New("email already exists"))
 	} else if err.Error() != "user is not found" {
-		return models.User{}, errors.WithStack(err)
+		return errors.WithStack(err)
 	}
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(user.Credential), 10)
 	if err != nil {
-		return models.User{}, errors.WithStack(err)
+		return errors.WithStack(err)
 	}
-	newUser := models.User{Name: user.Name, IdentityType: user.IdentityType, Identifier: user.Identifier, Credential: string(hash)}
-	if err := uu.ur.CreateUser(ctx, &newUser); err != nil {
-		return models.User{}, errors.WithStack(err)
+	user.Credential = string(hash)
+
+	if err := uu.ur.CreateUser(ctx, &user); err != nil {
+		return errors.WithStack(err)
 	}
-	resUser := models.User{
-		UserID: newUser.UserID,
-	}
-	return resUser, nil
+
+	return nil
 }
 
 func (uu *userUsecase) Login(ctx echo.Context, user models.User) (string, models.User, error) {
@@ -83,7 +82,7 @@ func (uu *userUsecase) Login(ctx echo.Context, user models.User) (string, models
 	return tokenString, resUser, nil
 }
 
-func (uu *userUsecase) GoogleOAuthCallback(ctx echo.Context, code string) (string, models.User, error) {
+func (uu *userUsecase) GoogleOAuthCallback(ctx echo.Context, code string) (string, error) {
 	client := oidc.NewGoogleOidcClient()
 	tokenResp, err := client.PostTokenEndpoint(
 		code,
@@ -96,19 +95,19 @@ func (uu *userUsecase) GoogleOAuthCallback(ctx echo.Context, code string) (strin
 		"authorization_code",
 	)
 	if err != nil {
-		return "", models.User{}, errors.WithStack(err)
+		return "", errors.WithStack(err)
 	}
 	idToken, err := oidc.NewIdToken(tokenResp.IdToken, oidc.Google)
 	if err != nil {
-		return "", models.User{}, errors.WithStack(err)
+		return "", errors.WithStack(err)
 	}
 	if err = idToken.Validate(client.JwksEndpoint, client.ClientId); err != nil {
-		return "", models.User{}, errors.WithStack(err)
+		return "", errors.WithStack(err)
 	}
 
 	email, err := idToken.Payload.GetEmail()
 	if err != nil {
-		return "", models.User{}, errors.WithStack(err)
+		return "", errors.WithStack(err)
 	}
 
 	user := models.User{
@@ -122,23 +121,22 @@ func (uu *userUsecase) GoogleOAuthCallback(ctx echo.Context, code string) (strin
 	if err == nil {
 		tokenString, err := utils.CreateJwtTokenByUserID(storedUser.UserID)
 		if err != nil {
-			return "", models.User{}, errors.WithStack(err)
+			return "", errors.WithStack(err)
 		}
-		return tokenString, storedUser, nil
+		return tokenString, nil
 	} else if err.Error() == "user is not found" {
-
 		if err := uu.ur.CreateUser(ctx, &user); err != nil {
-			return "", models.User{}, errors.WithStack(err)
+			return "", errors.WithStack(err)
 		}
 
 		tokenString, err := utils.CreateJwtTokenByUserID(user.UserID)
 		if err != nil {
-			return "", models.User{}, errors.WithStack(err)
+			return "", errors.WithStack(err)
 		}
-		return tokenString, user, nil
+		return tokenString, nil
 
 	} else {
-		return "", models.User{}, errors.WithStack(err)
+		return "", errors.WithStack(err)
 	}
 }
 

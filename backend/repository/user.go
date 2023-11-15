@@ -34,25 +34,21 @@ func (ur *userRepository) CreateUser(ctx echo.Context, user *models.User) error 
 		}
 		user.UserID = userID
 
+		var sqlString string
+		var sqlArgs []interface{}
+		if user.ProfileImage == "" {
+			sqlString = "INSERT INTO user_details ( user_id, name, profile_text ) VALUES ($1, $2, $3) RETURNING profile_image;"
+			sqlArgs = append(sqlArgs, userID, user.Name, user.ProfileText)
+		} else {
+			sqlString = "INSERT INTO user_details ( user_id, name, profile_text, profile_image ) VALUES ($1, $2, $3, $4) RETURNING profile_image;"
+			sqlArgs = append(sqlArgs, userID, user.Name, user.ProfileText, user.ProfileImage)
+		}
+
 		var profileImage string
 		err := tx.QueryRowContext(
 			c,
-			`
-			INSERT INTO user_details (user_id, name, profile_text, profile_image)
-			VALUES (
-				$1, 
-				$2, 
-				$3, 
-				CASE 
-					WHEN $4 = '' THEN DEFAULT 
-					ELSE $4
-				END
-			) RETURNING profile_image;
-		`,
-			userID,
-			user.Name,
-			user.ProfileText,
-			user.ProfileImage,
+			sqlString,
+			sqlArgs...,
 		).Scan(&profileImage)
 		if err != nil {
 			return errors.WithStack(err)

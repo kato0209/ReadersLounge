@@ -9,11 +9,14 @@ import AppHeader from '../components/Header/AppHeader';
 import Box from '@mui/material/Box';
 import { apiInstance } from '../lib/api/apiInstance';
 import { User } from '../openapi';
+import { AxiosError } from 'axios';
+import { useErrorHandler } from 'react-error-boundary';
 
 export const AppRoutes = () => {
 
     const { isAuthenticated, login } = useAuthUserContext();
     const [isAuthChecked, setIsAuthChecked] = React.useState(false);
+    const errorHandler = useErrorHandler();
 
     const fetchUserData = async () => {
         try {
@@ -25,9 +28,16 @@ export const AppRoutes = () => {
                 profile_image: res.data.profile_image,
             };
             login(user);
-        } catch (error) {
-            console.log("not authenticated");
-            console.log(error);
+        } catch (error: unknown) {
+            if (error instanceof AxiosError) {
+                if (error.response && error.response.status && error.response.status ===  401 ) {
+                    //console.log("UnAuthorized")
+                } else {
+                    errorHandler(error);
+                }
+            } else {
+                errorHandler(error);
+            }
         } finally {
             setIsAuthChecked(true);
         }
@@ -37,7 +47,6 @@ export const AppRoutes = () => {
         const isProtectedRoute = protectedRoutes.some(route => route.path === location.pathname);
         if (isProtectedRoute){
             if (!isAuthenticated && !isAuthChecked) {
-                console.log("fetching user data")
                 fetchUserData();
             }
         } else {

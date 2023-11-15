@@ -56,11 +56,6 @@ type ResCsrfToken struct {
 	CsrfToken *string `json:"csrf_token,omitempty"`
 }
 
-// ResSignupBody defines model for ResSignupBody.
-type ResSignupBody struct {
-	UserId *int `json:"user_id,omitempty"`
-}
-
 // User defines model for User.
 type User struct {
 	Name         *string `json:"name,omitempty"`

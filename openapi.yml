@@ -31,12 +31,8 @@ paths:
               $ref: "#/components/schemas/ReqSignupBody"
         required: true
       responses:
-        "200":
+        "201":
           description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ResSignupBody"
   /login:
     post:
       security:
@@ -161,10 +157,6 @@ components:
           type: string
         credential:
           type: string
-    ResSignupBody:
-      properties:
-        user_id:
-          type: integer
     ReqLoginBody:
       properties:
           identifier:
