@@ -1,6 +1,5 @@
 
-
-export const getGoogleAuthUrl = (from: string) => {
+export const getGoogleAuthUrl = (state: string) => {
     const rootUrl = `https://accounts.google.com/o/oauth2/v2/auth`;
 
     const apiUrl = import.meta.env.VITE_API_URL as string;
@@ -16,7 +15,7 @@ export const getGoogleAuthUrl = (from: string) => {
         'https://www.googleapis.com/auth/userinfo.profile',
         'https://www.googleapis.com/auth/userinfo.email',
       ].join(' '),
-      state: from,
+      state: state,
     };
   
     const qs = new URLSearchParams(options);

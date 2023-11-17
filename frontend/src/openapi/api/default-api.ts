@@ -373,7 +373,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async signup(reqSignupBody: ReqSignupBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async signup(reqSignupBody: ReqSignupBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<User>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.signup(reqSignupBody, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -453,7 +453,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        signup(reqSignupBody: ReqSignupBody, options?: any): AxiosPromise<void> {
+        signup(reqSignupBody: ReqSignupBody, options?: any): AxiosPromise<User> {
             return localVarFp.signup(reqSignupBody, options).then((request) => request(axios, basePath));
         },
         /**

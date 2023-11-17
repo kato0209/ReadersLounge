@@ -29,7 +29,23 @@ func (s *Server) Signup(ctx echo.Context) error {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.NoContent(http.StatusCreated)
+	tokenString, user, err := s.uu.Login(ctx, models.User{
+		Identifier: *reqSignupBody.Identifier,
+		Credential: *reqSignupBody.Credential,
+	})
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	resUser := openapi.User{
+		UserId:       &user.UserID,
+		Name:         &user.Name,
+		ProfileImage: &user.ProfileImage,
+	}
+
+	utils.SetJwtTokenInCookie(ctx, tokenString)
+
+	return ctx.JSON(http.StatusCreated, resUser)
 }
 
 func (s *Server) Login(ctx echo.Context) error {
@@ -52,17 +68,7 @@ func (s *Server) Login(ctx echo.Context) error {
 		ProfileImage: &user.ProfileImage,
 	}
 
-	cookie := new(http.Cookie)
-	cookie.Name = "jwt_token"
-	cookie.Value = tokenString
-	cookie.Expires = time.Now().Add(24 * time.Hour)
-	cookie.Path = "/"
-	cookie.Domain = os.Getenv("API_DOMAIN")
-	//cookie.Secure = true
-	cookie.HttpOnly = true
-	cookie.SameSite = http.SameSiteDefaultMode
-	//cookie.SameSite = http.SameSiteNoneMode
-	ctx.SetCookie(cookie)
+	utils.SetJwtTokenInCookie(ctx, tokenString)
 
 	return ctx.JSON(http.StatusOK, resUser)
 }
@@ -84,24 +90,22 @@ func (s *Server) Logout(ctx echo.Context) error {
 
 func (s *Server) GoogleOauthCallback(ctx echo.Context, params openapi.GoogleOauthCallbackParams) error {
 
-	// stateの検証
+	cookieState, err := ctx.Cookie("state")
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+	queryState := ctx.QueryParam("state")
+
+	if queryState != cookieState.Value {
+		return ctx.JSON(http.StatusInternalServerError, "invalid state")
+	}
 
 	tokenString, err := s.uu.GoogleOAuthCallback(ctx, params.Code)
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	cookie := new(http.Cookie)
-	cookie.Name = "jwt_token"
-	cookie.Value = tokenString
-	cookie.Expires = time.Now().Add(24 * time.Hour)
-	cookie.Path = "/"
-	cookie.Domain = os.Getenv("API_DOMAIN")
-	//cookie.Secure = true
-	cookie.HttpOnly = true
-	cookie.SameSite = http.SameSiteDefaultMode
-	//cookie.SameSite = http.SameSiteNoneMode
-	ctx.SetCookie(cookie)
+	utils.SetJwtTokenInCookie(ctx, tokenString)
 
 	return ctx.Redirect(http.StatusMovedPermanently, os.Getenv("FE_URL"))
 }

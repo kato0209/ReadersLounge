@@ -1,13 +1,28 @@
+import * as React from 'react';
 import Link from '@mui/material/Link';
 import { getGoogleAuthUrl } from '../../utils/getGoogleAuthUrl';
 import { FcGoogle } from 'react-icons/fc';
+import { useCookies } from "react-cookie";
+import { generateRandomState } from '../../utils/generateRandomState';
 
 export default function GoogleAuth() {
 
-    const from = "login"
+    const [_, setCookie] = useCookies(["state"]);
+    const [state, setState] = React.useState<string>("");
+    
+    React.useEffect(() => {
+        const state = generateRandomState(10);
+        setState(state);
+
+        const now = new Date();
+        const oneDay = 24 * 60 * 60 * 1000;
+        const expires = new Date(now.getTime() + oneDay);
+        setCookie("state", state, { path: '/', expires: expires });
+    }, []);
+
     return (
         <Link 
-            href={getGoogleAuthUrl(from)} 
+            href={getGoogleAuthUrl(state)} 
             sx={{
                 backgroundColor: '#EFEBE5',
                 borderRadius: 1,

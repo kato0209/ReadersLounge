@@ -16,6 +16,9 @@ import SubmitButton from '../../components/Button/SubmitButton';
 import PortalLogo from '../../components/Logo/PortalLogo';
 import GoogleAuth from '../../components/OAuth/GoogleAuth';
 import { useNavigate } from 'react-router-dom';
+import { User } from '../../openapi';
+import { useAuthUserContext } from '../../lib/auth/auth';
+
 
 const SignupSchema = z.object({
     email: z.string().nonempty('メールアドレスは必須です').email('有効なメールアドレスを入力してください'),
@@ -40,6 +43,7 @@ export default function SignUp() {
     });
     const errorHandler = useErrorHandler();
     const navigate = useNavigate();
+    const { login } = useAuthUserContext();
 
     const onSubmit = async (data: FormData) => {
 
@@ -51,8 +55,13 @@ export default function SignUp() {
         try {
             const api = await apiInstance;
             const res = await api.signup(reqSignupBody);
-            console.log(res);
-            navigate('/login');
+            const user: User = {
+                user_id: res.data.user_id,
+                name: res.data.name,
+                profile_image: res.data.profile_image,
+              }
+            login(user);
+            navigate('/');
         } catch (error: unknown) {
             if (error instanceof AxiosError) {
                 if (error.response && error.response.data && error.response.data === 'email already exists') {

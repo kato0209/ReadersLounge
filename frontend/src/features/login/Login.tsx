@@ -17,6 +17,7 @@ import { useAuthUserContext } from '../../lib/auth/auth';
 import { User } from '../../openapi';
 import { useNavigate } from 'react-router-dom';
 import PortalLogo from '../../components/Logo/PortalLogo';
+import GoogleAuth from '../../components/OAuth/GoogleAuth';
 
 const LoginSchema = z.object({
   email: z.string().nonempty('メールアドレスは必須です'),
@@ -115,6 +116,10 @@ const onSubmit = async (data: FormData) => {
                     </Link>
                 </Grid>
             </Grid>
+            <Typography component="h1" variant="h5" sx={{ mt: 2, mb: 1 }}>
+                Login with another provider
+            </Typography>
+            <GoogleAuth />
           </Box>
         </Box>
       </Container>
