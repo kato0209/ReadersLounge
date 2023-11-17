@@ -14,6 +14,8 @@ services:
       - PGUSER=root
       - PGPASSWORD=p@ssword
       - PGSSLMODE=disable
+    env_file:
+      - ./backend/.env
 
   db:
     image: postgres:15.3
