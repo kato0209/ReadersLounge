@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"backend/auth/oidc"
 	"backend/models"
 	"backend/repository"
 	"backend/validator"
@@ -13,6 +12,10 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
+	oauthApi "google.golang.org/api/oauth2/v2"
+	"google.golang.org/api/option"
 )
 
 type IUserUsecase interface {
@@ -83,39 +86,44 @@ func (uu *userUsecase) Login(ctx echo.Context, user models.User) (string, models
 }
 
 func (uu *userUsecase) GoogleOAuthCallback(ctx echo.Context, code string) (string, error) {
-	client := oidc.NewGoogleOidcClient()
-	tokenResp, err := client.PostTokenEndpoint(
-		code,
-		fmt.Sprintf(
+	c := ctx.Request().Context()
+
+	config := &oauth2.Config{
+		ClientID:     os.Getenv("GOOGLE_CLIENT_ID"),
+		ClientSecret: os.Getenv("GOOGLE_CLIENT_SECRET"),
+		RedirectURL: fmt.Sprintf(
 			"%s://%s:%s/oauth/google/callback",
 			os.Getenv("API_PROTOCOL"),
 			os.Getenv("API_DOMAIN"),
 			os.Getenv("API_PORT"),
 		),
-		"authorization_code",
-	)
-	if err != nil {
-		return "", errors.WithStack(err)
+		Scopes:   []string{"https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/userinfo.profile"},
+		Endpoint: google.Endpoint,
 	}
-	idToken, err := oidc.NewIdToken(tokenResp.IdToken, oidc.Google)
+
+	token, err := config.Exchange(c, code)
 	if err != nil {
-		return "", errors.WithStack(err)
-	}
-	if err = idToken.Validate(client.JwksEndpoint, client.ClientId); err != nil {
 		return "", errors.WithStack(err)
 	}
 
-	email, err := idToken.Payload.GetEmail()
+	service, err := oauthApi.NewService(c, option.WithTokenSource(config.TokenSource(c, token)))
+	if err != nil {
+		return "", errors.WithStack(err)
+	}
+
+	userInfo, err := service.Userinfo.Get().Do()
 	if err != nil {
 		return "", errors.WithStack(err)
 	}
 
 	user := models.User{
-		Name:         idToken.Payload.GetName(),
+		Name:         userInfo.Name,
+		ProfileImage: userInfo.Picture,
 		IdentityType: "GoogleOAuth",
-		Identifier:   email,
+		Identifier:   userInfo.Email,
 		Credential:   "",
 	}
+
 	storedUser := models.User{}
 	err = uu.ur.GetUserByIdentifier(ctx, &storedUser, user.Identifier)
 	if err == nil {
