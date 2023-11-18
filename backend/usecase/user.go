@@ -92,12 +92,13 @@ func (uu *userUsecase) GoogleOAuthCallback(ctx echo.Context, code string) (strin
 		ClientID:     os.Getenv("GOOGLE_CLIENT_ID"),
 		ClientSecret: os.Getenv("GOOGLE_CLIENT_SECRET"),
 		RedirectURL: fmt.Sprintf(
-			"%s://%s:%s/oauth/google/callback",
+			"%s://%s:%s/%s",
 			os.Getenv("API_PROTOCOL"),
 			os.Getenv("API_DOMAIN"),
 			os.Getenv("API_PORT"),
+			os.Getenv("GOOGLE_OAUTH_PATH"),
 		),
-		Scopes:   []string{"https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/userinfo.profile"},
+		Scopes:   []string{os.Getenv("GOOGLE_OAUTH_USER_INFO_EMAIL_URL"), os.Getenv("GOOGLE_OAUTH_USER_INFO_PROFILE_URL")},
 		Endpoint: google.Endpoint,
 	}
 

@@ -8,7 +8,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func (s *Server) Posts(ctx echo.Context) error {
+func (s *Server) GetPosts(ctx echo.Context) error {
 	/*
 		user := ctx.Get("user").(*jwt.Token)
 		claims := user.Claims.(jwt.MapClaims)
@@ -48,5 +48,9 @@ func (s *Server) Posts(ctx echo.Context) error {
 		})
 	}
 
-	return ctx.JSON(http.StatusCreated, resPosts)
+	return ctx.JSON(http.StatusOK, resPosts)
+}
+
+func (s *Server) CreatePost(ctx echo.Context) error {
+	return ctx.JSON(http.StatusCreated, "hello")
 }

@@ -114,8 +114,8 @@ paths:
       security:
         - X-CSRF-TOKEN: []
         - jwtAuth: []
-      summary: posts
-      operationId: posts
+      summary: get posts
+      operationId: get-posts
       responses:
         "200":
           description: OK
@@ -123,7 +123,21 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Post"
-          
+    post:
+      security:
+        - X-CSRF-TOKEN: []
+        - jwtAuth: []
+      summary: create post
+      operationId: create-post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReqCreatePostBody"
+        required: true
+      responses:
+        "201":
+          description: OK
       
 components:
   securitySchemes:
@@ -194,6 +208,20 @@ components:
           format: date-time
         book:
           $ref: "#/components/schemas/Book"
+    ReqCreatePostBody:
+      properties:
+        content:
+          type: string
+        rating:
+          type: integer
+        image:
+          type: string
+        ISBNcode:
+          type: string
+      required:
+        - content
+        - rating
+        - ISBNcode
     Book:
       type: object
       properties:

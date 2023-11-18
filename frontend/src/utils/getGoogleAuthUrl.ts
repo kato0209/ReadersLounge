@@ -12,8 +12,8 @@ export const getGoogleAuthUrl = (state: string) => {
       response_type: 'code',
       prompt: 'consent',
       scope: [
-        'https://www.googleapis.com/auth/userinfo.profile',
-        'https://www.googleapis.com/auth/userinfo.email',
+        import.meta.env.VITE_GOOGLE_OAUTH_USER_INFO_EMAIL_URL as string,
+        import.meta.env.VITE_GOOGLE_OAUTH_USER_INFO_PROFILE_URL as string,
       ].join(' '),
       state: state,
     };

@@ -32,9 +32,12 @@ type ServerInterface interface {
 	// Callback for Google OAuth
 	// (GET /oauth/google/callback)
 	GoogleOauthCallback(ctx echo.Context, params GoogleOauthCallbackParams) error
-	// posts
+	// get posts
 	// (GET /posts)
-	Posts(ctx echo.Context) error
+	GetPosts(ctx echo.Context) error
+	// create post
+	// (POST /posts)
+	CreatePost(ctx echo.Context) error
 	// create new user
 	// (POST /signup)
 	Signup(ctx echo.Context) error
@@ -108,8 +111,8 @@ func (w *ServerInterfaceWrapper) GoogleOauthCallback(ctx echo.Context) error {
 	return err
 }
 
-// Posts converts echo context to params.
-func (w *ServerInterfaceWrapper) Posts(ctx echo.Context) error {
+// GetPosts converts echo context to params.
+func (w *ServerInterfaceWrapper) GetPosts(ctx echo.Context) error {
 	var err error
 
 	ctx.Set(X_CSRF_TOKENScopes, []string{})
@@ -117,7 +120,20 @@ func (w *ServerInterfaceWrapper) Posts(ctx echo.Context) error {
 	ctx.Set(JwtAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.Posts(ctx)
+	err = w.Handler.GetPosts(ctx)
+	return err
+}
+
+// CreatePost converts echo context to params.
+func (w *ServerInterfaceWrapper) CreatePost(ctx echo.Context) error {
+	var err error
+
+	ctx.Set(X_CSRF_TOKENScopes, []string{})
+
+	ctx.Set(JwtAuthScopes, []string{})
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.CreatePost(ctx)
 	return err
 }
 
@@ -177,7 +193,8 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.POST(baseURL+"/login", wrapper.Login)
 	router.POST(baseURL+"/logout", wrapper.Logout)
 	router.GET(baseURL+"/oauth/google/callback", wrapper.GoogleOauthCallback)
-	router.GET(baseURL+"/posts", wrapper.Posts)
+	router.GET(baseURL+"/posts", wrapper.GetPosts)
+	router.POST(baseURL+"/posts", wrapper.CreatePost)
 	router.POST(baseURL+"/signup", wrapper.Signup)
 	router.GET(baseURL+"/user", wrapper.User)
 
@@ -186,23 +203,24 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/8xW30/jSAz+V6K5e8ySLvuyyhug+4FYLQgW6SSEqunEbQeScZhxQD2U//1kT9qSNuF2",
-	"VyDtU3/YHvv7PP7Gz8pgVaMDR0HlzyqYJVRavh4j3vNn7bEGTxbk39Or468GC+DvtKpB5SqQt26h2lTp",
-	"hpboB00zxPupLV7YrCNYgGejrfRi+ERLUE0bXw4aa2/NcFjdzEobllBMNbHDHH3F31ShCT6QrUCl41HD",
-	"CMhSOZSt3ZyEszswxL4XGGifu1nH6O8e5ipXv2Vb7rOO+ExYb1Nl0BE4GqzEeND0g9jGKa4x0GhnvCZ2",
-	"G7Q1ITL1Gpxr9hmk6BIevuDCumMsVvtUGQ8FOLJ6uPNWjHM72Ko2nn5lF66p3/74CNzpCkZzh5Pg59/w",
-	"HtxA6uDnU1rbBsKvO1r7YSP5eAhwbkuYjjeYyx1p8H5j2lQFMI23tLriHsbs/3w4ubr888O387M/vvJv",
-	"61SulqAL8Crtaus7bQ7WtT2DFdexQFyUMGWRkHtb4pMcHlXD/qvJojvptKX35zULgFoS1SHPMm0MNo7C",
-	"QTzwwGCVYYYccZg9HmaSIFXBYB2rh0pbPkA+E10UHkJQG+pUrmY6WJN0vxPr4kxZdDL43Kx+CTFZV4Cu",
-	"bZAiYldfkipufMbdEx11uIU7g3hvYcvd3RN1l2KAuECaYDQ0WvfCuAwGwnEFBONtLYBydSl9C1+wcQtI",
-	"ji5O1UbcBm2P4EOM/HgwOZhwRViD07VVufokf6Wq1rQUsjO+4Jv7vQDRKL7JwudpoXJ1svFIlYdQowux",
-	"UYeTiYzIVvt0XZfWSGh2F9Bt36j/U57eFAobfRbOz3qXXeU3t6kKTVVpv1I5F54wkmTb1KxkvZLR7OS9",
-	"D0vkTCA9NBBorTxvhOaFWgoazmI9FCon30D7jkx2Gv4dDO4Kxc1t2yM1ErjmEht6lUy2/zybu7rWjlD0",
-	"Bpi4UAEl855FVciMLsuZNvejY/CX+J1zzMnalwfJ6woIfJDk/fKueNaTjUsyR59wcSxdBEa80igTDw34",
-	"1b5K9K9Nuk/Ydq3ZTX70UpITXgITD9R4B0UyWyURTsJwkgD+UZ6GoVJkffyRSm53OvdpcjikaoX1YCgh",
-	"TP7GCvb72Ht/brpXYfsK3DLiTmp3m7zujxDeAT0XQZe+8xUOo32+EOs7Dqhsmz87oOnz9nHahR1xCcQg",
-	"29T4vMZt6/3U78U2913y9/EXlL+4tycOnpJmvRdn6y168OpI7l9V2l+7Ofx8NpvDoxxEQWs2i1SeZSUa",
-	"XS4xUP558nmi2tv2vwAAAP//foKuV5EOAAA=",
+	"H4sIAAAAAAAC/8xXXU/jOhP+K5Hf9zKQLnuzyh1U5wOxWhAs0pFQVbnOtDUknmBPQD0o//1o7DQhbcIC",
+	"AmmvmmY+PPPMzDPOk1BYlGjAkBPpk3BqDYX0jyeId/xbWizBkgb/9vTq5IfCDPiZNiWIVDiy2qxEHQtZ",
+	"0RrtoGiBeDfX2TOZNgQrsCzUhVwNe9QExbyy+aCwtFoNm5XVItduDdlcEiss0Rb8JDJJcEC6ABGPWw1n",
+	"QJryodPq1hMubkER616go33sFg2i/7ewFKn4X9JhnzTAJx71OhYKDYGhwUiUBUlvzG0c4hIdjVbGSmK1",
+	"QVnlAlIvpXPNOoMQXcL91OfBWJ1gtnljr70E0Hiy4/mwEO4rbSET6U3rvjWJu3BmIfzvuNJmOHJlIQND",
+	"Wg43rvbCpR7stDp4v9IrU5Uf7z7UzcgCRs92U2eXP/EOzMDRzi7ntJUNmF83XdE3GzmPZxiXOof5eMk4",
+	"3JH+3O+rOhYOVGU1ba64BcPp/xxMry7/PPh5fvbHD/6vjUjFGmQGVsRNbH2l1rEs9RlsOI4V4iqHOXOc",
+	"H7scH73zQHr6X0kazbRp197La+YvsSYqXZokUimsDLnD4PBQYZFggmxxlDwcJf6AWDiFZYgeCqnZgf+N",
+	"ZJZZcE600IlULKTTKmr+R9oEStBoPG9xsfohhMOaAGSpnQ8iVPU5qF6Nfdw+0nGTt8dOId5p6LC7faSm",
+	"KQaAcyQJRk2DdM+Mw+BE2C4Dp6wufUKpuPR1c9+xMiuIji9ORcvNg7IHsC5YfjmcHE44IizByFKLVHz1",
+	"r2JRSlp7sBNu8La/V+AJhjvZ43maiVRMWw2mDFeicaFQR5OJH5GOmWRZ5lp50+TWoelW7K+IszeFHo0+",
+	"CudnvWYX6c0sFq4qCmk3IuXAI84k6oqa5MxXfjSb7dRPy9OZCCwIHSV/UDbP2LLucy3ZCupPRLJZQa9A",
+	"cJcobmZ1D9QA4BZLrOhFMFn+fjR3ea0egegDcuJAfVJ+3pPAComSeb6Q6m50DP7yeudsM93q8iBZWQCB",
+	"df7wfnhXPOtRqxIt0UYcHFMXgfJacaCJ+wrsZp8l+m0T7wPW3cp2Dz9+TskRL/LIAlXWQBYtNlFIJ+J0",
+	"Igf2wa+GoVD8FeAtkcx2Kvd1cjTEapm2oCgijP7GAvbr2Ns/N81W6LbAjDNuqHa3yNv6eMCbRM89ofu6",
+	"cwu78ToDXXiFT5xRf19+74zGT91+2s2ceTCk19x0B+i8vYV+Hvnt3HRfxYBf3jneL8ERvhw8IqH0zt8y",
+	"x3ks3EI/D5hnt9zXg/KbrYUGVAOPUbX93Em2H0eDI+XP/l1X3q/GqWqdB5oMRF+1F8w0SXJUMl+jo/Tb",
+	"5NtE1LP6vwAAAP//w43CKWgQAAA=",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

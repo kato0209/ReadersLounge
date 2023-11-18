@@ -38,6 +38,14 @@ type Post struct {
 	User      *User      `json:"user,omitempty"`
 }
 
+// ReqCreatePostBody defines model for ReqCreatePostBody.
+type ReqCreatePostBody struct {
+	ISBNcode string  `json:"ISBNcode"`
+	Content  string  `json:"content"`
+	Image    *string `json:"image,omitempty"`
+	Rating   int     `json:"rating"`
+}
+
 // ReqLoginBody defines model for ReqLoginBody.
 type ReqLoginBody struct {
 	Credential *string `json:"credential,omitempty"`
@@ -80,6 +88,9 @@ type LoginJSONRequestBody = ReqLoginBody
 
 // LogoutJSONRequestBody defines body for Logout for application/json ContentType.
 type LogoutJSONRequestBody = LogoutJSONBody
+
+// CreatePostJSONRequestBody defines body for CreatePost for application/json ContentType.
+type CreatePostJSONRequestBody = ReqCreatePostBody
 
 // SignupJSONRequestBody defines body for Signup for application/json ContentType.
 type SignupJSONRequestBody = ReqSignupBody
