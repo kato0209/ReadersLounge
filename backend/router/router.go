@@ -37,7 +37,8 @@ func NewRouter(server *controller.Server) *echo.Echo {
 		SigningKey:  []byte(os.Getenv("JWT_SECRET")),
 		TokenLookup: "cookie:jwt_token",
 	}))
-	p.GET("", server.Posts)
+	p.GET("", server.GetPosts)
+	p.POST("", server.CreatePost)
 
 	u := e.Group("/user")
 	u.Use(echojwt.WithConfig(echojwt.Config{
