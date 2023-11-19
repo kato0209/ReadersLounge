@@ -75,7 +75,7 @@ func (bu *bookUsecase) RegisterBook(ctx echo.Context, ISBNcode string) (models.B
 		return models.Book{}, errors.WithStack(err)
 	}
 
-	bookExists, err := bu.br.CheckExistsBookData(ctx, ISBNcode)
+	bookExists, err := bu.br.CheckExistsBookDataByISBNcode(ctx, ISBNcode)
 	if err != nil {
 		return models.Book{}, errors.WithStack(err)
 	}

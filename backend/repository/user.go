@@ -14,6 +14,7 @@ type IUserRepository interface {
 	CreateUser(ctx echo.Context, user *models.User) error
 	GetUserByIdentifier(ctx echo.Context, user *models.User, identifier string) error
 	GetUserByUserID(ctx echo.Context, user *models.User, userID int) error
+	CheckExistsUserByIdentifier(ctx echo.Context, identifier string) (bool, error)
 }
 
 type userRepository struct {
@@ -125,4 +126,25 @@ func (ur *userRepository) GetUserByUserID(ctx echo.Context, user *models.User, u
 	}
 
 	return nil
+}
+
+func (ur *userRepository) CheckExistsUserByIdentifier(ctx echo.Context, identifier string) (bool, error) {
+	c := ctx.Request().Context()
+	query := `
+		SELECT
+			EXISTS (
+				SELECT
+					*
+				FROM
+					user_auths
+				WHERE
+					identifier = $1
+			)
+	`
+	var exists bool
+	err := ur.db.QueryRowxContext(c, query, identifier).Scan(&exists)
+	if err != nil {
+		return false, errors.WithStack(err)
+	}
+	return exists, nil
 }

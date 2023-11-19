@@ -12,7 +12,7 @@ import (
 type IBookRepository interface {
 	InsertBookData(ctx echo.Context, book *models.Book) error
 	UpdateBookData(ctx echo.Context, book *models.Book) error
-	CheckExistsBookData(ctx echo.Context, ISBNcode string) (bool, error)
+	CheckExistsBookDataByISBNcode(ctx echo.Context, ISBNcode string) (bool, error)
 	//GetBookByISBNcode(ctx echo.Context, ISBNcode string) (models.Book, error)
 }
 
@@ -93,7 +93,7 @@ func (br *bookRepository) UpdateBookData(ctx echo.Context, book *models.Book) er
 	return nil
 }
 
-func (br *bookRepository) CheckExistsBookData(ctx echo.Context, ISBNcode string) (bool, error) {
+func (br *bookRepository) CheckExistsBookDataByISBNcode(ctx echo.Context, ISBNcode string) (bool, error) {
 	c := ctx.Request().Context()
 	query := `
 		SELECT

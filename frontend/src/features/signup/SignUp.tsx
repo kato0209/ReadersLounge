@@ -64,7 +64,7 @@ export default function SignUp() {
             navigate('/');
         } catch (error: unknown) {
             if (error instanceof AxiosError) {
-                if (error.response && error.response.data && error.response.data === 'email already exists') {
+                if (error.response && error.response.data && error.response.data === 'EMAIL_ALREADY_USED') {
                     setError('email', {
                         type: 'manual',
                         message: 'このメールアドレスは既に使用されています。',

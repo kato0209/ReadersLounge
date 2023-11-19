@@ -38,12 +38,14 @@ func (uu *userUsecase) Signup(ctx echo.Context, user models.User) error {
 	if err := uu.uv.SignupValidator(user); err != nil {
 		return errors.WithStack(err)
 	}
-	existingUser := models.User{}
-	err := uu.ur.GetUserByIdentifier(ctx, &existingUser, user.Identifier)
-	if err == nil {
-		return errors.WithStack(errors.New("email already exists"))
-	} else if err.Error() != "user is not found" {
+
+	userExists, err := uu.ur.CheckExistsUserByIdentifier(ctx, user.Identifier)
+	if err != nil {
 		return errors.WithStack(err)
+	}
+
+	if userExists {
+		return errors.New("EMAIL_ALREADY_USED")
 	}
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(user.Credential), 10)
