@@ -5,6 +5,8 @@ package openapi
 
 import (
 	"time"
+
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 const (
@@ -29,21 +31,21 @@ type Book struct {
 
 // Post defines model for Post.
 type Post struct {
-	Book      *Book      `json:"book,omitempty"`
-	Content   *string    `json:"content,omitempty"`
-	CreatedAt *time.Time `json:"created_at,omitempty"`
-	Image     *string    `json:"image,omitempty"`
-	PostId    *int       `json:"post_id,omitempty"`
-	Rating    *int       `json:"rating,omitempty"`
-	User      *User      `json:"user,omitempty"`
+	Book      *Book               `json:"book,omitempty"`
+	Content   *string             `json:"content,omitempty"`
+	CreatedAt *time.Time          `json:"created_at,omitempty"`
+	Image     *openapi_types.File `json:"image,omitempty"`
+	PostId    *int                `json:"post_id,omitempty"`
+	Rating    *int                `json:"rating,omitempty"`
+	User      *User               `json:"user,omitempty"`
 }
 
 // ReqCreatePostBody defines model for ReqCreatePostBody.
 type ReqCreatePostBody struct {
-	ISBNcode string  `json:"ISBNcode"`
-	Content  string  `json:"content"`
-	Image    *string `json:"image,omitempty"`
-	Rating   int     `json:"rating"`
+	ISBNcode string              `json:"ISBNcode"`
+	Content  string              `json:"content"`
+	Image    *openapi_types.File `json:"image,omitempty"`
+	Rating   int                 `json:"rating"`
 }
 
 // ReqLoginBody defines model for ReqLoginBody.
@@ -89,8 +91,8 @@ type LoginJSONRequestBody = ReqLoginBody
 // LogoutJSONRequestBody defines body for Logout for application/json ContentType.
 type LogoutJSONRequestBody = LogoutJSONBody
 
-// CreatePostJSONRequestBody defines body for CreatePost for application/json ContentType.
-type CreatePostJSONRequestBody = ReqCreatePostBody
+// CreatePostMultipartRequestBody defines body for CreatePost for multipart/form-data ContentType.
+type CreatePostMultipartRequestBody = ReqCreatePostBody
 
 // SignupJSONRequestBody defines body for Signup for application/json ContentType.
 type SignupJSONRequestBody = ReqSignupBody

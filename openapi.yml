@@ -131,7 +131,7 @@ paths:
       operationId: create-post
       requestBody:
         content:
-          application/json:
+          multipart/form-data:
             schema:
               $ref: "#/components/schemas/ReqCreatePostBody"
         required: true
@@ -203,6 +203,7 @@ components:
           type: integer
         image:
           type: string
+          format: binary
         created_at:
           type: string
           format: date-time
@@ -216,6 +217,7 @@ components:
           type: integer
         image:
           type: string
+          format: binary
         ISBNcode:
           type: string
       required:

@@ -33,10 +33,10 @@ func (s *Server) GetPosts(ctx echo.Context) error {
 			Title:       &post.Book.Title,
 		}
 		resPosts = append(resPosts, openapi.Post{
-			PostId:    &post.PostID,
-			Content:   &post.Content,
-			Rating:    &post.Rating,
-			Image:     post.Image,
+			PostId:  &post.PostID,
+			Content: &post.Content,
+			Rating:  &post.Rating,
+			//Image:     post.Image,
 			CreatedAt: &post.CreatedAt,
 			User:      &resUser,
 			Book:      &resBook,
@@ -65,7 +65,7 @@ func (s *Server) CreatePost(ctx echo.Context) error {
 	post := models.Post{
 		Content: reqCreatePostBody.Content,
 		Rating:  reqCreatePostBody.Rating,
-		Image:   reqCreatePostBody.Image,
+		//Image:   reqCreatePostBody.Image,
 		User: models.User{
 			UserID: userID,
 		},
