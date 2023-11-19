@@ -1,15 +1,28 @@
 package models
 
-import "time"
-
 type Book struct {
-	BookID      int       `db:"book_id"`
-	ISBNcode    string    `db:"ISBNcode"`
-	Title       string    `db:"title"`
-	Author      string    `db:"author"`
-	Price       string    `db:"price"`
-	Publisher   string    `db:"publisher"`
-	PublishedAt time.Time `db:"published_at"`
-	ItemURL     string    `db:"item_url"`
-	Image       string    `db:"image"`
+	BookID      int    `db:"book_id"`
+	ISBNcode    string `db:"ISBNcode"`
+	Title       string `db:"title"`
+	Author      string `db:"author"`
+	Price       int    `db:"price"`
+	Publisher   string `db:"publisher"`
+	PublishedAt string `db:"published_at"`
+	ItemURL     string `db:"item_url"`
+	Image       string `db:"image"`
+}
+
+type RakutenBooksApiResponse struct {
+	Items []struct {
+		Item struct {
+			ISBNcode    string `json:"isbn"`
+			Title       string `json:"title"`
+			Author      string `json:"author"`
+			Price       int    `json:"itemPrice"`
+			Publisher   string `json:"publisherName"`
+			PublishedAt string `json:"salesDate"`
+			ItemURL     string `json:"itemUrl"`
+			Image       string `json:"largeImageUrl"`
+		} `json:"Item"`
+	} `json:"Items"`
 }

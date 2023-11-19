@@ -29,9 +29,13 @@ func main() {
 	userRepository := repository.NewUserRepository(db)
 	userValidator := validator.NewUserValidator()
 	userUsecase := usecase.NewUserUsecase(userRepository, userValidator)
+
 	postRepository := repository.NewPostRepository(db)
 	postUsecase := usecase.NewPostUsecase(postRepository)
-	server := controller.NewServer(userUsecase, postUsecase)
+
+	bookRepository := repository.NewBookRepository(db)
+	bookUsecase := usecase.NewBookUsecase(bookRepository)
+	server := controller.NewServer(userUsecase, postUsecase, bookUsecase)
 
 	e := router.NewRouter(server)
 

@@ -26,34 +26,35 @@ func NewUserRepository(db *sqlx.DB) IUserRepository {
 
 func (ur *userRepository) CreateUser(ctx echo.Context, user *models.User) error {
 	c := ctx.Request().Context()
-	var userID int
 	if err := db.Tx(c, ur.db, func(tx *sqlx.Tx) error {
 
-		if err := tx.QueryRowContext(c, "INSERT INTO users DEFAULT VALUES RETURNING user_id;").Scan(&userID); err != nil {
+		if err := tx.QueryRowContext(c, "INSERT INTO users DEFAULT VALUES RETURNING user_id;").Scan(&user.UserID); err != nil {
 			return errors.WithStack(err)
 		}
-		user.UserID = userID
+
+		var profileText sql.NullString
+		if user.ProfileText != nil {
+			profileText = sql.NullString{String: *user.ProfileText, Valid: true}
+		}
 
 		var sqlString string
 		var sqlArgs []interface{}
 		if user.ProfileImage == "" {
 			sqlString = "INSERT INTO user_details ( user_id, name, profile_text ) VALUES ($1, $2, $3) RETURNING profile_image;"
-			sqlArgs = append(sqlArgs, userID, user.Name, user.ProfileText)
+			sqlArgs = append(sqlArgs, user.UserID, user.Name, profileText)
 		} else {
 			sqlString = "INSERT INTO user_details ( user_id, name, profile_text, profile_image ) VALUES ($1, $2, $3, $4) RETURNING profile_image;"
-			sqlArgs = append(sqlArgs, userID, user.Name, user.ProfileText, user.ProfileImage)
+			sqlArgs = append(sqlArgs, user.UserID, user.Name, profileText, user.ProfileImage)
 		}
 
-		var profileImage string
 		err := tx.QueryRowContext(
 			c,
 			sqlString,
 			sqlArgs...,
-		).Scan(&profileImage)
+		).Scan(&user.ProfileImage)
 		if err != nil {
 			return errors.WithStack(err)
 		}
-		user.ProfileImage = profileImage
 
 		_, err = tx.ExecContext(
 			c,
@@ -61,7 +62,7 @@ func (ur *userRepository) CreateUser(ctx echo.Context, user *models.User) error 
 			INSERT INTO user_auths (user_id, identity_type, identifier, credential)
 			VALUES ($1, $2, $3, $4);
 		`,
-			userID,
+			user.UserID,
 			user.IdentityType,
 			user.Identifier,
 			user.Credential,

@@ -10,6 +10,7 @@ import (
 
 type IPostUsecase interface {
 	GetAllPosts(ctx echo.Context, posts *[]models.Post) error
+	CreatePost(ctx echo.Context, post *models.Post) error
 }
 
 type postUsecase struct {
@@ -23,6 +24,13 @@ func NewPostUsecase(pr repository.IPostRepository) IPostUsecase {
 func (pu *postUsecase) GetAllPosts(ctx echo.Context, posts *[]models.Post) error {
 
 	if err := pu.pr.GetAllPosts(ctx, posts); err != nil {
+		return errors.WithStack(err)
+	}
+	return nil
+}
+
+func (pu *postUsecase) CreatePost(ctx echo.Context, post *models.Post) error {
+	if err := pu.pr.CreatePost(ctx, post); err != nil {
 		return errors.WithStack(err)
 	}
 	return nil

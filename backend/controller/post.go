@@ -3,18 +3,13 @@ package controller
 import (
 	"backend/controller/openapi"
 	"backend/models"
+	"backend/utils"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 )
 
 func (s *Server) GetPosts(ctx echo.Context) error {
-	/*
-		user := ctx.Get("user").(*jwt.Token)
-		claims := user.Claims.(jwt.MapClaims)
-		userID := claims["user_id"]
-	*/
-
 	posts := []models.Post{}
 	if err := s.pu.GetAllPosts(ctx, &posts); err != nil {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
@@ -41,7 +36,7 @@ func (s *Server) GetPosts(ctx echo.Context) error {
 			PostId:    &post.PostID,
 			Content:   &post.Content,
 			Rating:    &post.Rating,
-			Image:     &post.Image,
+			Image:     post.Image,
 			CreatedAt: &post.CreatedAt,
 			User:      &resUser,
 			Book:      &resBook,
@@ -52,5 +47,34 @@ func (s *Server) GetPosts(ctx echo.Context) error {
 }
 
 func (s *Server) CreatePost(ctx echo.Context) error {
-	return ctx.JSON(http.StatusCreated, "hello")
+	userID, err := utils.ExtractUserID(ctx)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	reqCreatePostBody := openapi.ReqCreatePostBody{}
+	if err := ctx.Bind(&reqCreatePostBody); err != nil {
+		return ctx.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	book, err := s.bu.RegisterBook(ctx, reqCreatePostBody.ISBNcode)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	post := models.Post{
+		Content: reqCreatePostBody.Content,
+		Rating:  reqCreatePostBody.Rating,
+		Image:   reqCreatePostBody.Image,
+		User: models.User{
+			UserID: userID,
+		},
+		Book: book,
+	}
+
+	if err := s.pu.CreatePost(ctx, &post); err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.NoContent(http.StatusCreated)
 }

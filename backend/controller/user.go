@@ -20,7 +20,7 @@ func (s *Server) Signup(ctx echo.Context) error {
 
 	err := s.uu.Signup(ctx, models.User{
 		Name:         *reqSignupBody.Username,
-		ProfileText:  "",
+		ProfileText:  nil,
 		IdentityType: "EmailPassword",
 		Identifier:   *reqSignupBody.Identifier,
 		Credential:   *reqSignupBody.Credential,

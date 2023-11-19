@@ -16,15 +16,15 @@ const (
 
 // Book defines model for Book.
 type Book struct {
-	ISBNcode    *string    `json:"ISBNcode,omitempty"`
-	Author      *string    `json:"author,omitempty"`
-	BookId      *int       `json:"book_id,omitempty"`
-	Image       *string    `json:"image,omitempty"`
-	ItemUrl     *string    `json:"item_url,omitempty"`
-	Price       *string    `json:"price,omitempty"`
-	PublishedAt *time.Time `json:"published_at,omitempty"`
-	Publisher   *string    `json:"publisher,omitempty"`
-	Title       *string    `json:"title,omitempty"`
+	ISBNcode    *string `json:"ISBNcode,omitempty"`
+	Author      *string `json:"author,omitempty"`
+	BookId      *int    `json:"book_id,omitempty"`
+	Image       *string `json:"image,omitempty"`
+	ItemUrl     *string `json:"item_url,omitempty"`
+	Price       *int    `json:"price,omitempty"`
+	PublishedAt *string `json:"published_at,omitempty"`
+	Publisher   *string `json:"publisher,omitempty"`
+	Title       *string `json:"title,omitempty"`
 }
 
 // Post defines model for Post.

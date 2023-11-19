@@ -2,6 +2,8 @@ package repository
 
 import (
 	"backend/models"
+	"database/sql"
+	"fmt"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
@@ -10,6 +12,7 @@ import (
 
 type IPostRepository interface {
 	GetAllPosts(ctx echo.Context, posts *[]models.Post) error
+	CreatePost(ctx echo.Context, post *models.Post) error
 }
 
 type postRepository struct {
@@ -93,5 +96,50 @@ func (pr *postRepository) GetAllPosts(ctx echo.Context, posts *[]models.Post) er
 		return errors.WithStack(err)
 	}
 
+	return nil
+}
+
+func (pr *postRepository) CreatePost(ctx echo.Context, post *models.Post) error {
+	fmt.Println(99)
+	c := ctx.Request().Context()
+	tx, err := pr.db.BeginTxx(c, nil)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	defer tx.Rollback()
+
+	err = tx.QueryRowContext(
+		c,
+		`
+		INSERT INTO posts ( user_id, book_id ) VALUES ($1, $2) RETURNING post_id;
+	`,
+		post.User.UserID,
+		post.Book.BookID,
+	).Scan(&post.PostID)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	var postImage sql.NullString
+	if post.Image != nil {
+		postImage = sql.NullString{String: *post.Image, Valid: true}
+	}
+	_, err = tx.ExecContext(
+		c,
+		`
+		INSERT INTO post_details ( post_id, content, rating, image ) VALUES ($1, $2, $3, $4);
+	`,
+		post.PostID,
+		post.Content,
+		post.Rating,
+		postImage,
+	)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return errors.WithStack(err)
+	}
 	return nil
 }

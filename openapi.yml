@@ -234,12 +234,11 @@ components:
         author:
           type: string
         price:
-          type: string
+          type: integer
         publisher:
           type: string
         published_at:
           type: string
-          format: date-time
         item_url:
           type: string
         image:

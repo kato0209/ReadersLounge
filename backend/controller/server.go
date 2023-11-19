@@ -12,10 +12,11 @@ import (
 type Server struct {
 	uu usecase.IUserUsecase
 	pu usecase.IPostUsecase
+	bu usecase.IBookUsecase
 }
 
-func NewServer(uu usecase.IUserUsecase, pu usecase.IPostUsecase) *Server {
-	return &Server{uu, pu}
+func NewServer(uu usecase.IUserUsecase, pu usecase.IPostUsecase, bu usecase.IBookUsecase) *Server {
+	return &Server{uu, pu, bu}
 }
 
 func (s *Server) Csrftoken(ctx echo.Context) error {
