@@ -1,2 +1,4 @@
 .env
 tmp
+assets/images/*
+!assets/images/.uploaded_image_from_user

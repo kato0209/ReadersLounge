@@ -4,8 +4,14 @@ import (
 	"backend/controller/openapi"
 	"backend/models"
 	"backend/utils"
+	"fmt"
+	"io"
 	"net/http"
+	"os"
+	"strconv"
+	"strings"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
@@ -52,9 +58,19 @@ func (s *Server) CreatePost(ctx echo.Context) error {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	reqCreatePostBody := openapi.ReqCreatePostBody{}
-	if err := ctx.Bind(&reqCreatePostBody); err != nil {
-		return ctx.JSON(http.StatusBadRequest, err.Error())
+	form, err := ctx.MultipartForm()
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	rating, err := strconv.Atoi(form.Value["rating"][0])
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+	reqCreatePostBody := openapi.ReqCreatePostBody{
+		ISBNcode: form.Value["ISBNcode"][0],
+		Content:  form.Value["content"][0],
+		Rating:   rating,
 	}
 
 	book, err := s.bu.RegisterBook(ctx, reqCreatePostBody.ISBNcode)
@@ -62,10 +78,41 @@ func (s *Server) CreatePost(ctx echo.Context) error {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
 
+	var newFileName *string
+	file, err := ctx.FormFile("image")
+	if err == nil {
+		fmt.Println("image file exists")
+		src, err := file.Open()
+		if err != nil {
+			return ctx.JSON(http.StatusInternalServerError, err.Error())
+		}
+		defer src.Close()
+
+		fileModel := strings.Split(file.Filename, ".")
+		fileName := fileModel[0]
+		extension := fileModel[1]
+
+		generatedFileName := fmt.Sprintf("%s_%s.%s", fileName, uuid.New().String(), extension)
+		newFileName = &generatedFileName
+
+		filePath := os.Getenv("UPLOAD_IMAGE_PATH")
+		dst, err := os.Create(filePath + *newFileName)
+		if err != nil {
+			return ctx.JSON(http.StatusInternalServerError, err.Error())
+		}
+		defer dst.Close()
+
+		if _, err = io.Copy(dst, src); err != nil {
+			return ctx.JSON(http.StatusInternalServerError, err.Error())
+		}
+	} else if err != http.ErrMissingFile {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+
 	post := models.Post{
 		Content: reqCreatePostBody.Content,
 		Rating:  reqCreatePostBody.Rating,
-		//Image:   reqCreatePostBody.Image,
+		Image:   newFileName,
 		User: models.User{
 			UserID: userID,
 		},

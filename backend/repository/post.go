@@ -3,7 +3,6 @@ package repository
 import (
 	"backend/models"
 	"database/sql"
-	"fmt"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
@@ -100,7 +99,6 @@ func (pr *postRepository) GetAllPosts(ctx echo.Context, posts *[]models.Post) er
 }
 
 func (pr *postRepository) CreatePost(ctx echo.Context, post *models.Post) error {
-	fmt.Println(99)
 	c := ctx.Request().Context()
 	tx, err := pr.db.BeginTxx(c, nil)
 	if err != nil {
