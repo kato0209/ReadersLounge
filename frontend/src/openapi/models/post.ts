@@ -31,42 +31,42 @@ export interface Post {
      * @type {number}
      * @memberof Post
      */
-    'post_id'?: number;
+    'post_id': number;
     /**
      * 
      * @type {User}
      * @memberof Post
      */
-    'user'?: User;
+    'user': User;
     /**
      * 
      * @type {string}
      * @memberof Post
      */
-    'content'?: string;
+    'content': string;
     /**
      * 
      * @type {number}
      * @memberof Post
      */
-    'rating'?: number;
+    'rating': number;
+    /**
+     * 
+     * @type {File}
+     * @memberof Post
+     */
+    'image'?: File;
     /**
      * 
      * @type {string}
      * @memberof Post
      */
-    'image'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof Post
-     */
-    'created_at'?: string;
+    'created_at': string;
     /**
      * 
      * @type {Book}
      * @memberof Post
      */
-    'book'?: Book;
+    'book': Book;
 }
 

@@ -4,8 +4,6 @@
 package openapi
 
 import (
-	"time"
-
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
@@ -31,13 +29,13 @@ type Book struct {
 
 // Post defines model for Post.
 type Post struct {
-	Book      *Book               `json:"book,omitempty"`
-	Content   *string             `json:"content,omitempty"`
-	CreatedAt *time.Time          `json:"created_at,omitempty"`
-	Image     *openapi_types.File `json:"image,omitempty"`
-	PostId    *int                `json:"post_id,omitempty"`
-	Rating    *int                `json:"rating,omitempty"`
-	User      *User               `json:"user,omitempty"`
+	Book      Book    `json:"book"`
+	Content   string  `json:"content"`
+	CreatedAt string  `json:"created_at"`
+	Image     *string `json:"image,omitempty"`
+	PostId    int     `json:"post_id"`
+	Rating    int     `json:"rating"`
+	User      User    `json:"user"`
 }
 
 // ReqCreatePostBody defines model for ReqCreatePostBody.

@@ -122,7 +122,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Post"
+                type: array
+                items:
+                  $ref: "#/components/schemas/Post"
     post:
       security:
         - X-CSRF-TOKEN: []
@@ -203,12 +205,17 @@ components:
           type: integer
         image:
           type: string
-          format: binary
         created_at:
           type: string
-          format: date-time
         book:
           $ref: "#/components/schemas/Book"
+      required:
+      - post_id
+      - user
+      - content
+      - rating
+      - created_at
+      - book
     ReqCreatePostBody:
       properties:
         content:

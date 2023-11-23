@@ -46,10 +46,10 @@ export interface Book {
     'author'?: string;
     /**
      * 
-     * @type {string}
+     * @type {number}
      * @memberof Book
      */
-    'price'?: string;
+    'price'?: number;
     /**
      * 
      * @type {string}

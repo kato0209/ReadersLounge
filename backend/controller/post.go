@@ -37,14 +37,15 @@ func (s *Server) GetPosts(ctx echo.Context) error {
 			Price:       &post.Book.Price,
 			Title:       &post.Book.Title,
 		}
+		formattedTime := post.CreatedAt.Format("2006-01-02 15:04")
 		resPosts = append(resPosts, openapi.Post{
-			PostId:  &post.PostID,
-			Content: &post.Content,
-			Rating:  &post.Rating,
-			//Image:     post.Image,
-			CreatedAt: &post.CreatedAt,
-			User:      &resUser,
-			Book:      &resBook,
+			PostId:    post.PostID,
+			Content:   post.Content,
+			Rating:    post.Rating,
+			Image:     post.Image.EncodedImage,
+			CreatedAt: formattedTime,
+			User:      resUser,
+			Book:      resBook,
 		})
 	}
 

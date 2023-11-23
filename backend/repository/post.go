@@ -2,7 +2,11 @@ package repository
 
 import (
 	"backend/models"
+	"bytes"
 	"database/sql"
+	"encoding/base64"
+	"image"
+	"image/png"
 	"os"
 
 	"github.com/jmoiron/sqlx"
@@ -14,6 +18,7 @@ type IPostRepository interface {
 	GetAllPosts(ctx echo.Context, posts *[]models.Post) error
 	CreatePost(ctx echo.Context, post *models.Post) error
 	SavePostImage(ctx echo.Context, image *models.PostImage) error
+	LoadImage(ctx echo.Context, fileName string) (string, error)
 }
 
 type postRepository struct {
@@ -68,12 +73,13 @@ func (pr *postRepository) GetAllPosts(ctx echo.Context, posts *[]models.Post) er
 		user := models.User{}
 		post.Book = book
 		post.User = user
+		var fileName sql.NullString
 
 		err := rows.Scan(
 			&post.PostID,
 			&post.Content,
 			&post.Rating,
-			&post.Image.FileName,
+			&fileName,
 			&post.CreatedAt,
 			&post.User.UserID,
 			&post.User.Name,
@@ -90,6 +96,9 @@ func (pr *postRepository) GetAllPosts(ctx echo.Context, posts *[]models.Post) er
 		)
 		if err != nil {
 			return errors.WithStack(err)
+		}
+		if fileName.Valid {
+			post.Image = &models.PostImage{FileName: &fileName.String}
 		}
 		*posts = append(*posts, post)
 	}
@@ -157,4 +166,25 @@ func (pr *postRepository) SavePostImage(ctx echo.Context, image *models.PostImag
 		return errors.WithStack(err)
 	}
 	return nil
+}
+
+func (pr *postRepository) LoadImage(ctx echo.Context, fileName string) (string, error) {
+	filePath := os.Getenv("UPLOAD_IMAGE_PATH")
+	file, err := os.Open(filePath + fileName)
+	if err != nil {
+		return "", errors.WithStack(err)
+	}
+	defer file.Close()
+
+	img, _, err := image.Decode(file)
+	if err != nil {
+		return "", errors.WithStack(err)
+	}
+
+	var buf bytes.Buffer
+	if err := png.Encode(&buf, img); err != nil {
+		return "", errors.WithStack(err)
+	}
+
+	return base64.StdEncoding.EncodeToString(buf.Bytes()), nil
 }

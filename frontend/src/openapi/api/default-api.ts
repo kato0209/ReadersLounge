@@ -39,6 +39,71 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
     return {
         /**
          * 
+         * @summary create post
+         * @param {string} content 
+         * @param {number} rating 
+         * @param {string} iSBNcode 
+         * @param {File} [image] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createPost: async (content: string, rating: number, iSBNcode: string, image?: File, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'content' is not null or undefined
+            assertParamExists('createPost', 'content', content)
+            // verify required parameter 'rating' is not null or undefined
+            assertParamExists('createPost', 'rating', rating)
+            // verify required parameter 'iSBNcode' is not null or undefined
+            assertParamExists('createPost', 'iSBNcode', iSBNcode)
+            const localVarPath = `/posts`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+            const localVarFormParams = new ((configuration && configuration.formDataCtor) || FormData)();
+
+            // authentication X-CSRF-TOKEN required
+            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
+
+            // authentication jwtAuth required
+
+
+            if (content !== undefined) { 
+                localVarFormParams.append('content', content as any);
+            }
+    
+            if (rating !== undefined) { 
+                localVarFormParams.append('rating', rating as any);
+            }
+    
+            if (image !== undefined) { 
+                localVarFormParams.append('image', image as any);
+            }
+    
+            if (iSBNcode !== undefined) { 
+                localVarFormParams.append('ISBNcode', iSBNcode as any);
+            }
+    
+    
+            localVarHeaderParameter['Content-Type'] = 'multipart/form-data';
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = localVarFormParams;
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary get csrf token
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -55,6 +120,41 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary get posts
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPosts: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/posts`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication X-CSRF-TOKEN required
+            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
+
+            // authentication jwtAuth required
 
 
     
@@ -195,41 +295,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
-         * @summary posts
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        posts: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/posts`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication X-CSRF-TOKEN required
-            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
-
-            // authentication jwtAuth required
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
          * @summary create new user
          * @param {ReqSignupBody} reqSignupBody 
          * @param {*} [options] Override http request option.
@@ -314,12 +379,36 @@ export const DefaultApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
+         * @summary create post
+         * @param {string} content 
+         * @param {number} rating 
+         * @param {string} iSBNcode 
+         * @param {File} [image] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createPost(content: string, rating: number, iSBNcode: string, image?: File, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createPost(content, rating, iSBNcode, image, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary get csrf token
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
         async csrftoken(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResCsrfToken>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.csrftoken(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary get posts
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getPosts(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Post>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getPosts(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -358,16 +447,6 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary posts
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async posts(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Post>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.posts(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
          * @summary create new user
          * @param {ReqSignupBody} reqSignupBody 
          * @param {*} [options] Override http request option.
@@ -399,12 +478,34 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
     return {
         /**
          * 
+         * @summary create post
+         * @param {string} content 
+         * @param {number} rating 
+         * @param {string} iSBNcode 
+         * @param {File} [image] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createPost(content: string, rating: number, iSBNcode: string, image?: File, options?: any): AxiosPromise<void> {
+            return localVarFp.createPost(content, rating, iSBNcode, image, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary get csrf token
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
         csrftoken(options?: any): AxiosPromise<ResCsrfToken> {
             return localVarFp.csrftoken(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary get posts
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPosts(options?: any): AxiosPromise<Array<Post>> {
+            return localVarFp.getPosts(options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -439,15 +540,6 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * 
-         * @summary posts
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        posts(options?: any): AxiosPromise<Post> {
-            return localVarFp.posts(options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
          * @summary create new user
          * @param {ReqSignupBody} reqSignupBody 
          * @param {*} [options] Override http request option.
@@ -477,6 +569,21 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
 export class DefaultApi extends BaseAPI {
     /**
      * 
+     * @summary create post
+     * @param {string} content 
+     * @param {number} rating 
+     * @param {string} iSBNcode 
+     * @param {File} [image] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public createPost(content: string, rating: number, iSBNcode: string, image?: File, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).createPost(content, rating, iSBNcode, image, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @summary get csrf token
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -484,6 +591,17 @@ export class DefaultApi extends BaseAPI {
      */
     public csrftoken(options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).csrftoken(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary get posts
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getPosts(options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getPosts(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -521,17 +639,6 @@ export class DefaultApi extends BaseAPI {
      */
     public logout(body?: object, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).logout(body, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary posts
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof DefaultApi
-     */
-    public posts(options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).posts(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
