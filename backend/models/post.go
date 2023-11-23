@@ -1,13 +1,20 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 type Post struct {
 	PostID    int `db:"post_id"`
 	User      User
-	Content   string    `db:"content"`
-	Rating    int       `db:"rating"`
-	Image     *string   `db:"image"`
+	Content   string `db:"content"`
+	Rating    int    `db:"rating"`
+	Image     *PostImage
 	CreatedAt time.Time `db:"created_at"`
 	Book      Book
+}
+
+type PostImage struct {
+	Source   []byte
+	FileName *string `db:"image"`
 }

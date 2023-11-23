@@ -3,6 +3,7 @@ package repository
 import (
 	"backend/models"
 	"database/sql"
+	"os"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
@@ -12,6 +13,7 @@ import (
 type IPostRepository interface {
 	GetAllPosts(ctx echo.Context, posts *[]models.Post) error
 	CreatePost(ctx echo.Context, post *models.Post) error
+	SavePostImage(ctx echo.Context, image *models.PostImage) error
 }
 
 type postRepository struct {
@@ -71,7 +73,7 @@ func (pr *postRepository) GetAllPosts(ctx echo.Context, posts *[]models.Post) er
 			&post.PostID,
 			&post.Content,
 			&post.Rating,
-			&post.Image,
+			&post.Image.FileName,
 			&post.CreatedAt,
 			&post.User.UserID,
 			&post.User.Name,
@@ -118,9 +120,9 @@ func (pr *postRepository) CreatePost(ctx echo.Context, post *models.Post) error 
 		return errors.WithStack(err)
 	}
 
-	var postImage sql.NullString
-	if post.Image != nil {
-		postImage = sql.NullString{String: *post.Image, Valid: true}
+	var postImageStr sql.NullString
+	if post.Image != nil && post.Image.FileName != nil {
+		postImageStr = sql.NullString{String: *post.Image.FileName, Valid: true}
 	}
 	_, err = tx.ExecContext(
 		c,
@@ -130,13 +132,28 @@ func (pr *postRepository) CreatePost(ctx echo.Context, post *models.Post) error 
 		post.PostID,
 		post.Content,
 		post.Rating,
-		postImage,
+		postImageStr,
 	)
 	if err != nil {
 		return errors.WithStack(err)
 	}
 
 	if err := tx.Commit(); err != nil {
+		return errors.WithStack(err)
+	}
+	return nil
+}
+
+func (pr *postRepository) SavePostImage(ctx echo.Context, image *models.PostImage) error {
+	filePath := os.Getenv("UPLOAD_IMAGE_PATH")
+	file, err := os.Create(filePath + *image.FileName)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	defer file.Close()
+
+	_, err = file.Write(image.Source)
+	if err != nil {
 		return errors.WithStack(err)
 	}
 	return nil

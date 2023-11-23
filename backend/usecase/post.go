@@ -30,6 +30,12 @@ func (pu *postUsecase) GetAllPosts(ctx echo.Context, posts *[]models.Post) error
 }
 
 func (pu *postUsecase) CreatePost(ctx echo.Context, post *models.Post) error {
+	if post.Image != nil {
+		if err := pu.pr.SavePostImage(ctx, post.Image); err != nil {
+			return errors.WithStack(err)
+		}
+	}
+
 	if err := pu.pr.CreatePost(ctx, post); err != nil {
 		return errors.WithStack(err)
 	}

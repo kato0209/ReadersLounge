@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
 
@@ -78,33 +77,25 @@ func (s *Server) CreatePost(ctx echo.Context) error {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	var newFileName *string
+	var image *models.PostImage
 	file, err := ctx.FormFile("image")
 	if err == nil {
-		fmt.Println("image file exists")
 		src, err := file.Open()
 		if err != nil {
 			return ctx.JSON(http.StatusInternalServerError, err.Error())
 		}
 		defer src.Close()
 
+		data, _ := io.ReadAll(src)
+
 		fileModel := strings.Split(file.Filename, ".")
 		fileName := fileModel[0]
 		extension := fileModel[1]
-
 		generatedFileName := fmt.Sprintf("%s_%s.%s", fileName, uuid.New().String(), extension)
-		newFileName = &generatedFileName
 
-		filePath := os.Getenv("UPLOAD_IMAGE_PATH")
-		dst, err := os.Create(filePath + *newFileName)
-		if err != nil {
-			return ctx.JSON(http.StatusInternalServerError, err.Error())
-		}
-		defer dst.Close()
+		image.Source = data
+		image.FileName = &generatedFileName
 
-		if _, err = io.Copy(dst, src); err != nil {
-			return ctx.JSON(http.StatusInternalServerError, err.Error())
-		}
 	} else if err != http.ErrMissingFile {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
@@ -112,7 +103,7 @@ func (s *Server) CreatePost(ctx echo.Context) error {
 	post := models.Post{
 		Content: reqCreatePostBody.Content,
 		Rating:  reqCreatePostBody.Rating,
-		Image:   newFileName,
+		Image:   image,
 		User: models.User{
 			UserID: userID,
 		},
