@@ -16,101 +16,34 @@ import Rating from '@mui/material/Rating';
 import { apiInstance } from '../../lib/api/apiInstance';
 import { useErrorHandler } from 'react-error-boundary';
 import { Post } from '../../openapi';
+import Sidebar from './Sidebar';
+import Box from '@mui/material/Box';
+import PostList from './PostList';
 
 export default function Home() {
-    const errorHandler = useErrorHandler();
+    const [isMobile, setIsMobile] = React.useState(window.innerWidth <= 500);
 
-    const [posts, setPosts] = React.useState<Post[]>([]);
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 500);
+    };
 
     React.useEffect(() => {
-        const fetchPosts = async () => {
-        
-            try {
-                const api = await apiInstance;
-                const res = await api.getPosts();
-                
-                if (res.data && Array.isArray(res.data)) {
-                    const fetchedPosts: Post[] = res.data.map(item => ({
-                      post_id: item.post_id,
-                      user: item.user,
-                      content: item.content,
-                      rating: item.rating,
-                      image: item.image,
-                      created_at: item.created_at,
-                      book: item.book,
-                    }));
-                    setPosts(fetchedPosts);
-                }
-            } catch (error: unknown) {
-                errorHandler(error);
-            }
-                
-        };
-    
-        fetchPosts();
-      }, []);
+      window.addEventListener('resize', handleResize);
+      return () => {
+        window.removeEventListener('resize', handleResize);
+      };
+    }, []);
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', alignItems: 'center' }}>
-        {posts.length > 0 ? (
-        <>
-            {posts.map(post => (
-                <Card sx={{ width: '50%', minWidth: 600 }} key={post.post_id}>
-                <CardHeader
-                    avatar={
-                    <Avatar src={post.user.profile_image} aria-label="recipe">
-                        
-                    </Avatar>
-                    }
-                    action={
-                    <IconButton aria-label="settings">
-                        <MoreVertIcon />
-                    </IconButton>
-                    }
-                    title={post.user.name}
-                    subheader={post.created_at}
-                    sx={{
-                        '& .MuiCardHeader-content': {
-                            display: 'flex',
-                            alignItems: 'center',
-                        },
-                        '& .MuiCardHeader-title': {
-                            fontSize: '1.3rem',
-                        },
-                        '& .MuiCardHeader-subheader': {
-                            marginLeft: '1em',
-                        },
-                    
-                    }}
-                />
-                {post.image && (
-                    <CardMedia
-                        component="img"
-                        height="400"
-                        src={`data:image/png;base64,${post.image}`}
-                    />
-                )}
-                <CardContent>
-                    <Typography variant="body2" color="black" style={{ wordWrap: 'break-word' }}>
-                        {post.content}
-                    </Typography>
-                </CardContent>
-                <CardActions disableSpacing
-                    sx={{
-                        justifyContent: 'space-between',
-                    }}
-                >
-                    <IconButton aria-label="add to favorites">
-                    <FavoriteIcon />
-                    </IconButton>
-                    <Rating name="read-only" value={post.rating} readOnly />
-                </CardActions>
-                </Card>
-            ))}
-        </>
-      ) : (
-        <div>Loading...</div>
-      )}
+    <div style={{ display: 'flex'}}>
+        {!isMobile && (
+            <div style={{ flex: '0 0 30%', display: 'flex' }}>
+                <Sidebar />
+            </div>
+        )}
+        <div style={{ flex: 1, overflowX: 'hidden' }}>
+            <PostList />
+        </div>
     </div>
   );
 }

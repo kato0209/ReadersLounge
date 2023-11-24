@@ -29,7 +29,7 @@ export default function AppHeader() {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="fixed" sx={{ backgroundColor: '#FF7E73' }}>
+      <AppBar position="fixed" sx={{ backgroundColor: '#FF7E73', boxShadow: 'none' }}>
         <Toolbar sx={{ alignItems: 'center', height: '3rem', minHeight: '28px !important' }}>
           <IconButton
             size="large"
