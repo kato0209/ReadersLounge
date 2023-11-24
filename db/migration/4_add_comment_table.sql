@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS comments (
 CREATE TABLE IF NOT EXISTS comment_details (
     id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     comment_id integer NOT NULL,
-    content char(255) NOT NULL,
+    content varchar(255) NOT NULL,
     created_at timestamptz NOT NULL DEFAULT current_timestamp,
     updated_at timestamptz NOT NULL DEFAULT current_timestamp,
     FOREIGN KEY (comment_id) REFERENCES comments(comment_id)

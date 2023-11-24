@@ -1,14 +1,14 @@
 -- +goose Up
 CREATE TABLE IF NOT EXISTS books (
     book_id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    ISBNcode char(100) NOT NULL UNIQUE,
-    title char(100) NOT NULL,
-    author char(100) NOT NULL,
+    ISBNcode varchar(100) NOT NULL UNIQUE,
+    title varchar(100) NOT NULL,
+    author varchar(100) NOT NULL,
     price integer NOT NULL,
-    publisher char(100) NOT NULL,
-    published_at char(100) NOT NULL,
-    item_url char(255) NOT NULL,
-    image char(255) NOT NULL,
+    publisher varchar(100) NOT NULL,
+    published_at varchar(100) NOT NULL,
+    item_url varchar(255) NOT NULL,
+    image varchar(255) NOT NULL,
     created_at timestamptz NOT NULL DEFAULT current_timestamp,
     updated_at timestamptz NOT NULL DEFAULT current_timestamp
 );

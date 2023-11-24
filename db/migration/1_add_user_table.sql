@@ -7,9 +7,9 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS user_details (
     id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     user_id integer NOT NULL,
-    name char(20) NOT NULL,
-    profile_text char(255),
-    profile_image char(255) NOT NULL DEFAULT 'https://res.cloudinary.com/dvh5ehszr/image/upload/v1689442197/media/default_img.png',
+    name varchar(20) NOT NULL,
+    profile_text varchar(255),
+    profile_image varchar(255) NOT NULL DEFAULT 'https://res.cloudinary.com/dvh5ehszr/image/upload/v1689442197/media/default_img.png',
     created_at timestamptz NOT NULL DEFAULT current_timestamp,
     updated_at timestamptz NOT NULL DEFAULT current_timestamp,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
@@ -18,9 +18,9 @@ CREATE TABLE IF NOT EXISTS user_details (
 CREATE TABLE IF NOT EXISTS user_auths (
     id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     user_id integer NOT NULL,
-    identity_type char(100) NOT NULL,
-    identifier char(100) NOT NULL,
-    credential char(100) NOT NULL,
+    identity_type varchar(100) NOT NULL,
+    identifier varchar(100) NOT NULL,
+    credential varchar(100) NOT NULL,
     created_at timestamptz NOT NULL DEFAULT current_timestamp,
     updated_at timestamptz NOT NULL DEFAULT current_timestamp,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,

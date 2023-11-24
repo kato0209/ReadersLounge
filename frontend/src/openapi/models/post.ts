@@ -52,10 +52,10 @@ export interface Post {
     'rating': number;
     /**
      * 
-     * @type {File}
+     * @type {string}
      * @memberof Post
      */
-    'image'?: File;
+    'image'?: string;
     /**
      * 
      * @type {string}

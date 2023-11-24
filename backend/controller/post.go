@@ -37,12 +37,16 @@ func (s *Server) GetPosts(ctx echo.Context) error {
 			Price:       &post.Book.Price,
 			Title:       &post.Book.Title,
 		}
+		var encodedImage *string
+		if post.Image != nil {
+			encodedImage = post.Image.EncodedImage
+		}
 		formattedTime := post.CreatedAt.Format("2006-01-02 15:04")
 		resPosts = append(resPosts, openapi.Post{
 			PostId:    post.PostID,
 			Content:   post.Content,
 			Rating:    post.Rating,
-			Image:     post.Image.EncodedImage,
+			Image:     encodedImage,
 			CreatedAt: formattedTime,
 			User:      resUser,
 			Book:      resBook,
@@ -78,7 +82,7 @@ func (s *Server) CreatePost(ctx echo.Context) error {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	var image *models.PostImage
+	var image models.PostImage
 	file, err := ctx.FormFile("image")
 	if err == nil {
 		src, err := file.Open()
@@ -87,7 +91,11 @@ func (s *Server) CreatePost(ctx echo.Context) error {
 		}
 		defer src.Close()
 
-		data, _ := io.ReadAll(src)
+		data, err := io.ReadAll(src)
+		if err != nil {
+			fmt.Println(989888)
+			return ctx.JSON(http.StatusInternalServerError, err.Error())
+		}
 
 		fileModel := strings.Split(file.Filename, ".")
 		fileName := fileModel[0]
@@ -104,7 +112,7 @@ func (s *Server) CreatePost(ctx echo.Context) error {
 	post := models.Post{
 		Content: reqCreatePostBody.Content,
 		Rating:  reqCreatePostBody.Rating,
-		Image:   image,
+		Image:   &image,
 		User: models.User{
 			UserID: userID,
 		},

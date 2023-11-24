@@ -83,12 +83,13 @@ export default function Home() {
                     
                     }}
                 />
-                <CardMedia
-                    component="img"
-                    height="194"
-                    image="https://mui.com/static/images/cards/paella.jpg"
-                    alt="Paella dish"
-                />
+                {post.image && (
+                    <CardMedia
+                        component="img"
+                        height="400"
+                        src={`data:image/png;base64,${post.image}`}
+                    />
+                )}
                 <CardContent>
                     <Typography variant="body2" color="black" style={{ wordWrap: 'break-word' }}>
                         {post.content}
