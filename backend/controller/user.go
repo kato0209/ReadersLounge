@@ -38,9 +38,9 @@ func (s *Server) Signup(ctx echo.Context) error {
 	}
 
 	resUser := openapi.User{
-		UserId:       &user.UserID,
-		Name:         &user.Name,
-		ProfileImage: &user.ProfileImage,
+		UserId:       user.UserID,
+		Name:         user.Name,
+		ProfileImage: user.ProfileImage,
 	}
 
 	utils.SetJwtTokenInCookie(ctx, tokenString)
@@ -63,9 +63,9 @@ func (s *Server) Login(ctx echo.Context) error {
 	}
 
 	resUser := openapi.User{
-		UserId:       &user.UserID,
-		Name:         &user.Name,
-		ProfileImage: &user.ProfileImage,
+		UserId:       user.UserID,
+		Name:         user.Name,
+		ProfileImage: user.ProfileImage,
 	}
 
 	utils.SetJwtTokenInCookie(ctx, tokenString)
@@ -122,9 +122,9 @@ func (s *Server) User(ctx echo.Context) error {
 	}
 
 	resUser := openapi.User{
-		UserId:       &loginUser.UserID,
-		Name:         &loginUser.Name,
-		ProfileImage: &loginUser.ProfileImage,
+		UserId:       loginUser.UserID,
+		Name:         loginUser.Name,
+		ProfileImage: loginUser.ProfileImage,
 	}
 
 	return ctx.JSON(http.StatusOK, resUser)

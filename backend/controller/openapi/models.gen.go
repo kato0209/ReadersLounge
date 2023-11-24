@@ -66,9 +66,9 @@ type ResCsrfToken struct {
 
 // User defines model for User.
 type User struct {
-	Name         *string `json:"name,omitempty"`
-	ProfileImage *string `json:"profile_image,omitempty"`
-	UserId       *int    `json:"user_id,omitempty"`
+	Name         string `json:"name"`
+	ProfileImage string `json:"profile_image"`
+	UserId       int    `json:"user_id"`
 }
 
 // LogoutJSONBody defines parameters for Logout.

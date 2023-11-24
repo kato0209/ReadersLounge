@@ -22,9 +22,9 @@ func (s *Server) GetPosts(ctx echo.Context) error {
 	resPosts := []openapi.Post{}
 	for _, post := range posts {
 		resUser := openapi.User{
-			UserId:       &post.User.UserID,
-			Name:         &post.User.Name,
-			ProfileImage: &post.User.ProfileImage,
+			UserId:       post.User.UserID,
+			Name:         post.User.Name,
+			ProfileImage: post.User.ProfileImage,
 		}
 		resBook := openapi.Book{
 			BookId:      &post.Book.BookID,

@@ -18,6 +18,7 @@ import { useErrorHandler } from 'react-error-boundary';
 import { Post } from '../../openapi';
 import Sidebar from './Sidebar';
 import Box from '@mui/material/Box';
+import { isValidUrl } from '../../utils/isValidUrl';
 
 const PostListContainer = {
     display: 'flex', 
@@ -89,8 +90,8 @@ export default function PostList() {
                         key={post.post_id}>
                     <CardHeader
                         avatar={
-                        <Avatar src={post.user.profile_image} aria-label="recipe">
-                            
+                        <Avatar 
+                            src={isValidUrl(post.user.profile_image) ? post.user.profile_image : `data:image/png;base64,${post.user.profile_image}` }>                  
                         </Avatar>
                         }
                         action={
@@ -121,7 +122,7 @@ export default function PostList() {
                         <CardMedia
                             component="img"
                             height="400"
-                            src={`data:image/png;base64,${post.image}`}
+                            src={isValidUrl(post.image) ? post.image : `data:image/png;base64,${post.image}` }
                         />
                     )}
                     <CardContent>

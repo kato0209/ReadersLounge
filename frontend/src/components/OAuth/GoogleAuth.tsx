@@ -40,7 +40,7 @@ export default function GoogleAuth() {
                 },
                 '&:active': {
                     backgroundColor: '#D5D0CA',
-                  },
+                },
               }}
               display='flex'
               justifyContent='center'

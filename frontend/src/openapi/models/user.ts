@@ -25,18 +25,18 @@ export interface User {
      * @type {number}
      * @memberof User
      */
-    'user_id'?: number;
+    'user_id': number;
     /**
      * 
      * @type {string}
      * @memberof User
      */
-    'name'?: string;
+    'name': string;
     /**
      * 
      * @type {string}
      * @memberof User
      */
-    'profile_image'?: string;
+    'profile_image': string;
 }
 

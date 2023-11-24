@@ -7,8 +7,12 @@ import ListItemText from '@mui/material/ListItemText';
 import HomeIcon from '@mui/icons-material/Home';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MailIcon from '@mui/icons-material/Mail';
+import CreatePost  from './CreatePost';
+
 
 export default function Sidebar() {
+
+  
 
   return (
     <Drawer
@@ -43,19 +47,7 @@ export default function Sidebar() {
           </ListItemIcon>
           <ListItemText primary="Messages" />
         </ListItem>
-        <ListItem 
-          button 
-          sx={{ 
-            borderRadius: '50px', 
-            backgroundColor: '#FF7E73',
-            color: '#fff',
-            marginTop: '0.8rem',
-            '&:hover': {
-              backgroundColor: '#E56A67',
-            },
-          }}>
-          <ListItemText primary="Post" sx={{ textAlign: 'center' }} />
-        </ListItem>
+        <CreatePost/>
       </List>
     </Drawer>
   );

@@ -3,9 +3,15 @@ import { User } from '../../openapi';
 
 type AuthUserContextType = {
     isAuthenticated: boolean;
-    user: User | null;
+    user: User;
     login: (user:User) => void;
     logout: () => void;
+};
+
+const defaultUser: User = {
+    user_id: 0,
+    name: '',
+    profile_image: '',
 };
 
 const AuthUserContext = React.createContext<AuthUserContextType>({} as AuthUserContextType);
@@ -15,7 +21,7 @@ type AuthRouteProps = {
 };
 
 export const AuthProvider: React.FC<AuthRouteProps> = ({ children }) => {
-    const [user, setUser] = React.useState<User | null>(null);
+    const [user, setUser] = React.useState<User>(defaultUser);
     const [isAuthenticated, setIsAuthenticated] = React.useState<boolean>(false);
 
     const login = (newUser: User) => {
@@ -25,7 +31,7 @@ export const AuthProvider: React.FC<AuthRouteProps> = ({ children }) => {
 
     const logout = () => {
         setIsAuthenticated(false);
-        setUser(null);
+        setUser(defaultUser);
     }
 
     const value:AuthUserContextType = { isAuthenticated, user, login, logout };

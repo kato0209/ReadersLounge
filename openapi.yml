@@ -192,6 +192,10 @@ components:
           type: string
         profile_image:
           type: string
+      required:
+      - user_id
+      - name
+      - profile_image
     Post:
       type: object
       properties:
