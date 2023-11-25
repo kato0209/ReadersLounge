@@ -82,8 +82,9 @@ func (s *Server) CreatePost(ctx echo.Context) error {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	var image models.PostImage
+	var image *models.PostImage
 	file, err := ctx.FormFile("image")
+	fmt.Println(file)
 	if err == nil {
 		src, err := file.Open()
 		if err != nil {
@@ -93,7 +94,6 @@ func (s *Server) CreatePost(ctx echo.Context) error {
 
 		data, err := io.ReadAll(src)
 		if err != nil {
-			fmt.Println(989888)
 			return ctx.JSON(http.StatusInternalServerError, err.Error())
 		}
 
@@ -112,7 +112,7 @@ func (s *Server) CreatePost(ctx echo.Context) error {
 	post := models.Post{
 		Content: reqCreatePostBody.Content,
 		Rating:  reqCreatePostBody.Rating,
-		Image:   &image,
+		Image:   image,
 		User: models.User{
 			UserID: userID,
 		},

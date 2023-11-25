@@ -121,7 +121,7 @@ export default function PostList() {
                     {post.image && (
                         <CardMedia
                             component="img"
-                            height="400"
+                            width={1}
                             src={isValidUrl(post.image) ? post.image : `data:image/png;base64,${post.image}` }
                         />
                     )}
@@ -158,7 +158,7 @@ export default function PostList() {
                 </Box>
             </>
         ) : (
-            <div>Loading...</div>
+            <></>
         )}
         </Box>
   );

@@ -24,6 +24,7 @@ export default function Sidebar() {
             marginTop: '3rem',
             width: '30%',
             alignItems: 'center',
+            borderRight: 'none',
         },
         }}
         anchor="left"

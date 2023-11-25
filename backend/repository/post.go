@@ -60,6 +60,7 @@ func (pr *postRepository) GetAllPosts(ctx echo.Context, posts *[]models.Post) er
 			user_details AS ud ON u.user_id = ud.user_id
 		INNER JOIN
 			books AS b ON p.book_id = b.book_id
+		ORDER BY pd.updated_at DESC;
 	`
 	rows, err := pr.db.QueryContext(c, query)
 	if err != nil {
