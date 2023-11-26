@@ -32,27 +32,24 @@ func NewRouter(server *controller.Server) *echo.Echo {
 	}))
 
 	openapi.RegisterHandlers(e, server)
-	p := e.Group("/posts")
-	p.Use(echojwt.WithConfig(echojwt.Config{
-		SigningKey:  []byte(os.Getenv("JWT_SECRET")),
-		TokenLookup: "cookie:jwt_token",
-	}))
-	p.GET("", server.GetPosts)
-	p.POST("", server.CreatePost)
 
-	u := e.Group("/user")
-	u.Use(echojwt.WithConfig(echojwt.Config{
+	e.Use(echojwt.WithConfig(echojwt.Config{
 		SigningKey:  []byte(os.Getenv("JWT_SECRET")),
 		TokenLookup: "cookie:jwt_token",
-	}))
-	u.GET("", server.User)
+		Skipper: func(c echo.Context) bool {
+			skipPaths := []string{"/csrftoken", "/signup", "/login", "/logout", "/oauth/google/callback"}
 
-	b := e.Group("/books")
-	b.Use(echojwt.WithConfig(echojwt.Config{
-		SigningKey:  []byte(os.Getenv("JWT_SECRET")),
-		TokenLookup: "cookie:jwt_token",
+			path := c.Path()
+
+			for _, skipPath := range skipPaths {
+				if path == skipPath {
+					return true
+				}
+			}
+
+			return false
+		},
 	}))
-	b.GET("", server.FetchBookData)
 
 	return e
 }

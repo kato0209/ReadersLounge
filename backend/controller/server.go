@@ -24,3 +24,9 @@ func (s *Server) Csrftoken(ctx echo.Context) error {
 	csrfToken := openapi.ResCsrfToken{CsrfToken: &token}
 	return ctx.JSON(http.StatusOK, csrfToken)
 }
+
+func (s *Server) FetchBookDataWrapper(ctx echo.Context) error {
+	var params openapi.FetchBookDataParams
+
+	return s.FetchBookData(ctx, params)
+}
