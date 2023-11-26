@@ -1,20 +1,10 @@
 import * as React from 'react';
 import Sidebar from './Sidebar';
 import PostList from './PostList';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 export default function Home() {
-    const [isMobile, setIsMobile] = React.useState(window.innerWidth <= 500);
-
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 500);
-    };
-
-    React.useEffect(() => {
-      window.addEventListener('resize', handleResize);
-      return () => {
-        window.removeEventListener('resize', handleResize);
-      };
-    }, []);
+    const isMobile = useMediaQuery('(max-width:500px)');
 
   return (
     <div style={{ display: 'flex'}}>

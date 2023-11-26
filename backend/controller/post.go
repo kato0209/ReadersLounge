@@ -82,9 +82,16 @@ func (s *Server) CreatePost(ctx echo.Context) error {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	var image *models.PostImage
+	post := models.Post{
+		Content: reqCreatePostBody.Content,
+		Rating:  reqCreatePostBody.Rating,
+		User: models.User{
+			UserID: userID,
+		},
+		Book: book,
+	}
+
 	file, err := ctx.FormFile("image")
-	fmt.Println(file)
 	if err == nil {
 		src, err := file.Open()
 		if err != nil {
@@ -92,31 +99,30 @@ func (s *Server) CreatePost(ctx echo.Context) error {
 		}
 		defer src.Close()
 
-		data, err := io.ReadAll(src)
-		if err != nil {
-			return ctx.JSON(http.StatusInternalServerError, err.Error())
-		}
-
 		fileModel := strings.Split(file.Filename, ".")
 		fileName := fileModel[0]
 		extension := fileModel[1]
-		generatedFileName := fmt.Sprintf("%s_%s.%s", fileName, uuid.New().String(), extension)
 
-		image.Source = data
-		image.FileName = &generatedFileName
+		if extension == "jpeg" || extension == "png" {
+
+			data, err := io.ReadAll(src)
+			if err != nil {
+				return ctx.JSON(http.StatusInternalServerError, err.Error())
+			}
+
+			generatedFileName := fmt.Sprintf("%s_%s.%s", fileName, uuid.New().String(), extension)
+
+			image := models.PostImage{
+				Source:   data,
+				FileName: &generatedFileName,
+			}
+			post.Image = &image
+		} else {
+			return ctx.JSON(http.StatusBadRequest, "Unsupported file type")
+		}
 
 	} else if err != http.ErrMissingFile {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
-	}
-
-	post := models.Post{
-		Content: reqCreatePostBody.Content,
-		Rating:  reqCreatePostBody.Rating,
-		Image:   image,
-		User: models.User{
-			UserID: userID,
-		},
-		Book: book,
 	}
 
 	if err := s.pu.CreatePost(ctx, &post); err != nil {

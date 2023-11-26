@@ -15,10 +15,15 @@ import PostTextarea from './PostTextarea';
 import Rating from '@mui/material/Rating';
 import ImageIcon from '@mui/icons-material/Image';
 import { z } from 'zod';
+import { zfd } from "zod-form-data";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { apiInstance } from '../../lib/api/apiInstance';
 import { useErrorHandler } from 'react-error-boundary';
+import { get } from 'http';
+import { error } from 'console';
+
+const IMAGE_TYPES = ['image/jpeg', 'image/png'];
 
 const PostSchema = z.object({
   content: z.string().nonempty('投稿内容は必須です').max(255, {
@@ -26,16 +31,16 @@ const PostSchema = z.object({
   }),
   rating: z.number().positive(),
   ISBNcode: z.string().nonempty('本が選択されていません'), 
-  postImage: z.any().optional()
-  .refine(
-    (files) => {
-      if (!files || files.length === 0) {
-        return true;
-      }
-      ['image/jpeg', 'image/png'].includes(files?.[0]?.type),
-    '.jpg, .jpeg, .pngのファイルを選択してください。'
-    }
-  )
+  postImage: z.instanceof(File).optional()
+  .refine((file) => {
+    return (
+      file === undefined ||
+      (IMAGE_TYPES.includes(file.type) &&
+        file.name.split('.').pop()?.toLowerCase() !== 'jpg')
+    );
+  }, {
+    message: '.jpegもしくは.pngのみ可能です',
+  })
 });
 
 type FormData = z.infer<typeof PostSchema>;
@@ -43,7 +48,6 @@ type FormData = z.infer<typeof PostSchema>;
 export default function CreatePost() {
   const [openCreatePostDialog, setOpenCreatePostDialog] = React.useState(false);
   const { user } = useAuthUserContext();
-  const [image, setImage] = React.useState<File | null>(null);
   const [imagePreview, setImagePreview] = React.useState<string | null>(null);
 
   const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm<FormData>({
@@ -52,16 +56,24 @@ export default function CreatePost() {
   const errorHandler = useErrorHandler();
 
   const onSubmit = async (data: FormData) => {
-    console.log("onSubmit");
-    console.log(data);
+    
     try {
       const api = await apiInstance;
+
+      if (data.postImage) {
       const res = await api.createPost(
         data.content,
         data.rating,
         data.ISBNcode,
         data.postImage
       );
+    } else {
+      const res = await api.createPost(
+        data.content,
+        data.rating,
+        data.ISBNcode
+      );
+    }
     } catch (error: unknown) {
       errorHandler(error);
     }
@@ -71,7 +83,7 @@ export default function CreatePost() {
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
-      setImage(file);
+      setValue('postImage', file, { shouldValidate: true });
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
@@ -80,12 +92,16 @@ export default function CreatePost() {
     }
   };
 
+  const handleImageRemove = () => {
+    setValue('postImage', undefined, { shouldValidate: true });
+    setImagePreview(null);
+  };
+
   const handleRatingChange = (newValue: number) => {
     setValue('rating', newValue, { shouldValidate: true });
   };
 
   const handlePostTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    //setPostText(event.target.value);
     setValue('content', event.target.value, { shouldValidate: true });
   };
   
@@ -98,18 +114,14 @@ export default function CreatePost() {
     setOpenCreatePostDialog(false);
   };
 
-  const handleImageRemove = () => {
-    setImage(null);
-    setImagePreview(null);
-  };
+  
 
   return (
     <React.Fragment>
-      {errors.postImage && <p>lklk</p>}
         <ListItem 
         button 
         sx={{ 
-            borderRadius: '50px', 
+            borderRadius: '100px', 
             backgroundColor: '#FF7E73',
             color: '#fff',
             marginTop: '0.8rem',
@@ -119,7 +131,7 @@ export default function CreatePost() {
         }}
         onClick={handleOpen}
         >
-        <ListItemText primary="Post" sx={{ textAlign: 'center' }} />
+        <ListItemText primary="Post" sx={{ textAlign: 'center', paddingHorizontal: '0.5rem' }} />
         </ListItem>
 
         <Dialog 
@@ -158,34 +170,42 @@ export default function CreatePost() {
                     <PostTextarea {...register("content")} onChange={handlePostTextChange} value={getValues('content')}/>
                 </Box>
                 {imagePreview && (
-                  <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '1rem', position: 'relative' }}>
-                    <img src={imagePreview} style={{ width: '50%', height: 'auto' }}/>
-                    <IconButton
-                      aria-label="close"
-                      onClick={handleImageRemove}
-                      sx={{
-                          position: 'absolute',
-                          right: 0,
-                          top: 0,
-                          color: (theme) => theme.palette.grey[500],
-                      }}
-                      >
-                      <CloseIcon />
-                      </IconButton>
-                  </Box>
+                <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '1rem', position: 'relative' }}>
+                      <img src={imagePreview} style={{ width: '50%', height: 'auto' }}/>
+                      
+                      <IconButton
+                        aria-label="close"
+                        onClick={handleImageRemove}
+                        sx={{
+                            position: 'absolute',
+                            right: 0,
+                            top: 0,
+                            color: (theme) => theme.palette.grey[500],
+                        }}
+                        >
+                        <CloseIcon />
+                        </IconButton>
+                    </Box>
+                    {errors.postImage && <span style={{ color: 'red', textAlign: 'center' }}>{errors.postImage.message}</span>}
+                </Box>
                 )}
               </DialogContent>
               <DialogActions sx={{ justifyContent: 'start' }}>
-                  <Rating
-                      name="rating"
-                      value={Number(getValues('rating'))}
-                      onChange={(event, newValue) => {
-                        handleRatingChange(Number(newValue));
-                      }}
-                  />
+                  <Box>
+                    <Rating
+                        name="rating"
+                        value={Number(getValues('rating'))}
+                        onChange={(event, newValue) => {
+                          handleRatingChange(Number(newValue));
+                        }}
+                    />
+                    <Box sx={{display: 'flex', justifyContent: 'center'}}>
+                    {errors.rating && <span style={{ color: 'red' }}>{errors.rating.message}</span>}
+                    </Box>
+                  </Box>
                   <label htmlFor="image-upload">
                     <input
-                      {...register("postImage")}
                       type="file"
                       id="image-upload"
                       style={{ display: 'none' }}
@@ -198,7 +218,7 @@ export default function CreatePost() {
                   </label>
                   <Button 
                     type="submit"
-                    disabled={!getValues('content') || !getValues('rating') || !getValues('ISBNcode')}
+                    disabled={ !getValues('content') || !getValues('rating') || !getValues('ISBNcode')}
                     sx={{
                       borderRadius: '50px', 
                       backgroundColor: '#FF7E73',
@@ -218,6 +238,12 @@ export default function CreatePost() {
                   </Button>
               </DialogActions>
               <input {...register("ISBNcode")} type="hidden" value="9784472405433" />
+              <Box sx={{display: 'flex', justifyContent: 'center'}}>
+                {errors.content && <span style={{ color: 'red' }}>{errors.content.message}</span>}
+              </Box>
+              <Box sx={{display: 'flex', justifyContent: 'center'}}>
+              {errors.ISBNcode && <span style={{ color: 'red' }}>{errors.ISBNcode.message}</span>}
+              </Box>
             </Box>
         </Dialog>
     </React.Fragment>

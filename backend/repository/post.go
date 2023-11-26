@@ -6,8 +6,10 @@ import (
 	"database/sql"
 	"encoding/base64"
 	"image"
+	"image/jpeg"
 	"image/png"
 	"os"
+	"strings"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
@@ -182,9 +184,18 @@ func (pr *postRepository) LoadImage(ctx echo.Context, fileName string) (string, 
 		return "", errors.WithStack(err)
 	}
 
+	split := strings.Split(fileName, ".")
 	var buf bytes.Buffer
-	if err := png.Encode(&buf, img); err != nil {
-		return "", errors.WithStack(err)
+	switch split[len(split)-1] {
+	case "png":
+		if err := png.Encode(&buf, img); err != nil {
+			return "", errors.WithStack(err)
+		}
+	case "jpeg":
+		if err := jpeg.Encode(&buf, img, &jpeg.Options{Quality: 100}); err != nil {
+			return "", errors.WithStack(err)
+		}
+	default:
 	}
 
 	return base64.StdEncoding.EncodeToString(buf.Bytes()), nil

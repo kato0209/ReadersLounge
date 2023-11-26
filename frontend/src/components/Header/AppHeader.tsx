@@ -11,17 +11,29 @@ import Menu from '@mui/material/Menu';
 import { FaBookOpen } from 'react-icons/fa';
 import useLogout from '../../features/logout/logout';
 import { Link } from 'react-router-dom';
-
+import useMediaQuery from '@mui/material/useMediaQuery';
+import CreatePost  from '../../features/home/CreatePost';
 
 export default function AppHeader() {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [profileAnchorEl, setProfileAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [MenuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(null);
 
-  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
+  const isMobile = useMediaQuery('(max-width:500px)');
+
+  const handleProfile = (event: React.MouseEvent<HTMLElement>) => {
+    setProfileAnchorEl(event.currentTarget);
   };
 
-  const handleClose = () => {
-    setAnchorEl(null);
+  const handleProfileClose = () => {
+    setProfileAnchorEl(null);
+  };
+
+  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setMenuAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setMenuAnchorEl(null);
   };
 
   const handleLogout = useLogout();
@@ -31,15 +43,46 @@ export default function AppHeader() {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="fixed" sx={{ backgroundColor: '#FF7E73', boxShadow: 'none' }}>
         <Toolbar sx={{ alignItems: 'center', height: '3rem', minHeight: '28px !important' }}>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton>
+        {isMobile && (
+          <>
+            <IconButton
+              size="large"
+              edge="start"
+              color="inherit"
+              aria-label="menu"
+              sx={{ mr: 2 }}
+              onClick={handleMenu}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Menu
+              id="menu-appbar"
+              anchorEl={MenuAnchorEl}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              sx={{ 
+                '& .MuiPaper-root': {
+                  paddingLeft: '5px', paddingRight: '5px'
+                },
+              }}
+              open={Boolean(MenuAnchorEl)}
+              onClose={handleMenuClose}
+            >
+              <MenuItem onClick={handleMenuClose}>Home</MenuItem>
+              <MenuItem onClick={handleMenuClose}>Notifications</MenuItem>
+              <MenuItem onClick={handleMenuClose}>Messages</MenuItem>
+              <CreatePost/>
+            </Menu>
+          </>
+          
+          )}
           <Box 
             component={Link} 
             to="/" 
@@ -64,14 +107,14 @@ export default function AppHeader() {
               aria-label="account of current user"
               aria-controls="menu-appbar"
               aria-haspopup="true"
-              onClick={handleMenu}
+              onClick={handleProfile}
               color="inherit"
             >
               <AccountCircle />
             </IconButton>
             <Menu
               id="menu-appbar"
-              anchorEl={anchorEl}
+              anchorEl={profileAnchorEl}
               anchorOrigin={{
                 vertical: 'top',
                 horizontal: 'right',
@@ -81,10 +124,10 @@ export default function AppHeader() {
                 vertical: 'top',
                 horizontal: 'right',
               }}
-              open={Boolean(anchorEl)}
-              onClose={handleClose}
+              open={Boolean(profileAnchorEl)}
+              onClose={handleProfileClose}
             >
-              <MenuItem onClick={handleClose}>Profile</MenuItem>
+              <MenuItem onClick={handleProfileClose}>Profile</MenuItem>
               <MenuItem onClick={handleLogout}>ログアウト</MenuItem>
             </Menu>
           </>
