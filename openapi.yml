@@ -140,6 +140,34 @@ paths:
       responses:
         "201":
           description: OK
+          
+  /books:
+    get:
+      security:
+        - X-CSRF-TOKEN: []
+        - jwtAuth: []
+      summary: fetch book data from RakutenAPI
+      operationId: fetch-book-data
+      parameters:
+        - name: booksGenreId
+          in: query
+          description: ID to specify the genre in Rakuten Books
+          schema:
+            type: string
+        - name: keyword
+          in: query
+          description: keyword to search books
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Book"
       
 components:
   securitySchemes:

@@ -47,5 +47,12 @@ func NewRouter(server *controller.Server) *echo.Echo {
 	}))
 	u.GET("", server.User)
 
+	b := e.Group("/books")
+	b.Use(echojwt.WithConfig(echojwt.Config{
+		SigningKey:  []byte(os.Getenv("JWT_SECRET")),
+		TokenLookup: "cookie:jwt_token",
+	}))
+	b.GET("", server.FetchBookData)
+
 	return e
 }

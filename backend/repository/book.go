@@ -13,7 +13,7 @@ type IBookRepository interface {
 	InsertBookData(ctx echo.Context, book *models.Book) error
 	UpdateBookData(ctx echo.Context, book *models.Book) error
 	CheckExistsBookDataByISBNcode(ctx echo.Context, ISBNcode string) (bool, error)
-	//GetBookByISBNcode(ctx echo.Context, ISBNcode string) (models.Book, error)
+	FetchBookData(ctx echo.Context, books *[]models.Book, keyword, booksGenreID string) error
 }
 
 type bookRepository struct {
@@ -114,30 +114,7 @@ func (br *bookRepository) CheckExistsBookDataByISBNcode(ctx echo.Context, ISBNco
 	return exists, nil
 }
 
-/*
-func (br *bookRepository) GetBookByISBNcode(ctx echo.Context, ISBNcode string) (models.Book, error) {
-	c := ctx.Request().Context()
-	query := `
-		SELECT
-			book_id,
-			ISBNcode,
-			title,
-			author,
-			price,
-			publisher,
-			published_at,
-			image,
-			item_url
-		FROM
-			books
-		WHERE
-			ISBNcode = $1
-	`
-	book := models.Book{}
-	err := br.db.QueryRowxContext(c, query, ISBNcode).StructScan(&book)
-	if err != nil {
-		return models.Book{}, errors.WithStack(err)
-	}
-	return book, nil
+func (br *bookRepository) FetchBookData(ctx echo.Context, books *[]models.Book, keyword, booksGenreID string) error {
+
+	return nil
 }
-*/

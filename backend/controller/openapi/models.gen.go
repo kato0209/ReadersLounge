@@ -71,6 +71,15 @@ type User struct {
 	UserId       int    `json:"user_id"`
 }
 
+// FetchBookDataParams defines parameters for FetchBookData.
+type FetchBookDataParams struct {
+	// BooksGenreId ID to specify the genre in Rakuten Books
+	BooksGenreId *string `form:"booksGenreId,omitempty" json:"booksGenreId,omitempty"`
+
+	// Keyword keyword to search books
+	Keyword *string `form:"keyword,omitempty" json:"keyword,omitempty"`
+}
+
 // LogoutJSONBody defines parameters for Logout.
 type LogoutJSONBody = map[string]interface{}
 
