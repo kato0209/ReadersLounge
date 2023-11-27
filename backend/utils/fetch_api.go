@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func FetchApi(url, response interface{}) error {
+func FetchApi(url string, response interface{}) error {
 	req, err := http.NewRequest("GET", url, http.NoBody)
 	if err != nil {
 		return err
