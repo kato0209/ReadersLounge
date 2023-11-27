@@ -73,6 +73,7 @@ export default function CreatePost() {
         data.rating,
         data.ISBNcode
       );
+      window.location.reload();
     }
     } catch (error: unknown) {
       errorHandler(error);

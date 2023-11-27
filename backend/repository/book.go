@@ -2,6 +2,9 @@ package repository
 
 import (
 	"backend/models"
+	"backend/utils"
+	"fmt"
+	"os"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -13,6 +16,7 @@ type IBookRepository interface {
 	InsertBookData(ctx echo.Context, book *models.Book) error
 	UpdateBookData(ctx echo.Context, book *models.Book) error
 	CheckExistsBookDataByISBNcode(ctx echo.Context, ISBNcode string) (bool, error)
+	FetchBookInfo(ctx echo.Context, ISBNcode string) (models.Book, error)
 	FetchBookData(ctx echo.Context, books *[]models.Book, keyword, booksGenreID string) error
 }
 
@@ -114,7 +118,67 @@ func (br *bookRepository) CheckExistsBookDataByISBNcode(ctx echo.Context, ISBNco
 	return exists, nil
 }
 
+func (br *bookRepository) FetchBookInfo(ctx echo.Context, ISBNcode string) (models.Book, error) {
+	url := fmt.Sprintf("%s?format=json&applicationId=%s&isbn=%s&outOfStockFlag=1",
+		os.Getenv("RAKUTEN_BOOKS_API_URL"),
+		os.Getenv("RAKUTEN_APPLICATION_ID"),
+		ISBNcode,
+	)
+
+	res := models.RakutenBooksApiResponse{}
+	if err := utils.FetchApi(url, &res); err != nil {
+		return models.Book{}, errors.WithStack(err)
+	}
+
+	book := models.Book{
+		ISBNcode:    res.Items[0].Item.ISBNcode,
+		Title:       res.Items[0].Item.Title,
+		Author:      res.Items[0].Item.Author,
+		Price:       res.Items[0].Item.Price,
+		Publisher:   res.Items[0].Item.Publisher,
+		PublishedAt: res.Items[0].Item.PublishedAt,
+		ItemURL:     res.Items[0].Item.ItemURL,
+		Image:       res.Items[0].Item.Image,
+	}
+
+	return book, nil
+}
+
 func (br *bookRepository) FetchBookData(ctx echo.Context, books *[]models.Book, keyword, booksGenreID string) error {
+	baseUrl := fmt.Sprintf("%s?format=json&applicationId=%s&outOfStockFlag=1",
+		os.Getenv("RAKUTEN_BOOKS_API_URL"),
+		os.Getenv("RAKUTEN_APPLICATION_ID"),
+	)
+
+	var url string
+	if keyword != "" && booksGenreID != "" {
+		url = fmt.Sprintf("%s&title=%s&booksGenreId=%s", baseUrl, keyword, booksGenreID)
+	} else if keyword != "" {
+		url = fmt.Sprintf("%s&title=%s", baseUrl, keyword)
+	} else if booksGenreID != "" {
+		url = fmt.Sprintf("%s&booksGenreId=%s", baseUrl, booksGenreID)
+	} else {
+		url = baseUrl
+	}
+
+	res := models.RakutenBooksApiResponse{}
+	if err := utils.FetchApi(url, &res); err != nil {
+		return errors.WithStack(err)
+	}
+
+	for _, item := range res.Items {
+		book := models.Book{
+			ISBNcode:    item.Item.ISBNcode,
+			Title:       item.Item.Title,
+			Author:      item.Item.Author,
+			Price:       item.Item.Price,
+			Publisher:   item.Item.Publisher,
+			PublishedAt: item.Item.PublishedAt,
+			ItemURL:     item.Item.ItemURL,
+			Image:       item.Item.Image,
+		}
+		*books = append(*books, book)
+	}
 
 	return nil
 }
