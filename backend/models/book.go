@@ -12,7 +12,15 @@ type Book struct {
 	Image       string `db:"image"`
 }
 
-type RakutenBooksApiResponse struct {
+type BooksGenre struct {
+	ID             int    `db:"id"`
+	BooksGenreID   string `db:"books_genre_id"`
+	BooksGenreName string `db:"books_genre_name"`
+	GenreLevel     int    `db:"genre_level"`
+	ParentGenreID  string `db:"parent_genre_id"`
+}
+
+type RakutenApiBooksResponse struct {
 	Items []struct {
 		Item struct {
 			ISBNcode    string `json:"isbn"`
@@ -25,4 +33,14 @@ type RakutenBooksApiResponse struct {
 			Image       string `json:"largeImageUrl"`
 		} `json:"Item"`
 	} `json:"Items"`
+}
+
+type RakutenApiBooksGenreResponse struct {
+	Children []struct {
+		Child struct {
+			BooksGenreID   string `json:"booksGenreId"`
+			BooksGenreName string `json:"booksGenreName"`
+			GenreLevel     int    `json:"genreLevel"`
+		} `json:"child"`
+	}
 }

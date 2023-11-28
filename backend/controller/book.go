@@ -41,3 +41,25 @@ func (s *Server) FetchBookData(ctx echo.Context, params openapi.FetchBookDataPar
 
 	return ctx.JSON(http.StatusOK, resBooks)
 }
+
+func (s *Server) FetchBookGenres(ctx echo.Context) error {
+
+	bookGenres, err := s.bu.FetchBookGenres(ctx)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	resBookGenres := []openapi.BookGenre{}
+	for _, bookGenre := range bookGenres {
+		bookGenre := openapi.BookGenre{
+			BooksGenreId:   &bookGenre.BooksGenreID,
+			BooksGenreName: &bookGenre.BooksGenreName,
+			GenreLevel:     &bookGenre.GenreLevel,
+			ParentGenreId:  &bookGenre.ParentGenreID,
+		}
+
+		resBookGenres = append(resBookGenres, bookGenre)
+	}
+
+	return ctx.JSON(http.StatusOK, resBookGenres)
+}

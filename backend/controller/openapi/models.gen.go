@@ -27,6 +27,15 @@ type Book struct {
 	Title       *string `json:"title,omitempty"`
 }
 
+// BookGenre defines model for BookGenre.
+type BookGenre struct {
+	BooksGenreId   *string `json:"books_genre_id,omitempty"`
+	BooksGenreName *string `json:"books_genre_name,omitempty"`
+	GenreLevel     *int    `json:"genre_level,omitempty"`
+	Id             *int    `json:"id,omitempty"`
+	ParentGenreId  *string `json:"parent_genre_id,omitempty"`
+}
+
 // Post defines model for Post.
 type Post struct {
 	Book      Book    `json:"book"`

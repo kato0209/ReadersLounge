@@ -4,6 +4,7 @@ import (
 	"backend/controller"
 	"backend/controller/openapi"
 	"backend/db"
+	"backend/initialize"
 	"backend/repository"
 	"backend/router"
 	"backend/usecase"
@@ -25,6 +26,8 @@ func main() {
 		slog.Error("db connection error", "error", err)
 	}
 	defer db.Close()
+
+	initialize.Init(db)
 
 	userRepository := repository.NewUserRepository(db)
 	userValidator := validator.NewUserValidator()

@@ -32,3 +32,11 @@ CREATE TABLE IF NOT EXISTS book_archives (
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (book_id) REFERENCES books(book_id)
 );
+
+CREATE TABLE IF NOT EXISTS books_genres (
+    id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    books_genre_id VARCHAR(255) NOT NULL UNIQUE,
+    books_genre_name VARCHAR(255) NOT NULL,
+    genre_level INT NOT NULL,
+    parent_genre_id VARCHAR(255)
+);

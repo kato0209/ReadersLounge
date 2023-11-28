@@ -11,6 +11,7 @@ import (
 type IBookUsecase interface {
 	RegisterBook(ctx echo.Context, ISBNcode string) (models.Book, error)
 	FetchBookData(ctx echo.Context, books *[]models.Book, keyword, booksGenreID string) error
+	FetchBookGenres(ctx echo.Context) ([]models.BooksGenre, error)
 }
 
 type bookUsecase struct {
@@ -51,4 +52,13 @@ func (bu *bookUsecase) FetchBookData(ctx echo.Context, books *[]models.Book, key
 	}
 
 	return nil
+}
+
+func (bu *bookUsecase) FetchBookGenres(ctx echo.Context) ([]models.BooksGenre, error) {
+	bookGenres, err := bu.br.FetchAllBooksGenre(ctx)
+	if err != nil {
+		return []models.BooksGenre{}, errors.WithStack(err)
+	}
+
+	return bookGenres, nil
 }

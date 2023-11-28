@@ -168,6 +168,23 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Book"
+  
+  /books-genres:
+    get:
+      security:
+        - X-CSRF-TOKEN: []
+        - jwtAuth: []
+      summary: fetch book genre from RakutenAPI
+      operationId: fetch-book-genres
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BookGenre"
       
 components:
   securitySchemes:
@@ -284,6 +301,20 @@ components:
           type: string
         image:
           type: string
+    BookGenre:
+      type: object
+      properties:
+        id:
+          type: integer
+        books_genre_id:
+          type: string
+        books_genre_name:
+          type: string
+        genre_level:
+          type: integer
+        parent_genre_id:
+          type: string
+        
         
     
                   
