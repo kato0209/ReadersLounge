@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS user_details (
     user_id integer NOT NULL,
     name varchar(20) NOT NULL,
     profile_text varchar(255),
-    profile_image varchar(255) NOT NULL DEFAULT 'https://res.cloudinary.com/dvh5ehszr/image/upload/v1689442197/media/default_img.png',
+    profile_image varchar(255) NOT NULL DEFAULT 'default_img.png',
     created_at timestamptz NOT NULL DEFAULT current_timestamp,
     updated_at timestamptz NOT NULL DEFAULT current_timestamp,
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE

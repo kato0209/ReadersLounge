@@ -78,6 +78,7 @@ export default function PostList() {
                             borderTop: '1px solid #BDBDBD', 
                             borderRight: '1px solid #BDBDBD',
                             borderLeft: '1px solid #BDBDBD',
+                            borderBottom: '1px solid #BDBDBD',
                             cursor: 'pointer',
                             '&:hover': {
                                 color: 'inherit',
@@ -142,20 +143,6 @@ export default function PostList() {
                     </CardActions>
                     </Card>
                 ))}
-                <Box 
-                    sx={{ 
-                        height: '100px',
-                        width: '60%', 
-                        minWidth: '600',
-                        backgroundColor: '#EFEBE5', 
-                        borderTop: '1px solid #BDBDBD', 
-                        borderRight: '1px solid #BDBDBD',
-                        borderLeft: '1px solid #BDBDBD',
-                        '@media (max-width: 500px)': {
-                            width: '80%',
-                        }
-                    }}>
-                </Box>
             </>
         ) : (
             <></>
