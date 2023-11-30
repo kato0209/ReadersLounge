@@ -26,14 +26,14 @@ func (s *Server) FetchBookData(ctx echo.Context, params openapi.FetchBookDataPar
 	resBooks := []openapi.Book{}
 	for _, book := range books {
 		book := openapi.Book{
-			ISBNcode:    &book.ISBNcode,
-			Author:      &book.Author,
-			Image:       &book.Image,
-			ItemUrl:     &book.ItemURL,
-			PublishedAt: &book.PublishedAt,
-			Publisher:   &book.Publisher,
-			Price:       &book.Price,
-			Title:       &book.Title,
+			ISBNcode:    book.ISBNcode,
+			Author:      book.Author,
+			Image:       book.Image,
+			ItemUrl:     book.ItemURL,
+			PublishedAt: book.PublishedAt,
+			Publisher:   book.Publisher,
+			Price:       book.Price,
+			Title:       book.Title,
 		}
 
 		resBooks = append(resBooks, book)
@@ -42,23 +42,27 @@ func (s *Server) FetchBookData(ctx echo.Context, params openapi.FetchBookDataPar
 	return ctx.JSON(http.StatusOK, resBooks)
 }
 
-func (s *Server) FetchBookGenres(ctx echo.Context) error {
+func (s *Server) GetBooksGenres(ctx echo.Context, params openapi.GetBooksGenresParams) error {
 
-	bookGenres, err := s.bu.FetchBookGenres(ctx)
+	booksGenreID := params.BooksGenreId
+	bookGenres, err := s.bu.GetBooksGenres(ctx, booksGenreID)
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
 
 	resBookGenres := []openapi.BookGenre{}
 	for _, bookGenre := range bookGenres {
-		bookGenre := openapi.BookGenre{
-			BooksGenreId:   &bookGenre.BooksGenreID,
-			BooksGenreName: &bookGenre.BooksGenreName,
-			GenreLevel:     &bookGenre.GenreLevel,
-			ParentGenreId:  &bookGenre.ParentGenreID,
+
+		resBookGenre := openapi.BookGenre{
+			Id:             bookGenre.ID,
+			BooksGenreId:   bookGenre.BooksGenreID,
+			BooksGenreName: bookGenre.BooksGenreName,
+			GenreLevel:     bookGenre.GenreLevel,
+			ParentGenreId:  bookGenre.ParentGenreID,
 		}
 
-		resBookGenres = append(resBookGenres, bookGenre)
+		resBookGenres = append(resBookGenres, resBookGenre)
+
 	}
 
 	return ctx.JSON(http.StatusOK, resBookGenres)

@@ -16,24 +16,24 @@ const (
 
 // Book defines model for Book.
 type Book struct {
-	ISBNcode    *string `json:"ISBNcode,omitempty"`
-	Author      *string `json:"author,omitempty"`
-	BookId      *int    `json:"book_id,omitempty"`
-	Image       *string `json:"image,omitempty"`
-	ItemUrl     *string `json:"item_url,omitempty"`
-	Price       *int    `json:"price,omitempty"`
-	PublishedAt *string `json:"published_at,omitempty"`
-	Publisher   *string `json:"publisher,omitempty"`
-	Title       *string `json:"title,omitempty"`
+	ISBNcode    string `json:"ISBNcode"`
+	Author      string `json:"author"`
+	BookId      int    `json:"book_id"`
+	Image       string `json:"image"`
+	ItemUrl     string `json:"item_url"`
+	Price       int    `json:"price"`
+	PublishedAt string `json:"published_at"`
+	Publisher   string `json:"publisher"`
+	Title       string `json:"title"`
 }
 
 // BookGenre defines model for BookGenre.
 type BookGenre struct {
-	BooksGenreId   *string `json:"books_genre_id,omitempty"`
-	BooksGenreName *string `json:"books_genre_name,omitempty"`
-	GenreLevel     *int    `json:"genre_level,omitempty"`
-	Id             *int    `json:"id,omitempty"`
-	ParentGenreId  *string `json:"parent_genre_id,omitempty"`
+	BooksGenreId   string `json:"books_genre_id"`
+	BooksGenreName string `json:"books_genre_name"`
+	GenreLevel     int    `json:"genre_level"`
+	Id             int    `json:"id"`
+	ParentGenreId  string `json:"parent_genre_id"`
 }
 
 // Post defines model for Post.
@@ -87,6 +87,12 @@ type FetchBookDataParams struct {
 
 	// Keyword keyword to search books
 	Keyword *string `form:"keyword,omitempty" json:"keyword,omitempty"`
+}
+
+// GetBooksGenresParams defines parameters for GetBooksGenres.
+type GetBooksGenresParams struct {
+	// BooksGenreId ID to specify the genre in Rakuten Books
+	BooksGenreId string `form:"booksGenreId" json:"booksGenreId"`
 }
 
 // LogoutJSONBody defines parameters for Logout.

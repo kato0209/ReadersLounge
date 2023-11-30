@@ -38,5 +38,7 @@ CREATE TABLE IF NOT EXISTS books_genres (
     books_genre_id VARCHAR(255) NOT NULL UNIQUE,
     books_genre_name VARCHAR(255) NOT NULL,
     genre_level INT NOT NULL,
-    parent_genre_id VARCHAR(255)
+    parent_genre_id VARCHAR(255) NOT NULL,
+    created_at timestamptz NOT NULL DEFAULT current_timestamp,
+    updated_at timestamptz NOT NULL DEFAULT current_timestamp
 );

@@ -27,15 +27,15 @@ func (s *Server) GetPosts(ctx echo.Context) error {
 			ProfileImage: post.User.ProfileImage,
 		}
 		resBook := openapi.Book{
-			BookId:      &post.Book.BookID,
-			ISBNcode:    &post.Book.ISBNcode,
-			Author:      &post.Book.Author,
-			Image:       &post.Book.Image,
-			ItemUrl:     &post.Book.ItemURL,
-			PublishedAt: &post.Book.PublishedAt,
-			Publisher:   &post.Book.Publisher,
-			Price:       &post.Book.Price,
-			Title:       &post.Book.Title,
+			BookId:      post.Book.BookID,
+			ISBNcode:    post.Book.ISBNcode,
+			Author:      post.Book.Author,
+			Image:       post.Book.Image,
+			ItemUrl:     post.Book.ItemURL,
+			PublishedAt: post.Book.PublishedAt,
+			Publisher:   post.Book.Publisher,
+			Price:       post.Book.Price,
+			Title:       post.Book.Title,
 		}
 		var encodedImage *string
 		if post.Image != nil {

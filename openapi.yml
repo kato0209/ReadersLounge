@@ -174,8 +174,15 @@ paths:
       security:
         - X-CSRF-TOKEN: []
         - jwtAuth: []
-      summary: fetch book genre from RakutenAPI
-      operationId: fetch-book-genres
+      summary: Get the child genres of booksGenreId
+      operationId: get-books-genres
+      parameters:
+        - name: booksGenreId
+          in: query
+          required: true
+          description: ID to specify the genre in Rakuten Books
+          schema:
+            type: string
       responses:
         "200":
           description: OK
@@ -301,6 +308,16 @@ components:
           type: string
         image:
           type: string
+      required:
+        - book_id
+        - ISBNcode
+        - title
+        - author
+        - price
+        - publisher
+        - published_at
+        - item_url
+        - image
     BookGenre:
       type: object
       properties:
@@ -314,6 +331,12 @@ components:
           type: integer
         parent_genre_id:
           type: string
+      required:
+        - id
+        - books_genre_id
+        - books_genre_name
+        - genre_level
+        - parent_genre_id
         
         
     

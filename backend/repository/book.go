@@ -18,7 +18,7 @@ type IBookRepository interface {
 	CheckExistsBookDataByISBNcode(ctx echo.Context, ISBNcode string) (bool, error)
 	FetchBookInfo(ctx echo.Context, ISBNcode string) (models.Book, error)
 	FetchBookData(ctx echo.Context, books *[]models.Book, keyword, booksGenreID string) error
-	FetchAllBooksGenre(ctx echo.Context) ([]models.BooksGenre, error)
+	GetBooksGenresByParentBooksGenreID(ctx echo.Context, bookGenres *[]models.BooksGenre, booksGenreID string) error
 }
 
 type bookRepository struct {
@@ -184,53 +184,44 @@ func (br *bookRepository) FetchBookData(ctx echo.Context, books *[]models.Book, 
 	return nil
 }
 
-func (br *bookRepository) FetchAllBooksGenre(ctx echo.Context) ([]models.BooksGenre, error) {
-	genreRootUrl := fmt.Sprintf("%s?applicationId=%s&booksGenreId=001",
-		os.Getenv("RAKUTEN_BOOKS_GENRE_API_URL"),
-		os.Getenv("RAKUTEN_APPLICATION_ID"),
-	)
+func (br *bookRepository) GetBooksGenresByParentBooksGenreID(ctx echo.Context, bookGenres *[]models.BooksGenre, booksGenreID string) error {
+	c := ctx.Request().Context()
+	query := `
+		SELECT
+			id,
+			books_genre_id,
+			books_genre_name,
+			genre_level,
+			parent_genre_id
+		FROM
+			books_genres
+		WHERE
+			parent_genre_id = $1
+	`
 
-	res := models.RakutenApiBooksGenreResponse{}
-	if err := utils.FetchApi(genreRootUrl, &res); err != nil {
-		return []models.BooksGenre{}, errors.WithStack(err)
+	rows, err := br.db.QueryContext(c, query, booksGenreID)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		bookGenre := models.BooksGenre{}
+		err := rows.Scan(
+			&bookGenre.ID,
+			&bookGenre.BooksGenreID,
+			&bookGenre.BooksGenreName,
+			&bookGenre.GenreLevel,
+			&bookGenre.ParentGenreID,
+		)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+		*bookGenres = append(*bookGenres, bookGenre)
+	}
+	if err := rows.Err(); err != nil {
+		return errors.WithStack(err)
 	}
 
-	bookGenreStack := []models.BooksGenre{}
-	bookGenreResults := []models.BooksGenre{}
-	for _, child := range res.Children {
-		rootBooksGenre := models.BooksGenre{
-			BooksGenreID:   child.Child.BooksGenreID,
-			BooksGenreName: child.Child.BooksGenreName,
-			GenreLevel:     child.Child.GenreLevel,
-			ParentGenreID:  "001",
-		}
-
-		bookGenreStack = append(bookGenreStack, rootBooksGenre)
-		bookGenreResults = append(bookGenreResults, rootBooksGenre)
-		for len(bookGenreStack) > 0 {
-			genreRootUrl := fmt.Sprintf("%s?applicationId=%s&booksGenreId=%s",
-				os.Getenv("RAKUTEN_BOOKS_GENRE_API_URL"),
-				os.Getenv("RAKUTEN_APPLICATION_ID"),
-				bookGenreStack[0].BooksGenreID,
-			)
-			res := models.RakutenApiBooksGenreResponse{}
-			if err := utils.FetchApi(genreRootUrl, &res); err != nil {
-				return []models.BooksGenre{}, errors.WithStack(err)
-			}
-			for _, child := range res.Children {
-				bookGenre := models.BooksGenre{
-					BooksGenreID:   child.Child.BooksGenreID,
-					BooksGenreName: child.Child.BooksGenreName,
-					GenreLevel:     child.Child.GenreLevel,
-					ParentGenreID:  bookGenreStack[0].BooksGenreID,
-				}
-				bookGenreStack = append(bookGenreStack, bookGenre)
-				bookGenreResults = append(bookGenreResults, bookGenre)
-			}
-			bookGenreStack = bookGenreStack[1:]
-		}
-
-	}
-
-	return bookGenreResults, nil
+	return nil
 }
