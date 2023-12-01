@@ -25,54 +25,54 @@ export interface Book {
      * @type {number}
      * @memberof Book
      */
-    'book_id'?: number;
+    'book_id': number;
     /**
      * 
      * @type {string}
      * @memberof Book
      */
-    'ISBNcode'?: string;
+    'ISBNcode': string;
     /**
      * 
      * @type {string}
      * @memberof Book
      */
-    'title'?: string;
+    'title': string;
     /**
      * 
      * @type {string}
      * @memberof Book
      */
-    'author'?: string;
+    'author': string;
     /**
      * 
      * @type {number}
      * @memberof Book
      */
-    'price'?: number;
+    'price': number;
     /**
      * 
      * @type {string}
      * @memberof Book
      */
-    'publisher'?: string;
+    'publisher': string;
     /**
      * 
      * @type {string}
      * @memberof Book
      */
-    'published_at'?: string;
+    'published_at': string;
     /**
      * 
      * @type {string}
      * @memberof Book
      */
-    'item_url'?: string;
+    'item_url': string;
     /**
      * 
      * @type {string}
      * @memberof Book
      */
-    'image'?: string;
+    'image': string;
 }
 
