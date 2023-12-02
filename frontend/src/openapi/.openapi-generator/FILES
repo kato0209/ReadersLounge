@@ -6,7 +6,7 @@ base.ts
 common.ts
 configuration.ts
 index.ts
-models/book-genre.ts
+models/book-genre-node.ts
 models/book.ts
 models/index.ts
 models/post.ts

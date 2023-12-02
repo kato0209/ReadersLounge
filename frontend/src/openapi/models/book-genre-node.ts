@@ -17,38 +17,44 @@
 /**
  * 
  * @export
- * @interface BookGenre
+ * @interface BookGenreNode
  */
-export interface BookGenre {
+export interface BookGenreNode {
     /**
      * 
      * @type {number}
-     * @memberof BookGenre
+     * @memberof BookGenreNode
      */
     'id': number;
     /**
      * 
      * @type {string}
-     * @memberof BookGenre
+     * @memberof BookGenreNode
      */
     'books_genre_id': string;
     /**
      * 
      * @type {string}
-     * @memberof BookGenre
+     * @memberof BookGenreNode
      */
     'books_genre_name': string;
     /**
      * 
      * @type {number}
-     * @memberof BookGenre
+     * @memberof BookGenreNode
      */
     'genre_level': number;
     /**
      * 
      * @type {string}
-     * @memberof BookGenre
+     * @memberof BookGenreNode
      */
     'parent_genre_id': string;
+    /**
+     * 
+     * @type {Array<BookGenreNode>}
+     * @memberof BookGenreNode
+     */
+    'children': Array<BookGenreNode>;
 }
 

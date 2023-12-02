@@ -24,7 +24,7 @@ import { BASE_PATH, COLLECTION_FORMATS, RequestArgs, BaseAPI, RequiredError } fr
 // @ts-ignore
 import { Book } from '../models';
 // @ts-ignore
-import { BookGenre } from '../models';
+import { BookGenreNode } from '../models';
 // @ts-ignore
 import { Post } from '../models';
 // @ts-ignore
@@ -183,14 +183,11 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
-         * @summary Get the child genres of booksGenreId
-         * @param {string} booksGenreId ID to specify the genre in Rakuten Books
+         * @summary Get books genres
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getBooksGenres: async (booksGenreId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'booksGenreId' is not null or undefined
-            assertParamExists('getBooksGenres', 'booksGenreId', booksGenreId)
+        getBooksGenres: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/books-genres`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -207,10 +204,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
 
             // authentication jwtAuth required
-
-            if (booksGenreId !== undefined) {
-                localVarQueryParameter['booksGenreId'] = booksGenreId;
-            }
 
 
     
@@ -506,13 +499,12 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Get the child genres of booksGenreId
-         * @param {string} booksGenreId ID to specify the genre in Rakuten Books
+         * @summary Get books genres
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getBooksGenres(booksGenreId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<BookGenre>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getBooksGenres(booksGenreId, options);
+        async getBooksGenres(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<BookGenreNode>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getBooksGenres(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -625,13 +617,12 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * 
-         * @summary Get the child genres of booksGenreId
-         * @param {string} booksGenreId ID to specify the genre in Rakuten Books
+         * @summary Get books genres
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getBooksGenres(booksGenreId: string, options?: any): AxiosPromise<Array<BookGenre>> {
-            return localVarFp.getBooksGenres(booksGenreId, options).then((request) => request(axios, basePath));
+        getBooksGenres(options?: any): AxiosPromise<Array<BookGenreNode>> {
+            return localVarFp.getBooksGenres(options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -743,14 +734,13 @@ export class DefaultApi extends BaseAPI {
 
     /**
      * 
-     * @summary Get the child genres of booksGenreId
-     * @param {string} booksGenreId ID to specify the genre in Rakuten Books
+     * @summary Get books genres
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public getBooksGenres(booksGenreId: string, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).getBooksGenres(booksGenreId, options).then((request) => request(this.axios, this.basePath));
+    public getBooksGenres(options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getBooksGenres(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

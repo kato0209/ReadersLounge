@@ -18,7 +18,7 @@ export const BookList: React.FC<BookListProps> = ({ books }) => {
     <Container component="main">
         <List>
             {books.map((book) => (
-            <ListItem key={book.book_id}>
+            <ListItem key={book.ISBNcode}>
                 <ListItemText primary={book.title} secondary={book.author} />
             </ListItem>
             ))}

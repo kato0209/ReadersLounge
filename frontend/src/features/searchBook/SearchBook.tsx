@@ -10,24 +10,22 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { apiInstance } from '../../lib/api/apiInstance';
 import { useErrorHandler } from 'react-error-boundary';
-import { useForm } from 'react-hook-form';
+import { set, useForm } from 'react-hook-form';
 import { Book } from '../../openapi';
 import { BookList } from './BookList';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { TreeView } from '@mui/x-tree-view/TreeView';
 import { TreeItem } from '@mui/x-tree-view/TreeItem';
-import { BookGenre } from '../../openapi/models';
+import { BookGenreNode } from '../../openapi/models';
 import { IconButton } from '@mui/material';
-
-
-type bookGenreNode = {
-    current: BookGenre,
-    children: bookGenreNode[],
-}
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import Chip from '@mui/material/Chip';
 
 const searchBookSchema = z.object({
-    keyword: z.string()
+    keyword: z.string().optional(),
+    bookGenreID: z.string().optional(),
 });
 
 type FormData = z.infer<typeof searchBookSchema>;
@@ -39,21 +37,19 @@ export default function SearchBook() {
     });
     const errorHandler = useErrorHandler();
     const [books, setBooks] = React.useState<Book[]>([]);
-    const [bookGenreNodes, setBookGenreNodes] = React.useState<bookGenreNode[]>([]);
+    const [bookGenreNodes, setBookGenreNodes] = React.useState<BookGenreNode[]>([]);
+    const [hasGenre, setHasGenre] = React.useState<boolean>(false);
+    const [selectedGenre, setSelectedGenre] = React.useState<string>("");
 
     React.useEffect(() => {
-        const fetchBookGenres = async (bookGenreID: string) => {
+        const fetchBookGenres = async () => {
         
             try {
                 const api = await apiInstance;
-                const res = await api.getBooksGenres(bookGenreID);
+                const res = await api.getBooksGenres();
                 
                 if (res.data && Array.isArray(res.data)) {
-                    const bookGenreNodes: bookGenreNode[] = res.data.map(item => ({
-                        current: item,
-                        children: [],
-                    }));
-                    setBookGenreNodes(bookGenreNodes);
+                    setBookGenreNodes(res.data);
                 }
             } catch (error: unknown) {
                 errorHandler(error);
@@ -61,58 +57,23 @@ export default function SearchBook() {
                 
         };
     
-        fetchBookGenres("001");
+        fetchBookGenres();
       }, []);
-    
-    const appendChildren = async (nodes: bookGenreNode) => {
-        console.log(99);
-        if (nodes.children.length > 0) {
-            console.log(100);
-            console.log(bookGenreNodes)
-            return;
-        }
-        console.log(101);
-        try {
-            const api = await apiInstance;
-            const res = await api.getBooksGenres(nodes.current.books_genre_id);
-            
-            if (res.data && Array.isArray(res.data)) {
-                
-                const newChildrens: bookGenreNode[] = res.data.map(item => ({
-                    current: item,
-                    children: [],
-                }));
-                
-                const newTree = addChildrenToTree(bookGenreNodes, nodes.current.id, newChildrens);
-                setBookGenreNodes(newTree); // 新しい状態を設定
-            }
-        } catch (error: unknown) {
-            errorHandler(error);
-        }
-    };
 
-    const addChildrenToTree = (nodes: bookGenreNode[], targetId: number, newChildren: bookGenreNode[]): bookGenreNode[] => {
-        return nodes.map(node => {
-            if (node.current.id === targetId) {
-                return {...node, children: [...node.children, ...newChildren]};
-            } else if (node.children) {
-                return {...node, children: addChildrenToTree(node.children, targetId, newChildren)};
-            } else {
-                return node;
-            }
-        });
-    };
-
-
-    const renderTree = (nodes: bookGenreNode) => (
-        <TreeItem key={nodes.current.id} nodeId={String(nodes.current.genre_level-1)} label={
+    const renderTree = (nodes: BookGenreNode) => (
+        <TreeItem key={nodes.id} nodeId={String(nodes.id)} label={
             <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'start'}}>
-                <IconButton onClick={() => appendChildren(nodes)}>
-                    <ChevronRightIcon/>
-                </IconButton>
                 <Box sx={{width: '100%'}}>
-                    <Button variant="text" sx={{ width: '100%', justifyContent: 'flex-start', color: 'black' }}>
-                        {nodes.current.books_genre_name}
+                    <Button 
+                        variant="text" 
+                        sx={{ 
+                            width: '100%', 
+                            justifyContent: 'flex-start', 
+                            color: 'black' 
+                        }}
+                        onClick={() => handleGenreSelect(nodes.books_genre_name, nodes.books_genre_id)}
+                    >
+                        {nodes.books_genre_name}
                     </Button>
                 </Box>
             </Box>
@@ -129,7 +90,8 @@ export default function SearchBook() {
     const onSubmit = async (data: FormData) => {
         try {
             const api = await apiInstance;
-            const res = await api.fetchBookData(data.keyword);
+            const res = await api.fetchBookData(data.bookGenreID, data.keyword);
+            console.log(res.data);
             if (res.data && Array.isArray(res.data)) {
                 const fetchedBooks: Book[] = res.data.map(item => ({
                     book_id: item.book_id,
@@ -143,6 +105,7 @@ export default function SearchBook() {
                     image: item.image,
                 }));
                 setBooks(fetchedBooks);
+                setHasGenre(false);
             }
             
         } catch (error: unknown) {
@@ -150,19 +113,33 @@ export default function SearchBook() {
         }
     }
 
+    const handleGenreDisplay = () => {
+        setHasGenre(!hasGenre);
+    };
+
+    const handleGenreSelect = (bookGenreName: string, bookGenreID: string) => {
+        setSelectedGenre(bookGenreName);
+        setValue('bookGenreID', bookGenreID, { shouldValidate: true });
+    }
+
+    const handleGenreDelete = () => {
+        setSelectedGenre("");
+        setValue('bookGenreID', undefined, { shouldValidate: true });
+    }
+
   return (
     <Container component="main">
         <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{mt: '1rem'}}>
             <Box sx={{display: 'flex'}}>
                 <TextField
+                    {...register("keyword")}
                     required
                     fullWidth
-                    id="serchBook"
+                    id="keyword"
                     label="本のタイトル"
-                    name="serchBook"
+                    name="keyword"
                 />
                 <Button 
-                    {...register("keyword")}
                     type="submit"
                     sx={{
                     backgroundColor: '#FF7E73',
@@ -181,11 +158,31 @@ export default function SearchBook() {
             </Box>
         </Box>
         <Box sx={{mt: '2rem'}}>
-            <TreeView 
-                disableSelection={true}
-            >
-                {bookGenreNodes.map((data) => renderTree(data))}
-            </TreeView>
+            <Box sx={{display: 'flex', textAlign: 'center'}}>
+                <Button 
+                    sx={{
+                        backgroundColor: '#FF7E73',
+                        color: '#fff',
+                        marginBottom: '1rem',
+                        marginRight: '1rem',
+                        '&:hover': {
+                        backgroundColor: '#E56A67',
+                        },
+                    }}
+                    onClick={handleGenreDisplay}
+                >
+                    本のジャンルを選択 {hasGenre ? <KeyboardArrowUpIcon/> : <KeyboardArrowDownIcon/>}
+                </Button>
+                {selectedGenre && <Chip label={selectedGenre} variant="outlined" onDelete={handleGenreDelete} />}
+            </Box>
+            {hasGenre &&
+                <TreeView 
+                    defaultCollapseIcon={<ExpandMoreIcon />}
+                    defaultExpandIcon={<ChevronRightIcon />}
+                >
+                    {bookGenreNodes.map((data) => renderTree(data))}
+                </TreeView>
+            } 
         </Box>
         <BookList books={books} />
     </Container>
