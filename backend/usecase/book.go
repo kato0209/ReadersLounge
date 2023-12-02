@@ -11,7 +11,7 @@ import (
 type IBookUsecase interface {
 	RegisterBook(ctx echo.Context, ISBNcode string) (models.Book, error)
 	FetchBookData(ctx echo.Context, books *[]models.Book, keyword, booksGenreID string) error
-	GetBooksGenres(ctx echo.Context, booksGenreID string) ([]models.BooksGenre, error)
+	GetBooksGenres(ctx echo.Context) ([]models.BooksGenreNode, error)
 }
 
 type bookUsecase struct {
@@ -54,12 +54,12 @@ func (bu *bookUsecase) FetchBookData(ctx echo.Context, books *[]models.Book, key
 	return nil
 }
 
-func (bu *bookUsecase) GetBooksGenres(ctx echo.Context, booksGenreID string) ([]models.BooksGenre, error) {
-	bookGenres := []models.BooksGenre{}
-	err := bu.br.GetBooksGenresByParentBooksGenreID(ctx, &bookGenres, booksGenreID)
+func (bu *bookUsecase) GetBooksGenres(ctx echo.Context) ([]models.BooksGenreNode, error) {
+	booksGenreNode := []models.BooksGenreNode{}
+	err := bu.br.GetAllBooksGenres(ctx, &booksGenreNode)
 	if err != nil {
-		return []models.BooksGenre{}, errors.WithStack(err)
+		return []models.BooksGenreNode{}, errors.WithStack(err)
 	}
 
-	return bookGenres, nil
+	return booksGenreNode, nil
 }

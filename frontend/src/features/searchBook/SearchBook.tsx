@@ -13,6 +13,18 @@ import { useErrorHandler } from 'react-error-boundary';
 import { useForm } from 'react-hook-form';
 import { Book } from '../../openapi';
 import { BookList } from './BookList';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { TreeView } from '@mui/x-tree-view/TreeView';
+import { TreeItem } from '@mui/x-tree-view/TreeItem';
+import { BookGenre } from '../../openapi/models';
+import { IconButton } from '@mui/material';
+
+
+type bookGenreNode = {
+    current: BookGenre,
+    children: bookGenreNode[],
+}
 
 const searchBookSchema = z.object({
     keyword: z.string()
@@ -27,6 +39,92 @@ export default function SearchBook() {
     });
     const errorHandler = useErrorHandler();
     const [books, setBooks] = React.useState<Book[]>([]);
+    const [bookGenreNodes, setBookGenreNodes] = React.useState<bookGenreNode[]>([]);
+
+    React.useEffect(() => {
+        const fetchBookGenres = async (bookGenreID: string) => {
+        
+            try {
+                const api = await apiInstance;
+                const res = await api.getBooksGenres(bookGenreID);
+                
+                if (res.data && Array.isArray(res.data)) {
+                    const bookGenreNodes: bookGenreNode[] = res.data.map(item => ({
+                        current: item,
+                        children: [],
+                    }));
+                    setBookGenreNodes(bookGenreNodes);
+                }
+            } catch (error: unknown) {
+                errorHandler(error);
+            }
+                
+        };
+    
+        fetchBookGenres("001");
+      }, []);
+    
+    const appendChildren = async (nodes: bookGenreNode) => {
+        console.log(99);
+        if (nodes.children.length > 0) {
+            console.log(100);
+            console.log(bookGenreNodes)
+            return;
+        }
+        console.log(101);
+        try {
+            const api = await apiInstance;
+            const res = await api.getBooksGenres(nodes.current.books_genre_id);
+            
+            if (res.data && Array.isArray(res.data)) {
+                
+                const newChildrens: bookGenreNode[] = res.data.map(item => ({
+                    current: item,
+                    children: [],
+                }));
+                
+                const newTree = addChildrenToTree(bookGenreNodes, nodes.current.id, newChildrens);
+                setBookGenreNodes(newTree); // 新しい状態を設定
+            }
+        } catch (error: unknown) {
+            errorHandler(error);
+        }
+    };
+
+    const addChildrenToTree = (nodes: bookGenreNode[], targetId: number, newChildren: bookGenreNode[]): bookGenreNode[] => {
+        return nodes.map(node => {
+            if (node.current.id === targetId) {
+                return {...node, children: [...node.children, ...newChildren]};
+            } else if (node.children) {
+                return {...node, children: addChildrenToTree(node.children, targetId, newChildren)};
+            } else {
+                return node;
+            }
+        });
+    };
+
+
+    const renderTree = (nodes: bookGenreNode) => (
+        <TreeItem key={nodes.current.id} nodeId={String(nodes.current.genre_level-1)} label={
+            <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'start'}}>
+                <IconButton onClick={() => appendChildren(nodes)}>
+                    <ChevronRightIcon/>
+                </IconButton>
+                <Box sx={{width: '100%'}}>
+                    <Button variant="text" sx={{ width: '100%', justifyContent: 'flex-start', color: 'black' }}>
+                        {nodes.current.books_genre_name}
+                    </Button>
+                </Box>
+            </Box>
+            
+        }>
+            {Array.isArray(nodes.children)
+        ? nodes.children.map((node) => renderTree(node))
+        : null}
+        </TreeItem>
+        
+    );
+    
     
     const onSubmit = async (data: FormData) => {
         try {
@@ -81,6 +179,13 @@ export default function SearchBook() {
                 送信
                 </Button>
             </Box>
+        </Box>
+        <Box sx={{mt: '2rem'}}>
+            <TreeView 
+                disableSelection={true}
+            >
+                {bookGenreNodes.map((data) => renderTree(data))}
+            </TreeView>
         </Box>
         <BookList books={books} />
     </Container>

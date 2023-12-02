@@ -20,6 +20,11 @@ type BooksGenre struct {
 	ParentGenreID  string `db:"parent_genre_id"`
 }
 
+type BooksGenreNode struct {
+	CurrentGenre BooksGenre
+	Children     []BooksGenreNode
+}
+
 type RakutenApiBooksResponse struct {
 	Items []struct {
 		Item struct {

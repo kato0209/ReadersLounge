@@ -18,7 +18,7 @@ type IBookRepository interface {
 	CheckExistsBookDataByISBNcode(ctx echo.Context, ISBNcode string) (bool, error)
 	FetchBookInfo(ctx echo.Context, ISBNcode string) (models.Book, error)
 	FetchBookData(ctx echo.Context, books *[]models.Book, keyword, booksGenreID string) error
-	GetBooksGenresByParentBooksGenreID(ctx echo.Context, bookGenres *[]models.BooksGenre, booksGenreID string) error
+	GetAllBooksGenres(ctx echo.Context, bookGenres *[]models.BooksGenreNode) error
 }
 
 type bookRepository struct {
@@ -184,7 +184,27 @@ func (br *bookRepository) FetchBookData(ctx echo.Context, books *[]models.Book, 
 	return nil
 }
 
-func (br *bookRepository) GetBooksGenresByParentBooksGenreID(ctx echo.Context, bookGenres *[]models.BooksGenre, booksGenreID string) error {
+func buildTree(genres []models.BooksGenre) []models.BooksGenreNode {
+	childrenMap := make(map[string][]models.BooksGenreNode)
+	for _, genre := range genres {
+		node := models.BooksGenreNode{CurrentGenre: genre}
+		parentID := genre.ParentGenreID
+		childrenMap[parentID] = append(childrenMap[parentID], node)
+	}
+
+	var buildTree func(parentID string) []models.BooksGenreNode
+	buildTree = func(parentID string) []models.BooksGenreNode {
+		children := childrenMap[parentID]
+		for i, child := range children {
+			children[i].Children = buildTree(child.CurrentGenre.BooksGenreID)
+		}
+		return children
+	}
+
+	return buildTree("001")
+}
+
+func (br *bookRepository) GetAllBooksGenres(ctx echo.Context, booksGenreNode *[]models.BooksGenreNode) error {
 	c := ctx.Request().Context()
 	query := `
 		SELECT
@@ -194,17 +214,16 @@ func (br *bookRepository) GetBooksGenresByParentBooksGenreID(ctx echo.Context, b
 			genre_level,
 			parent_genre_id
 		FROM
-			books_genres
-		WHERE
-			parent_genre_id = $1
+			books_genres;
 	`
 
-	rows, err := br.db.QueryContext(c, query, booksGenreID)
+	rows, err := br.db.QueryContext(c, query)
 	if err != nil {
 		return errors.WithStack(err)
 	}
 	defer rows.Close()
 
+	bookGenres := []models.BooksGenre{}
 	for rows.Next() {
 		bookGenre := models.BooksGenre{}
 		err := rows.Scan(
@@ -217,11 +236,13 @@ func (br *bookRepository) GetBooksGenresByParentBooksGenreID(ctx echo.Context, b
 		if err != nil {
 			return errors.WithStack(err)
 		}
-		*bookGenres = append(*bookGenres, bookGenre)
+		bookGenres = append(bookGenres, bookGenre)
 	}
 	if err := rows.Err(); err != nil {
 		return errors.WithStack(err)
 	}
+
+	*booksGenreNode = buildTree(bookGenres)
 
 	return nil
 }

@@ -174,15 +174,8 @@ paths:
       security:
         - X-CSRF-TOKEN: []
         - jwtAuth: []
-      summary: Get the child genres of booksGenreId
+      summary: Get books genres
       operationId: get-books-genres
-      parameters:
-        - name: booksGenreId
-          in: query
-          required: true
-          description: ID to specify the genre in Rakuten Books
-          schema:
-            type: string
       responses:
         "200":
           description: OK
@@ -191,7 +184,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/BookGenre"
+                  $ref: "#/components/schemas/BookGenreNode"
       
 components:
   securitySchemes:
@@ -318,7 +311,7 @@ components:
         - published_at
         - item_url
         - image
-    BookGenre:
+    BookGenreNode:
       type: object
       properties:
         id:
@@ -331,12 +324,17 @@ components:
           type: integer
         parent_genre_id:
           type: string
+        children:
+          type: array
+          items:
+            $ref: "#/components/schemas/BookGenreNode"
       required:
         - id
         - books_genre_id
         - books_genre_name
         - genre_level
         - parent_genre_id
+        - children
         
         
     

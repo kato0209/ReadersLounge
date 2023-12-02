@@ -42,28 +42,33 @@ func (s *Server) FetchBookData(ctx echo.Context, params openapi.FetchBookDataPar
 	return ctx.JSON(http.StatusOK, resBooks)
 }
 
-func (s *Server) GetBooksGenres(ctx echo.Context, params openapi.GetBooksGenresParams) error {
+func convertToNewStructure(node models.BooksGenreNode) openapi.BookGenreNode {
+	newNode := openapi.BookGenreNode{
+		BooksGenreId:   node.CurrentGenre.BooksGenreID,
+		BooksGenreName: node.CurrentGenre.BooksGenreName,
+		GenreLevel:     node.CurrentGenre.GenreLevel,
+		Id:             node.CurrentGenre.ID,
+		ParentGenreId:  node.CurrentGenre.ParentGenreID,
+	}
 
-	booksGenreID := params.BooksGenreId
-	bookGenres, err := s.bu.GetBooksGenres(ctx, booksGenreID)
+	for _, child := range node.Children {
+		newNode.Children = append(newNode.Children, convertToNewStructure(child))
+	}
+
+	return newNode
+}
+
+func (s *Server) GetBooksGenres(ctx echo.Context) error {
+
+	bookGenresNodes, err := s.bu.GetBooksGenres(ctx)
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	resBookGenres := []openapi.BookGenre{}
-	for _, bookGenre := range bookGenres {
-
-		resBookGenre := openapi.BookGenre{
-			Id:             bookGenre.ID,
-			BooksGenreId:   bookGenre.BooksGenreID,
-			BooksGenreName: bookGenre.BooksGenreName,
-			GenreLevel:     bookGenre.GenreLevel,
-			ParentGenreId:  bookGenre.ParentGenreID,
-		}
-
-		resBookGenres = append(resBookGenres, resBookGenre)
-
+	resBookGenreNodes := []openapi.BookGenreNode{}
+	for _, bookGenreNode := range bookGenresNodes {
+		resBookGenreNodes = append(resBookGenreNodes, convertToNewStructure(bookGenreNode))
 	}
 
-	return ctx.JSON(http.StatusOK, resBookGenres)
+	return ctx.JSON(http.StatusOK, resBookGenreNodes)
 }

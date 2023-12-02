@@ -27,13 +27,14 @@ type Book struct {
 	Title       string `json:"title"`
 }
 
-// BookGenre defines model for BookGenre.
-type BookGenre struct {
-	BooksGenreId   string `json:"books_genre_id"`
-	BooksGenreName string `json:"books_genre_name"`
-	GenreLevel     int    `json:"genre_level"`
-	Id             int    `json:"id"`
-	ParentGenreId  string `json:"parent_genre_id"`
+// BookGenreNode defines model for BookGenreNode.
+type BookGenreNode struct {
+	BooksGenreId   string          `json:"books_genre_id"`
+	BooksGenreName string          `json:"books_genre_name"`
+	Children       []BookGenreNode `json:"children"`
+	GenreLevel     int             `json:"genre_level"`
+	Id             int             `json:"id"`
+	ParentGenreId  string          `json:"parent_genre_id"`
 }
 
 // Post defines model for Post.
@@ -87,12 +88,6 @@ type FetchBookDataParams struct {
 
 	// Keyword keyword to search books
 	Keyword *string `form:"keyword,omitempty" json:"keyword,omitempty"`
-}
-
-// GetBooksGenresParams defines parameters for GetBooksGenres.
-type GetBooksGenresParams struct {
-	// BooksGenreId ID to specify the genre in Rakuten Books
-	BooksGenreId string `form:"booksGenreId" json:"booksGenreId"`
 }
 
 // LogoutJSONBody defines parameters for Logout.
