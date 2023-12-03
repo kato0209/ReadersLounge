@@ -47,14 +47,12 @@ export default function AppHeader() {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="fixed" sx={{ backgroundColor: '#FF7E73', boxShadow: 'none' }}>
         <Toolbar sx={{ alignItems: 'center', height: '3rem', minHeight: '28px !important' }}>
-        {isMobile && (
           <>
             <IconButton
               size="large"
               edge="start"
               color="inherit"
               aria-label="menu"
-              sx={{ mr: 2 }}
               onClick={handleMenu}
             >
               <MenuIcon />
@@ -91,15 +89,13 @@ export default function AppHeader() {
                 <MailIcon sx={{marginRight:'0.5rem'}}/>
                 Messages
               </MenuItem>
-              <MenuItem component={Link} to="/search-book" sx={{display: 'flex'}}>
+              <MenuItem component={Link} to="/search-book" sx={{display: 'flex', '&:hover': { color: 'black'}}}>
                 <SearchIcon sx={{marginRight:'0.5rem'}} />
                 本を探す
               </MenuItem>
               <CreatePost displayString='Post'/>
             </Menu>
           </>
-          
-          )}
           <Box 
             component={Link} 
             to="/" 

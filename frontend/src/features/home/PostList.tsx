@@ -121,11 +121,12 @@ export default function PostList() {
                         }}
                     />
                     {post.image && (
-                        <CardMedia
-                            component="img"
-                            width={1}
-                            src={isValidUrl(post.image) ? post.image : `data:image/png;base64,${post.image}` }
-                        />
+                        <Box sx={{margin: '1rem'}}>
+                            <CardMedia
+                                component="img"
+                                src={isValidUrl(post.image) ? post.image : `data:image/png;base64,${post.image}` }
+                            />
+                        </Box>
                     )}
                     <CardContent>
                         <Typography variant="body2" color="black" style={{ wordWrap: 'break-word' }}>
