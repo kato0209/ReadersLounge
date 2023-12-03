@@ -19,6 +19,7 @@ import { Post } from '../../openapi';
 import Sidebar from './Sidebar';
 import Box from '@mui/material/Box';
 import { isValidUrl } from '../../utils/isValidUrl';
+import Link from '@mui/material/Link';
 
 const PostListContainer = {
     display: 'flex', 
@@ -131,6 +132,49 @@ export default function PostList() {
                             {post.content}
                         </Typography>
                     </CardContent>
+                    <Box sx={{ 
+                            display: 'flex', 
+                            border: '1px solid #BDBDBD', 
+                            justifyContent: 'space-between',
+                            margin: '1rem',
+                            borderRadius: '20px',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <CardContent sx={{ flex: '1' }}>
+                            <Link href={post.book.item_url} underline="hover">
+                                <Typography component="div" sx={{ fontSize: '1.3rem', '@media (max-width: 500px)':{fontSize: '1.0rem'}}}>
+                                    {post.book.title}
+                                </Typography>
+                            </Link>
+                            <Typography variant="subtitle1" color="text.secondary" component="div">
+                                著者：{post.book.author}
+                            </Typography>
+                        </CardContent>
+                        <Box sx={{ 
+                            width: '30%', 
+                            margin: '1rem', 
+                            display: 'flex', 
+                            justifyContent: 'flex-end',
+                            '@media (max-width: 500px)': {
+                            margin: '0.2rem', 
+                            width: '35%',
+                            }
+                        }}
+                        >
+                        <CardMedia
+                            component="img"
+                            sx={{ 
+                            width: '60%',
+                            '@media (max-width: 500px)':{
+                                width: '100%',
+                                margin: '0.4rem',
+                            }
+                            }}
+                            image={post.book.image}
+                        />
+                        </Box>
+                    </Box>
                     <CardActions disableSpacing
                         sx={{
                             justifyContent: 'space-between',

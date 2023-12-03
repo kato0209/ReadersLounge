@@ -16,50 +16,68 @@ import Rating from '@mui/material/Rating';
 import ImageIcon from '@mui/icons-material/Image';
 import { z } from 'zod';
 import { zfd } from "zod-form-data";
-import { useForm } from 'react-hook-form';
+import { set, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { apiInstance } from '../../lib/api/apiInstance';
 import { useErrorHandler } from 'react-error-boundary';
+import { Book } from '../../openapi';
+import ImportContactsIcon from '@mui/icons-material/ImportContacts';
+import { BookSearchDialog } from './BookSearchDialog';
+import { PostSchema } from '../../types/PostSchema';
 import { get } from 'http';
-import { error } from 'console';
-
-const IMAGE_TYPES = ['image/jpeg', 'image/png'];
-
-const PostSchema = z.object({
-  content: z.string().nonempty('投稿内容は必須です').max(255, {
-    message: "投稿内容は255文字以内で入力してください"
-  }),
-  rating: z.number().positive(),
-  ISBNcode: z.string().nonempty('本が選択されていません'), 
-  postImage: z.instanceof(File).optional()
-  .refine((file) => {
-    return (
-      file === undefined ||
-      (IMAGE_TYPES.includes(file.type) &&
-        file.name.split('.').pop()?.toLowerCase() !== 'jpg')
-    );
-  }, {
-    message: '.jpegもしくは.pngのみ可能です',
-  })
-});
 
 type FormData = z.infer<typeof PostSchema>;
 
-export default function CreatePost() {
+type CreatePostProps  = {
+  displayString: string;
+  book?: Book;
+  formData?: FormData;
+};
+
+export const CreatePost: React.FC<CreatePostProps> = ({ displayString, book, formData }) => {
   const [openCreatePostDialog, setOpenCreatePostDialog] = React.useState(false);
   const { user } = useAuthUserContext();
   const [imagePreview, setImagePreview] = React.useState<string | null>(null);
+  const [isFormEdit, setIsFormEdit] = React.useState<boolean>(false);
 
   const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(PostSchema),
   });
+
+  React.useEffect(() => {
+    if (formData?.content) {
+      setValue('content', formData.content);
+    }
+  }, [formData?.content]);
+
+  React.useEffect(() => {
+    if (formData?.content) {
+      setValue('rating', formData.rating);
+    }
+  }, [formData?.rating]);
+
+  React.useEffect(() => {
+    if (formData?.postImage) {
+      setValue('postImage', formData.postImage);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(formData.postImage);
+    }
+  }, [formData?.postImage]);
+
+  React.useEffect(() => {
+    if (book) {
+      setValue('ISBNcode', book.ISBNcode);
+    }
+  }, [book]);
+
   const errorHandler = useErrorHandler();
 
   const onSubmit = async (data: FormData) => {
-    
     try {
       const api = await apiInstance;
-
       if (data.postImage) {
       const res = await api.createPost(
         data.content,
@@ -74,7 +92,7 @@ export default function CreatePost() {
         data.ISBNcode
       );
     }
-    window.location.reload();
+      window.location.reload();
     } catch (error: unknown) {
       errorHandler(error);
     }
@@ -90,20 +108,24 @@ export default function CreatePost() {
         setImagePreview(reader.result as string);
       };
       reader.readAsDataURL(file);
+      setIsFormEdit(true);
     }
   };
 
   const handleImageRemove = () => {
     setValue('postImage', undefined, { shouldValidate: true });
     setImagePreview(null);
+    setIsFormEdit(true);
   };
 
   const handleRatingChange = (newValue: number) => {
     setValue('rating', newValue, { shouldValidate: true });
+    setIsFormEdit(true);
   };
 
   const handlePostTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setValue('content', event.target.value, { shouldValidate: true });
+    setIsFormEdit(true);
   };
   
 
@@ -127,12 +149,12 @@ export default function CreatePost() {
             color: '#fff',
             marginTop: '0.8rem',
             '&:hover': {
-            backgroundColor: '#E56A67',
+              backgroundColor: '#E56A67',
             },
         }}
         onClick={handleOpen}
         >
-        <ListItemText primary="Post" sx={{ textAlign: 'center', paddingHorizontal: '0.5rem' }} />
+        <ListItemText primary={displayString} sx={{ textAlign: 'center', paddingHorizontal: '0.5rem' }} />
         </ListItem>
 
         <Dialog 
@@ -164,6 +186,12 @@ export default function CreatePost() {
                   marginTop: '2rem',
                 }}
               >
+                {book && (
+                  <Box sx={{marginBottom: '1rem', justifyContent: 'center', display: 'flex'}}>
+                    <ImportContactsIcon/>：
+                    {book.title}
+                  </Box>
+                )}
                 <Box sx={{ display: 'flex', alignItems: 'start', gap: 2 }}>
                     <Avatar 
                         src={isValidUrl(user.profile_image) ? user.profile_image : `data:image/png;base64,${user.profile_image}` }>                  
@@ -205,6 +233,15 @@ export default function CreatePost() {
                     {errors.rating && <span style={{ color: 'red' }}>{errors.rating.message}</span>}
                     </Box>
                   </Box>
+                  {!book && (
+                    <BookSearchDialog formData={{
+                      content: getValues('content'),
+                      rating: getValues('rating'),
+                      ISBNcode: getValues('ISBNcode'),
+                      postImage: getValues('postImage'),
+                    }}
+                  />
+                  )}
                   <label htmlFor="image-upload">
                     <input
                       type="file"
@@ -238,7 +275,7 @@ export default function CreatePost() {
                       Post
                   </Button>
               </DialogActions>
-              <input {...register("ISBNcode")} type="hidden" value="9784472405433" />
+              <input {...register("ISBNcode")} type="hidden" value={book ? book.ISBNcode : ''} />
               <Box sx={{display: 'flex', justifyContent: 'center'}}>
                 {errors.content && <span style={{ color: 'red' }}>{errors.content.message}</span>}
               </Box>

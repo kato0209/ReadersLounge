@@ -152,7 +152,7 @@ export default function SignUp() {
                             </Link>
                         </Grid>
                     </Grid>
-                    <Typography component="h1" variant="h5" sx={{ mt: 2, mb: 1 }}>
+                    <Typography component="h1" variant="h5" sx={{ mt: 2, mb: 1, textAlign: 'center' }}>
                         Sign up with another provider
                     </Typography>
                     <GoogleAuth />

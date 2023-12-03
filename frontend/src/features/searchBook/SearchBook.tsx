@@ -22,6 +22,7 @@ import { IconButton } from '@mui/material';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import Chip from '@mui/material/Chip';
+import { PostSchema } from '../../types/PostSchema';
 
 const searchBookSchema = z.object({
     keyword: z.string().optional(),
@@ -30,8 +31,15 @@ const searchBookSchema = z.object({
 
 type FormData = z.infer<typeof searchBookSchema>;
 
+type PostFormData = z.infer<typeof PostSchema>;
+type SearchBookProps  = {
+  formData?: PostFormData;
+};
 
-export default function SearchBook() {
+
+
+export const SearchBook: React.FC<SearchBookProps> = ({ formData }) => {
+    console.log(888);
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm<FormData>({
         resolver: zodResolver(searchBookSchema),
     });
@@ -40,6 +48,7 @@ export default function SearchBook() {
     const [bookGenreNodes, setBookGenreNodes] = React.useState<BookGenreNode[]>([]);
     const [hasGenre, setHasGenre] = React.useState<boolean>(false);
     const [selectedGenre, setSelectedGenre] = React.useState<string>("");
+    const [bookNotFound, setBookNotFound] = React.useState<boolean>(false);
 
     React.useEffect(() => {
         const fetchBookGenres = async () => {
@@ -50,7 +59,7 @@ export default function SearchBook() {
                 
                 if (res.data && Array.isArray(res.data)) {
                     setBookGenreNodes(res.data);
-                }
+                } 
             } catch (error: unknown) {
                 errorHandler(error);
             }
@@ -91,7 +100,6 @@ export default function SearchBook() {
         try {
             const api = await apiInstance;
             const res = await api.fetchBookData(data.bookGenreID, data.keyword);
-            console.log(res.data);
             if (res.data && Array.isArray(res.data)) {
                 const fetchedBooks: Book[] = res.data.map(item => ({
                     book_id: item.book_id,
@@ -106,6 +114,9 @@ export default function SearchBook() {
                 }));
                 setBooks(fetchedBooks);
                 setHasGenre(false);
+                if (res.data.length === 0) {
+                    setBookNotFound(true);
+                }
             }
             
         } catch (error: unknown) {
@@ -133,7 +144,6 @@ export default function SearchBook() {
             <Box sx={{display: 'flex'}}>
                 <TextField
                     {...register("keyword")}
-                    required
                     fullWidth
                     id="keyword"
                     label="本のタイトル"
@@ -184,7 +194,12 @@ export default function SearchBook() {
                 </TreeView>
             } 
         </Box>
-        <BookList books={books} />
+        <BookList books={books} formData={formData} />
+        {bookNotFound && 
+        <Typography component="div" sx={{fontSize: '1.5rem', marginTop: '1rem'}}>
+            該当するものはありません
+        </Typography>
+        }
     </Container>
   );
 }

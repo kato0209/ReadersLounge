@@ -116,7 +116,7 @@ const onSubmit = async (data: FormData) => {
                     </Link>
                 </Grid>
             </Grid>
-            <Typography component="h1" variant="h5" sx={{ mt: 2, mb: 1 }}>
+            <Typography component="h1" variant="h5" sx={{ mt: 2, mb: 1, textAlign: 'center' }}>
                 Login with another provider
             </Typography>
             <GoogleAuth />

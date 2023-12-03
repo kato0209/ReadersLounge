@@ -7,8 +7,9 @@ import ListItemText from '@mui/material/ListItemText';
 import HomeIcon from '@mui/icons-material/Home';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MailIcon from '@mui/icons-material/Mail';
-import CreatePost  from './CreatePost';
-
+import { CreatePost }  from './CreatePost';
+import SearchIcon from '@mui/icons-material/Search';
+import { Link } from 'react-router-dom';
 
 export default function Sidebar() {
 
@@ -48,7 +49,23 @@ export default function Sidebar() {
           </ListItemIcon>
           <ListItemText primary="Messages" />
         </ListItem>
-        <CreatePost/>
+        <ListItem 
+          button 
+          component={Link} 
+          sx={{ 
+            borderRadius: '50px',
+            '&:hover': {
+              color: 'black',
+            },
+          }} 
+          to="/search-book"
+        >
+          <ListItemIcon>
+            <SearchIcon/>
+          </ListItemIcon>
+          <ListItemText primary="本を探す" />
+        </ListItem>
+        <CreatePost displayString='Post'/>
       </List>
     </Drawer>
   );

@@ -12,7 +12,11 @@ import { FaBookOpen } from 'react-icons/fa';
 import useLogout from '../../features/logout/logout';
 import { Link } from 'react-router-dom';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import CreatePost  from '../../features/home/CreatePost';
+import { CreatePost } from '../../features/home/CreatePost';
+import HomeIcon from '@mui/icons-material/Home';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import MailIcon from '@mui/icons-material/Mail';
+import SearchIcon from '@mui/icons-material/Search';
 
 export default function AppHeader() {
   const [profileAnchorEl, setProfileAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -75,10 +79,23 @@ export default function AppHeader() {
               open={Boolean(MenuAnchorEl)}
               onClose={handleMenuClose}
             >
-              <MenuItem onClick={handleMenuClose}>Home</MenuItem>
-              <MenuItem onClick={handleMenuClose}>Notifications</MenuItem>
-              <MenuItem onClick={handleMenuClose}>Messages</MenuItem>
-              <CreatePost/>
+              <MenuItem onClick={handleMenuClose} sx={{display: 'flex'}}>
+                <HomeIcon sx={{marginRight:'0.5rem'}}/>
+                Home
+              </MenuItem>
+              <MenuItem onClick={handleMenuClose} sx={{display: 'flex'}}>
+                <NotificationsIcon sx={{marginRight:'0.5rem'}}/>
+                Notifications
+              </MenuItem>
+              <MenuItem onClick={handleMenuClose} sx={{display: 'flex'}}>
+                <MailIcon sx={{marginRight:'0.5rem'}}/>
+                Messages
+              </MenuItem>
+              <MenuItem component={Link} to="/search-book" sx={{display: 'flex'}}>
+                <SearchIcon sx={{marginRight:'0.5rem'}} />
+                本を探す
+              </MenuItem>
+              <CreatePost displayString='Post'/>
             </Menu>
           </>
           
