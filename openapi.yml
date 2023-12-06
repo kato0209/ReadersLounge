@@ -101,7 +101,7 @@ paths:
         - X-CSRF-TOKEN: []
         - jwtAuth: []
       summary: get user
-      operationId: user
+      operationId: get-user
       responses:
         "200":
           description: OK
@@ -109,6 +109,26 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
+    put:
+      security:
+        - X-CSRF-TOKEN: []
+        - jwtAuth: []
+      summary: update user
+      operationId: update-user
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/UpdateUserReqBody"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+    
   /posts:
     get:
       security:
@@ -259,6 +279,14 @@ components:
       - user_id
       - name
       - profile_image
+    UpdateUserReqBody:
+      properties:
+        name:
+          type: string
+        profile_image:
+          type: string
+        profile_text:
+          type: string
     Post:
       type: object
       properties:

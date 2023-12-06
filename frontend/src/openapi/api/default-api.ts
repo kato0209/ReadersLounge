@@ -292,6 +292,41 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
+         * @summary get user
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getUser: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/user`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication X-CSRF-TOKEN required
+            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
+
+            // authentication jwtAuth required
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary Callback for Google OAuth
          * @param {string} state State parameter for CSRF protection
          * @param {string} code Authorization code returned by Google auth server
@@ -457,11 +492,14 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
-         * @summary get user
+         * @summary update user
+         * @param {string} [name] 
+         * @param {string} [profileImage] 
+         * @param {string} [profileText] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        user: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        updateUser: async (name?: string, profileImage?: string, profileText?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/user`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -470,9 +508,10 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+            const localVarFormParams = new ((configuration && configuration.formDataCtor) || FormData)();
 
             // authentication X-CSRF-TOKEN required
             await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
@@ -480,10 +519,25 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             // authentication jwtAuth required
 
 
+            if (name !== undefined) { 
+                localVarFormParams.append('name', name as any);
+            }
+    
+            if (profileImage !== undefined) { 
+                localVarFormParams.append('profile_image', profileImage as any);
+            }
+    
+            if (profileText !== undefined) { 
+                localVarFormParams.append('profile_text', profileText as any);
+            }
+    
+    
+            localVarHeaderParameter['Content-Type'] = 'multipart/form-data';
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = localVarFormParams;
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -569,6 +623,16 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary get user
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getUser(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<User>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getUser(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary Callback for Google OAuth
          * @param {string} state State parameter for CSRF protection
          * @param {string} code Authorization code returned by Google auth server
@@ -614,12 +678,15 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary get user
+         * @summary update user
+         * @param {string} [name] 
+         * @param {string} [profileImage] 
+         * @param {string} [profileText] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async user(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<User>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.user(options);
+        async updateUser(name?: string, profileImage?: string, profileText?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<User>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateUser(name, profileImage, profileText, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -695,6 +762,15 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * 
+         * @summary get user
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getUser(options?: any): AxiosPromise<User> {
+            return localVarFp.getUser(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary Callback for Google OAuth
          * @param {string} state State parameter for CSRF protection
          * @param {string} code Authorization code returned by Google auth server
@@ -736,12 +812,15 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * 
-         * @summary get user
+         * @summary update user
+         * @param {string} [name] 
+         * @param {string} [profileImage] 
+         * @param {string} [profileText] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        user(options?: any): AxiosPromise<User> {
-            return localVarFp.user(options).then((request) => request(axios, basePath));
+        updateUser(name?: string, profileImage?: string, profileText?: string, options?: any): AxiosPromise<User> {
+            return localVarFp.updateUser(name, profileImage, profileText, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -828,6 +907,17 @@ export class DefaultApi extends BaseAPI {
 
     /**
      * 
+     * @summary get user
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getUser(options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getUser(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @summary Callback for Google OAuth
      * @param {string} state State parameter for CSRF protection
      * @param {string} code Authorization code returned by Google auth server
@@ -877,13 +967,16 @@ export class DefaultApi extends BaseAPI {
 
     /**
      * 
-     * @summary get user
+     * @summary update user
+     * @param {string} [name] 
+     * @param {string} [profileImage] 
+     * @param {string} [profileText] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public user(options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).user(options).then((request) => request(this.axios, this.basePath));
+    public updateUser(name?: string, profileImage?: string, profileText?: string, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).updateUser(name, profileImage, profileText, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

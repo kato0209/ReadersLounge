@@ -21,7 +21,7 @@ export const AppRoutes = () => {
     const fetchUserData = async () => {
         try {
             const api = await apiInstance;
-            const res = await api.user();
+            const res = await api.getUser();
             const user: User = {
                 user_id: res.data.user_id,
                 name: res.data.name,

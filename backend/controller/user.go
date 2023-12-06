@@ -1,14 +1,18 @@
 package controller
 
 import (
+	"fmt"
+	"io"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"backend/controller/openapi"
 	"backend/models"
 	"backend/utils"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
 
@@ -110,7 +114,7 @@ func (s *Server) GoogleOauthCallback(ctx echo.Context, params openapi.GoogleOaut
 	return ctx.Redirect(http.StatusMovedPermanently, os.Getenv("FE_URL"))
 }
 
-func (s *Server) User(ctx echo.Context) error {
+func (s *Server) GetUser(ctx echo.Context) error {
 	userID, err := utils.ExtractUserID(ctx)
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
@@ -127,5 +131,69 @@ func (s *Server) User(ctx echo.Context) error {
 		ProfileImage: loginUser.ProfileImage,
 	}
 
+	return ctx.JSON(http.StatusOK, resUser)
+}
+
+func (s *Server) UpdateUser(ctx echo.Context) error {
+	userID, err := utils.ExtractUserID(ctx)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	form, err := ctx.MultipartForm()
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	updateUser := models.User{
+		Name:        form.Value["name"][0],
+		ProfileText: &form.Value["profile_text"][0],
+	}
+
+	file, err := ctx.FormFile("image")
+	if err == nil {
+		src, err := file.Open()
+		if err != nil {
+			return ctx.JSON(http.StatusInternalServerError, err.Error())
+		}
+		defer src.Close()
+
+		fileModel := strings.Split(file.Filename, ".")
+		fileName := fileModel[0]
+		extension := fileModel[1]
+
+		if extension == "jpeg" || extension == "png" {
+
+			data, err := io.ReadAll(src)
+			if err != nil {
+				return ctx.JSON(http.StatusInternalServerError, err.Error())
+			}
+
+			generatedFileName := fmt.Sprintf("%s_%s.%s", fileName, uuid.New().String(), extension)
+
+			image := models.ProfileImage{
+				Source:   data,
+				FileName: &generatedFileName,
+			}
+			fmt.Println(image)
+
+		} else {
+			return ctx.JSON(http.StatusBadRequest, "Unsupported file type")
+		}
+
+	} else if err != http.ErrMissingFile {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	err = s.uu.UpdateUser(ctx, &updateUser, userID)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	resUser := openapi.User{
+		UserId:       updateUser.UserID,
+		Name:         updateUser.Name,
+		ProfileImage: updateUser.ProfileImage,
+	}
 	return ctx.JSON(http.StatusOK, resUser)
 }

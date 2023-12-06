@@ -23,6 +23,7 @@ type IUserUsecase interface {
 	Login(ctx echo.Context, user models.User) (string, models.User, error)
 	GoogleOAuthCallback(ctx echo.Context, code string) (string, error)
 	GetUserByUserID(ctx echo.Context, userID int) (models.User, error)
+	UpdateUser(ctx echo.Context, user *models.User, userID int) error
 }
 
 type userUsecase struct {
@@ -157,4 +158,11 @@ func (uu *userUsecase) GetUserByUserID(ctx echo.Context, userID int) (models.Use
 		return models.User{}, errors.WithStack(err)
 	}
 	return resUser, nil
+}
+
+func (uu *userUsecase) UpdateUser(ctx echo.Context, user *models.User, userID int) error {
+	if err := uu.ur.UpdateUserByUserID(ctx, user, userID); err != nil {
+		return errors.WithStack(err)
+	}
+	return nil
 }

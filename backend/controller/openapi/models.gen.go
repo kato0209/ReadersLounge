@@ -74,6 +74,13 @@ type ResCsrfToken struct {
 	CsrfToken *string `json:"csrf_token,omitempty"`
 }
 
+// UpdateUserReqBody defines model for UpdateUserReqBody.
+type UpdateUserReqBody struct {
+	Name         *string `json:"name,omitempty"`
+	ProfileImage *string `json:"profile_image,omitempty"`
+	ProfileText  *string `json:"profile_text,omitempty"`
+}
+
 // User defines model for User.
 type User struct {
 	Name         string `json:"name"`
@@ -113,3 +120,6 @@ type CreatePostMultipartRequestBody = ReqCreatePostBody
 
 // SignupJSONRequestBody defines body for Signup for application/json ContentType.
 type SignupJSONRequestBody = ReqSignupBody
+
+// UpdateUserMultipartRequestBody defines body for UpdateUser for multipart/form-data ContentType.
+type UpdateUserMultipartRequestBody = UpdateUserReqBody

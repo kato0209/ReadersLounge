@@ -15,6 +15,7 @@ type IUserRepository interface {
 	GetUserByIdentifier(ctx echo.Context, user *models.User, identifier string) error
 	GetUserByUserID(ctx echo.Context, user *models.User, userID int) error
 	CheckExistsUserByIdentifier(ctx echo.Context, identifier string) (bool, error)
+	UpdateUserByUserID(ctx echo.Context, user *models.User, userID int) error
 }
 
 type userRepository struct {
@@ -147,4 +148,8 @@ func (ur *userRepository) CheckExistsUserByIdentifier(ctx echo.Context, identifi
 		return false, errors.WithStack(err)
 	}
 	return exists, nil
+}
+
+func (ur *userRepository) UpdateUserByUserID(ctx echo.Context, user *models.User, userID int) error {
+	return nil
 }
