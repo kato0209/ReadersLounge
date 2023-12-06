@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"database/sql"
 	"encoding/base64"
+	"fmt"
 	"image"
 	"image/jpeg"
 	"image/png"
@@ -21,6 +22,7 @@ type IPostRepository interface {
 	CreatePost(ctx echo.Context, post *models.Post) error
 	SavePostImage(ctx echo.Context, image *models.PostImage) error
 	LoadImage(ctx echo.Context, fileName string) (string, error)
+	DeletePost(ctx echo.Context, postID int) error
 }
 
 type postRepository struct {
@@ -199,4 +201,21 @@ func (pr *postRepository) LoadImage(ctx echo.Context, fileName string) (string, 
 	}
 
 	return base64.StdEncoding.EncodeToString(buf.Bytes()), nil
+}
+
+func (pr *postRepository) DeletePost(ctx echo.Context, postID int) error {
+	c := ctx.Request().Context()
+	_, err := pr.db.ExecContext(
+		c,
+		`
+        DELETE FROM posts WHERE post_id = $1;
+        `,
+		postID,
+	)
+	if err != nil {
+		fmt.Println(err)
+		return errors.WithStack(err)
+	}
+
+	return nil
 }

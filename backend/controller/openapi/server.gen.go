@@ -23,7 +23,7 @@ type ServerInterface interface {
 	// fetch book data from RakutenAPI
 	// (GET /books)
 	FetchBookData(ctx echo.Context, params FetchBookDataParams) error
-	// Get the child genres of booksGenreId
+	// Get books genres
 	// (GET /books-genres)
 	GetBooksGenres(ctx echo.Context) error
 	// get csrf token
@@ -44,6 +44,9 @@ type ServerInterface interface {
 	// create post
 	// (POST /posts)
 	CreatePost(ctx echo.Context) error
+	// delete a post
+	// (DELETE /posts/{postId})
+	DeletePost(ctx echo.Context, postId int) error
 	// create new user
 	// (POST /signup)
 	Signup(ctx echo.Context) error
@@ -185,6 +188,26 @@ func (w *ServerInterfaceWrapper) CreatePost(ctx echo.Context) error {
 	return err
 }
 
+// DeletePost converts echo context to params.
+func (w *ServerInterfaceWrapper) DeletePost(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "postId" -------------
+	var postId int
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "postId", runtime.ParamLocationPath, ctx.Param("postId"), &postId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter postId: %s", err))
+	}
+
+	ctx.Set(X_CSRF_TOKENScopes, []string{})
+
+	ctx.Set(JwtAuthScopes, []string{})
+
+	// Invoke the callback with all the unmarshaled arguments
+	err = w.Handler.DeletePost(ctx, postId)
+	return err
+}
+
 // Signup converts echo context to params.
 func (w *ServerInterfaceWrapper) Signup(ctx echo.Context) error {
 	var err error
@@ -245,6 +268,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.GET(baseURL+"/oauth/google/callback", wrapper.GoogleOauthCallback)
 	router.GET(baseURL+"/posts", wrapper.GetPosts)
 	router.POST(baseURL+"/posts", wrapper.CreatePost)
+	router.DELETE(baseURL+"/posts/:postId", wrapper.DeletePost)
 	router.POST(baseURL+"/signup", wrapper.Signup)
 	router.GET(baseURL+"/user", wrapper.User)
 
@@ -253,29 +277,30 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/8xY32/bOAz+VwTdPaZ11r0Mflu7267YsA7tChxQBIEiM4kaW/IkuUVuyP9+IOUfsSNn",
-	"7W4b9tQ0okTy4yd+VL5yaYrSaNDe8fQrd3INhaCP58Zs8G9pTQnWK6BvL2/OP0qTAX722xJ4yp23Sq/4",
-	"bsJF5dfGRpcWxmzmKttbU9rDCiwuqkKs4icqD8W8snl0sbRKQvzEslrkyq0hmwsf31sbxKP1yuexgHYT",
-	"buFLpSxkPL1rk5p0sDR7WzCaMPddDuLbS7PBYjZpXJvFPUiPQWFB3oG28LHGv18ZDMbNV2jQB7pfhMZE",
-	"iyIOuVyrPLOgcRHjosP/tLDkKf8j6eiS1FxJ+nHt2siFtWKL/weHOTxAPlL/EV6UwoL2x3IaFIRqMQAi",
-	"knY/pEM/eyDECvHJOB/H/ylQEcZGe9BxZkoLwo8Td/yulMb50StmhUez6FrlwjU4Fvkt2gzhbjzWR3R5",
-	"tf566YRKRCG9hi8XZIjYnpts+8zOcwzQFrGlsQWiyhdKC7vlk0PbcZgGqUcybQOchYQ+mJXS8VykhQy0",
-	"VyLe2BQtLlW0O+3C6Tdqpavyxx8fajnSHYJvd+Hs8rPZhB4xcO3scu6btcj225ps/W2j3ai0ZqlymI/T",
-	"HsMdof2gZo3lhNddoH/4IS93E+5AVlb57Q3egxDrPycXN9dvTz5fvf/rIzVJzVO+BpHRFQiZ9I26lliq",
-	"9xB6ojGrHOYoEkTN3DzS4UE11L/CK6Mvarr3vrxFNeRr70uXJomQ0lTau9Nw4Kk0RWISgzvOkoezhBxM",
-	"uJOmDNFDIRQeQH+ZyDILznVY4O0QTklW/8+UDtdGGU29HUvbDyE4qwMQpXIURODArpODYIZn3D/613Xe",
-	"hJ00ZqOgw+7+0dcUigDnvPAwujWsHmzDMDAR3JeBk1aVlFDKr6lu7oOp9ArY60+XrYLH1x7AurDzxen0",
-	"dIoRmRK0KBVP+Uv6CvXErwnshKQHP62AmhNynrC8zHjK34KXa9SEN8KLoEOiAA/W8fRuGOnlG+YNcyVI",
-	"tdwyvwZGesWUZtdiU3nQ7Jy8TQI0XyqgHlcjQ5GQTF9mRAjs61FFHTrewPbR2Iy8g7ByzRZH/NTWR13M",
-	"8F660mgXOHk2nVLv6Jq4KMtcSUIquXdGd7Pps8aSw2kEmdBP7+p976IT8v0rfjdDUFrW3s0wAVcVBYpI",
-	"ypdYRcKEZcILtrSmaEqCpMHTAxFOqGLjfHgH/rwtEwL8a1A6Mrz9BLjegSf20ogVOOyYWbIeQQkz1JJW",
-	"SqKAXbQW/xOrYxD1BO9JiPTyXYFnmAnrOmKS42hAKliPkv20aHLgQbygm4d+UDZ7g8muL5HeVrD7iUjW",
-	"Q+T3caoHagCwwdJU/iiYuP79aA6Hgt0IRD8gJwyUkiKxTIKkJlLk+ULIzXjfILsr3HPR2H5DTW5QKFlr",
-	"wpbGMgwOdd+DJKt4g28ktk+bZynK6/15huHMzCz4ymrI2GLLQjoM02EO7APNVbFQ6hf30yMZCs/L6Vls",
-	"JMiUBelR8P42BRzWsTe83dUjVTdCUf+r55RhkZv6EOB1olfUKKnuSOGj+vCJDH6FMtAr91cIAjbIkHf9",
-	"iI30+fZtePQeF1XuVSmsT3BmPUE1flZjHDxBn9QdX3zn1T+GSHgzEyiBFo4ee+M9LjwGf55i7D02nw7K",
-	"byYZNagaHlnV/JiRND99RK/bbfhR4/eUw2/dqKo9PLTQIAJV+3JLkyQ3UuRr43z6avpqynez3X8BAAD/",
-	"/xsQ0y0PFgAA",
+	"H4sIAAAAAAAC/8xY227bPBJ+FYK7l07kpjeF7pp02w1aNEXSAAsEhkFTY5uxRCoklcBb+N1/zFAHS6Fc",
+	"pyf0yrI45Mx8c/iG+salKUqjQXvH02/cyTUUgh7Pjdngb2lNCdYroLeXN+efpckAn/22BJ5y563SK76b",
+	"cFH5tbHRpYUxm7nK9taU9rACi4uqEKv4icpDMa9sHl0srZIQP7GsFrlya8jmwsf31gJxa73yecyg3YRb",
+	"eKiUhYynd61Tkw6WZm8LRmPmvsqBfXtuNljMJo1qs7gH6dEoDMgH0BY+1/j3I4PGuPkKBfpA94PQiGhR",
+	"xCGXa5VnFjQuol10+L8tLHnK/5V06ZLUuZL07dq1lgtrxRb/B4U5PEI+Ev+RvCiFBe0P+TQICMViAETE",
+	"7b5Jz/XsgRALxBfjfBz/Y6AijI32oOOZKS0IP56447VSGudHS8wKj2LRtcqFMjhk+S3KDOFuNNZHdH61",
+	"+nruhEhEIb2GhwsSRGzPTbZ9Yec5BGiL2NLYAlHlC6WF3fLJc9lxmAauRzxtDZwFhz6ZldJxX6SFDLRX",
+	"It7YFC0uVbQ77cLpN2qlq/LXHx9iOdIdgm534ezyq9mEHjFQ7exy7pu1yPbbOtn620a7UWnNUuUwH097",
+	"NHck7QcxayQnvO4C/cOf5+Vuwh3Iyiq/vcE6CLb+7+Ti5vr9yderj//5TE1S85SvQWRUAsGTvlDXEkv1",
+	"EUJPNGaVwxxJglIzN090eGAN9X/hldEXdbr3Xt4iG/K196VLk0RIaSrt3Wk48FSaIjGJwR1nyeNZQgom",
+	"3ElTBuuhEAoPoF8mssyCcx0WWB3CKcnq/0zpUDbKaOrtGNq+CUFZbYAolSMjQg7sOjoIYnjG/ZN/W/tN",
+	"2EljNgo67O6ffJ1CEeCcFx5Gt4bVZ9vQDHQE92XgpFUlOZTya4qb+2QqvQL29stly+DxtUewLux8dTo9",
+	"naJFpgQtSsVT/ppeIZ/4NYGdEPXg0wqoOWHOE5aXGU/5e/ByjZzwTngReEgU4ME6nt4NLb18x7xhrgSp",
+	"llvm18CIr5jS7FpsKg+anZO2SYDmoQLqcTUyZAnR9GVGCYF9PcqoQ8Ub2D4Zm5F2EFau2eKAnlr6oIoZ",
+	"1qUrjXYhJ8+mU+odXRMXZZkrSUgl987objZ90VjyfBrBTOi7d/WxV+iEfL/E72YISpu1dzN0wFVFgSSS",
+	"8iVGkTBhmfCCLa0pmpBg0uDpIRFOKGLj+fAB/HkbJgT4z6B0YHj7DXB9AB8SiNVoED7IGy1tRMG5aCV+",
+	"EpdDcPTI7Sjve76twDP0hHXdL8lxDCDGq8fGvls0JfBAVNDNPr/Im70hZNenQ28r2P1GJOuB8cfypwdq",
+	"ALDB0lT+IJi4/uNoDgeA3QhEv8AnNJScImJMAn0mUuT5QsjNeI8guSvcc9HIfoc5bpAUWSvClsYyNA45",
+	"3oMkqXgzb+i0nzYvYo+3+7MLw/mYWfCV1ZCxxZYFdxi6wxzYR5qhYqbUt+vjLRmSzOvpWYz+M2VBeiS3",
+	"/5oCnsexN6jd1eNTNy5Rr6tnkmGQm/gQ4LWjV9QUKe6Ywge54AsJ/AkWoBvtn2j+2CCD3/WFNdLn23vg",
+	"wTouqtyrUlif4Hx6gsz7osY4uG4e1R1f/WDpH0Ik3I8JlL20SL7hz2W2CxpzCDNvH6l39L5G6mAHuNXq",
+	"oQLWXfyYWdIIiVow9xfAgpasKT+cYbvqC9YcU3/d5Wt2XOucBCNq9cxVUoJzyyrPtz8JbTiSiT1wHd2a",
+	"xwkk3Kp/Hx3v3dqPz7i/jI/rjNXwxKrmq1DSfEOK9rLb8HXo75w1vteuqvbwwE+hvqr2CpwmSW6kyNfG",
+	"+fTN9M2U72a7fwIAAP//e749plgXAAA=",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

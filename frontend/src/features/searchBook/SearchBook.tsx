@@ -39,7 +39,6 @@ type SearchBookProps  = {
 
 
 export const SearchBook: React.FC<SearchBookProps> = ({ formData }) => {
-    console.log(888);
     const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm<FormData>({
         resolver: zodResolver(searchBookSchema),
     });

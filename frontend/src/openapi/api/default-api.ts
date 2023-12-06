@@ -138,6 +138,45 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
+         * @summary delete a post
+         * @param {number} postId Unique identifier of the post to be deleted
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deletePost: async (postId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'postId' is not null or undefined
+            assertParamExists('deletePost', 'postId', postId)
+            const localVarPath = `/posts/{postId}`
+                .replace(`{${"postId"}}`, encodeURIComponent(String(postId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication X-CSRF-TOKEN required
+            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
+
+            // authentication jwtAuth required
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary fetch book data from RakutenAPI
          * @param {string} [booksGenreId] ID to specify the genre in Rakuten Books
          * @param {string} [keyword] keyword to search books
@@ -487,6 +526,17 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary delete a post
+         * @param {number} postId Unique identifier of the post to be deleted
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deletePost(postId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deletePost(postId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary fetch book data from RakutenAPI
          * @param {string} [booksGenreId] ID to specify the genre in Rakuten Books
          * @param {string} [keyword] keyword to search books
@@ -606,6 +656,16 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * 
+         * @summary delete a post
+         * @param {number} postId Unique identifier of the post to be deleted
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deletePost(postId: number, options?: any): AxiosPromise<void> {
+            return localVarFp.deletePost(postId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary fetch book data from RakutenAPI
          * @param {string} [booksGenreId] ID to specify the genre in Rakuten Books
          * @param {string} [keyword] keyword to search books
@@ -717,6 +777,18 @@ export class DefaultApi extends BaseAPI {
      */
     public csrftoken(options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).csrftoken(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary delete a post
+     * @param {number} postId Unique identifier of the post to be deleted
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public deletePost(postId: number, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).deletePost(postId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

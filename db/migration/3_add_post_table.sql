@@ -16,5 +16,5 @@ CREATE TABLE IF NOT EXISTS post_details (
     image varchar(255),
     created_at timestamptz NOT NULL DEFAULT current_timestamp,
     updated_at timestamptz NOT NULL DEFAULT current_timestamp,
-    FOREIGN KEY (post_id) REFERENCES posts(post_id)
+    FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE
 );

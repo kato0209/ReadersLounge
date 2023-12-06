@@ -131,3 +131,11 @@ func (s *Server) CreatePost(ctx echo.Context) error {
 
 	return ctx.NoContent(http.StatusCreated)
 }
+
+func (s *Server) DeletePost(ctx echo.Context, postID int) error {
+	if err := s.pu.DeletePost(ctx, postID); err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.NoContent(http.StatusNoContent)
+}

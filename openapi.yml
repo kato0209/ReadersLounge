@@ -140,6 +140,24 @@ paths:
       responses:
         "201":
           description: OK
+
+  /posts/{postId}:
+    delete:
+      security:
+        - X-CSRF-TOKEN: []
+        - jwtAuth: []
+      summary: delete a post
+      operationId: delete-post
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          description: Unique identifier of the post to be deleted
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK, post deleted successfully
           
   /books:
     get:

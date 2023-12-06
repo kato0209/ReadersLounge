@@ -22,7 +22,6 @@ export default function AppHeader() {
   const [profileAnchorEl, setProfileAnchorEl] = React.useState<null | HTMLElement>(null);
   const [MenuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(null);
 
-  const isMobile = useMediaQuery('(max-width:500px)');
 
   const handleProfile = (event: React.MouseEvent<HTMLElement>) => {
     setProfileAnchorEl(event.currentTarget);
@@ -140,7 +139,7 @@ export default function AppHeader() {
               open={Boolean(profileAnchorEl)}
               onClose={handleProfileClose}
             >
-              <MenuItem onClick={handleProfileClose}>Profile</MenuItem>
+              <MenuItem component={Link} to="/user-profile" sx={{display: 'flex', '&:hover': { color: 'black'}}}>プロフィール</MenuItem>
               <MenuItem onClick={handleLogout}>ログアウト</MenuItem>
             </Menu>
           </>
