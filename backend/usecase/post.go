@@ -4,6 +4,7 @@ import (
 	"backend/models"
 	"backend/repository"
 	"backend/utils"
+	"fmt"
 
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
@@ -35,6 +36,8 @@ func (pu *postUsecase) GetAllPosts(ctx echo.Context, posts *[]models.Post) error
 				return errors.WithStack(err)
 			}
 			post.User.ProfileImage.EncodedImage = &profileImage
+			fmt.Println(444444)
+			fmt.Println(post.User.ProfileImage.EncodedImage)
 		}
 		if post.Image != nil && post.Image.FileName != nil {
 			postImage, err := pu.pr.LoadPostImage(ctx, *post.Image.FileName)

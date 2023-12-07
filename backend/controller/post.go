@@ -22,6 +22,7 @@ func (s *Server) GetPosts(ctx echo.Context) error {
 	resPosts := []openapi.Post{}
 	for _, post := range posts {
 
+		fmt.Println(*post.User.ProfileImage.EncodedImage)
 		profileImage := post.User.ProfileImage.ClassifyPathType()
 
 		resUser := openapi.User{

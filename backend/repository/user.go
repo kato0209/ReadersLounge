@@ -18,6 +18,8 @@ type IUserRepository interface {
 	GetUserByUserID(ctx echo.Context, user *models.User, userID int) error
 	CheckExistsUserByIdentifier(ctx echo.Context, identifier string) (bool, error)
 	UpdateUserByUserID(ctx echo.Context, user *models.User, userID int) error
+	SaveProfileImage(ctx echo.Context, image *models.ProfileImage) error
+	LoadProfileImage(ctx echo.Context, fileName string) (string, error)
 }
 
 type userRepository struct {
@@ -80,14 +82,6 @@ func (ur *userRepository) CreateUser(ctx echo.Context, user *models.User) error 
 		return errors.WithStack(err)
 	}
 
-	if !utils.IsRemotePath(user.ProfileImage.FileName) {
-		profileImage, err := utils.LoadImage(ctx, user.ProfileImage.FileName)
-		if err != nil {
-			return errors.WithStack(err)
-		}
-		user.ProfileImage.EncodedImage = &profileImage
-	}
-
 	return nil
 }
 
@@ -124,13 +118,6 @@ func (ur *userRepository) GetUserByIdentifier(ctx echo.Context, user *models.Use
 	user.Credential = userWithProfileImage.Credential
 	user.ProfileImage = models.ProfileImage{FileName: userWithProfileImage.ProfileImageFileName}
 
-	if !utils.IsRemotePath(user.ProfileImage.FileName) {
-		profileImage, err := utils.LoadImage(ctx, user.ProfileImage.FileName)
-		if err != nil {
-			return errors.WithStack(err)
-		}
-		user.ProfileImage.EncodedImage = &profileImage
-	}
 	return nil
 }
 
@@ -159,14 +146,6 @@ func (ur *userRepository) GetUserByUserID(ctx echo.Context, user *models.User, u
 	user.Name = userWithProfileImage.Name
 	user.ProfileImage = models.ProfileImage{FileName: userWithProfileImage.ProfileImageFileName}
 
-	if !utils.IsRemotePath(user.ProfileImage.FileName) {
-		profileImage, err := utils.LoadImage(ctx, user.ProfileImage.FileName)
-		if err != nil {
-			return errors.WithStack(err)
-		}
-		user.ProfileImage.EncodedImage = &profileImage
-	}
-
 	return nil
 }
 
@@ -191,7 +170,7 @@ func (ur *userRepository) CheckExistsUserByIdentifier(ctx echo.Context, identifi
 	return exists, nil
 }
 
-func (pr *postRepository) SaveProfileImage(ctx echo.Context, image *models.ProfileImage) error {
+func (ur *userRepository) SaveProfileImage(ctx echo.Context, image *models.ProfileImage) error {
 
 	err := utils.SaveImage(ctx, image.FileName, image.Source)
 	if err != nil {
@@ -200,7 +179,7 @@ func (pr *postRepository) SaveProfileImage(ctx echo.Context, image *models.Profi
 	return nil
 }
 
-func (pr *postRepository) LoadProfileImage(ctx echo.Context, fileName string) (string, error) {
+func (ur *userRepository) LoadProfileImage(ctx echo.Context, fileName string) (string, error) {
 	res, err := utils.LoadImage(ctx, fileName)
 	if err != nil {
 		return "", errors.WithStack(err)

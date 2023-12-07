@@ -59,6 +59,14 @@ func (uu *userUsecase) Signup(ctx echo.Context, user models.User) error {
 		return errors.WithStack(err)
 	}
 
+	if !utils.IsRemotePath(user.ProfileImage.FileName) {
+		profileImage, err := uu.ur.LoadProfileImage(ctx, user.ProfileImage.FileName)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+		user.ProfileImage.EncodedImage = &profileImage
+	}
+
 	return nil
 }
 
@@ -80,6 +88,15 @@ func (uu *userUsecase) Login(ctx echo.Context, user models.User) (string, models
 	if err != nil {
 		return "", models.User{}, errors.WithStack(err)
 	}
+
+	if !utils.IsRemotePath(storedUser.ProfileImage.FileName) {
+		profileImage, err := uu.ur.LoadProfileImage(ctx, storedUser.ProfileImage.FileName)
+		if err != nil {
+			return "", models.User{}, errors.WithStack(err)
+		}
+		storedUser.ProfileImage.EncodedImage = &profileImage
+	}
+
 	resUser := models.User{
 		UserID:       storedUser.UserID,
 		Name:         storedUser.Name,
@@ -158,6 +175,15 @@ func (uu *userUsecase) GetUserByUserID(ctx echo.Context, userID int) (models.Use
 	if err := uu.ur.GetUserByUserID(ctx, &resUser, userID); err != nil {
 		return models.User{}, errors.WithStack(err)
 	}
+
+	if !utils.IsRemotePath(resUser.ProfileImage.FileName) {
+		profileImage, err := uu.ur.LoadProfileImage(ctx, resUser.ProfileImage.FileName)
+		if err != nil {
+			return models.User{}, errors.WithStack(err)
+		}
+		resUser.ProfileImage.EncodedImage = &profileImage
+	}
+
 	return resUser, nil
 }
 
