@@ -3,6 +3,8 @@ package repository
 import (
 	"backend/db"
 	"backend/models"
+	"backend/repository/response"
+	"backend/utils"
 	"database/sql"
 
 	"github.com/jmoiron/sqlx"
@@ -41,19 +43,19 @@ func (ur *userRepository) CreateUser(ctx echo.Context, user *models.User) error 
 
 		var sqlString string
 		var sqlArgs []interface{}
-		if user.ProfileImage == "" {
+		if user.ProfileImage.FileName == "" {
 			sqlString = "INSERT INTO user_details ( user_id, name, profile_text ) VALUES ($1, $2, $3) RETURNING profile_image;"
 			sqlArgs = append(sqlArgs, user.UserID, user.Name, profileText)
 		} else {
 			sqlString = "INSERT INTO user_details ( user_id, name, profile_text, profile_image ) VALUES ($1, $2, $3, $4) RETURNING profile_image;"
-			sqlArgs = append(sqlArgs, user.UserID, user.Name, profileText, user.ProfileImage)
+			sqlArgs = append(sqlArgs, user.UserID, user.Name, profileText, user.ProfileImage.FileName)
 		}
 
 		err := tx.QueryRowContext(
 			c,
 			sqlString,
 			sqlArgs...,
-		).Scan(&user.ProfileImage)
+		).Scan(&user.ProfileImage.FileName)
 		if err != nil {
 			return errors.WithStack(err)
 		}
@@ -77,14 +79,25 @@ func (ur *userRepository) CreateUser(ctx echo.Context, user *models.User) error 
 	}); err != nil {
 		return errors.WithStack(err)
 	}
+
+	if !utils.IsRemotePath(user.ProfileImage.FileName) {
+		profileImage, err := utils.LoadImage(ctx, user.ProfileImage.FileName)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+		user.ProfileImage.EncodedImage = &profileImage
+	}
+
 	return nil
 }
 
 func (ur *userRepository) GetUserByIdentifier(ctx echo.Context, user *models.User, identifier string) error {
 	c := ctx.Request().Context()
+
+	var userWithProfileImage response.UserWithProfileImage
 	if err := ur.db.GetContext(
 		c,
-		user,
+		&userWithProfileImage,
 		`
 		select
 			users.user_id,
@@ -104,14 +117,30 @@ func (ur *userRepository) GetUserByIdentifier(ctx echo.Context, user *models.Use
 		}
 		return errors.WithStack(err)
 	}
+
+	user.UserID = userWithProfileImage.UserID
+	user.Name = userWithProfileImage.Name
+	user.Identifier = userWithProfileImage.Identifier
+	user.Credential = userWithProfileImage.Credential
+	user.ProfileImage = models.ProfileImage{FileName: userWithProfileImage.ProfileImageFileName}
+
+	if !utils.IsRemotePath(user.ProfileImage.FileName) {
+		profileImage, err := utils.LoadImage(ctx, user.ProfileImage.FileName)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+		user.ProfileImage.EncodedImage = &profileImage
+	}
 	return nil
 }
 
 func (ur *userRepository) GetUserByUserID(ctx echo.Context, user *models.User, userID int) error {
 	c := ctx.Request().Context()
+
+	var userWithProfileImage response.UserWithProfileImage
 	if err := ur.db.GetContext(
 		c,
-		user,
+		&userWithProfileImage,
 		`
 		select
 			users.user_id,
@@ -124,6 +153,18 @@ func (ur *userRepository) GetUserByUserID(ctx echo.Context, user *models.User, u
 		userID,
 	); err != nil {
 		return errors.WithStack(err)
+	}
+
+	user.UserID = userWithProfileImage.UserID
+	user.Name = userWithProfileImage.Name
+	user.ProfileImage = models.ProfileImage{FileName: userWithProfileImage.ProfileImageFileName}
+
+	if !utils.IsRemotePath(user.ProfileImage.FileName) {
+		profileImage, err := utils.LoadImage(ctx, user.ProfileImage.FileName)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+		user.ProfileImage.EncodedImage = &profileImage
 	}
 
 	return nil
@@ -148,6 +189,24 @@ func (ur *userRepository) CheckExistsUserByIdentifier(ctx echo.Context, identifi
 		return false, errors.WithStack(err)
 	}
 	return exists, nil
+}
+
+func (pr *postRepository) SaveProfileImage(ctx echo.Context, image *models.ProfileImage) error {
+
+	err := utils.SaveImage(ctx, image.FileName, image.Source)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	return nil
+}
+
+func (pr *postRepository) LoadProfileImage(ctx echo.Context, fileName string) (string, error) {
+	res, err := utils.LoadImage(ctx, fileName)
+	if err != nil {
+		return "", errors.WithStack(err)
+	}
+
+	return res, nil
 }
 
 func (ur *userRepository) UpdateUserByUserID(ctx echo.Context, user *models.User, userID int) error {

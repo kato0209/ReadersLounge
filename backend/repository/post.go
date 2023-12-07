@@ -2,15 +2,8 @@ package repository
 
 import (
 	"backend/models"
-	"bytes"
+	"backend/utils"
 	"database/sql"
-	"encoding/base64"
-	"fmt"
-	"image"
-	"image/jpeg"
-	"image/png"
-	"os"
-	"strings"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
@@ -21,7 +14,7 @@ type IPostRepository interface {
 	GetAllPosts(ctx echo.Context, posts *[]models.Post) error
 	CreatePost(ctx echo.Context, post *models.Post) error
 	SavePostImage(ctx echo.Context, image *models.PostImage) error
-	LoadImage(ctx echo.Context, fileName string) (string, error)
+	LoadPostImage(ctx echo.Context, fileName string) (string, error)
 	DeletePost(ctx echo.Context, postID int) error
 }
 
@@ -75,7 +68,10 @@ func (pr *postRepository) GetAllPosts(ctx echo.Context, posts *[]models.Post) er
 	for rows.Next() {
 		post := models.Post{}
 		book := models.Book{}
+		profileImage := models.ProfileImage{}
 		user := models.User{}
+
+		user.ProfileImage = profileImage
 		post.Book = book
 		post.User = user
 		var fileName sql.NullString
@@ -88,7 +84,7 @@ func (pr *postRepository) GetAllPosts(ctx echo.Context, posts *[]models.Post) er
 			&post.CreatedAt,
 			&post.User.UserID,
 			&post.User.Name,
-			&post.User.ProfileImage,
+			&post.User.ProfileImage.FileName,
 			&post.Book.BookID,
 			&post.Book.ISBNcode,
 			&post.Book.Title,
@@ -159,48 +155,21 @@ func (pr *postRepository) CreatePost(ctx echo.Context, post *models.Post) error 
 }
 
 func (pr *postRepository) SavePostImage(ctx echo.Context, image *models.PostImage) error {
-	filePath := os.Getenv("UPLOAD_IMAGE_PATH")
-	file, err := os.Create(filePath + *image.FileName)
-	if err != nil {
-		return errors.WithStack(err)
-	}
-	defer file.Close()
 
-	_, err = file.Write(image.Source)
+	err := utils.SaveImage(ctx, *image.FileName, image.Source)
 	if err != nil {
 		return errors.WithStack(err)
 	}
 	return nil
 }
 
-func (pr *postRepository) LoadImage(ctx echo.Context, fileName string) (string, error) {
-	filePath := os.Getenv("UPLOAD_IMAGE_PATH")
-	file, err := os.Open(filePath + fileName)
-	if err != nil {
-		return "", errors.WithStack(err)
-	}
-	defer file.Close()
-
-	img, _, err := image.Decode(file)
+func (pr *postRepository) LoadPostImage(ctx echo.Context, fileName string) (string, error) {
+	res, err := utils.LoadImage(ctx, fileName)
 	if err != nil {
 		return "", errors.WithStack(err)
 	}
 
-	split := strings.Split(fileName, ".")
-	var buf bytes.Buffer
-	switch split[len(split)-1] {
-	case "png":
-		if err := png.Encode(&buf, img); err != nil {
-			return "", errors.WithStack(err)
-		}
-	case "jpeg":
-		if err := jpeg.Encode(&buf, img, &jpeg.Options{Quality: 100}); err != nil {
-			return "", errors.WithStack(err)
-		}
-	default:
-	}
-
-	return base64.StdEncoding.EncodeToString(buf.Bytes()), nil
+	return res, nil
 }
 
 func (pr *postRepository) DeletePost(ctx echo.Context, postID int) error {
@@ -213,7 +182,6 @@ func (pr *postRepository) DeletePost(ctx echo.Context, postID int) error {
 		postID,
 	)
 	if err != nil {
-		fmt.Println(err)
 		return errors.WithStack(err)
 	}
 

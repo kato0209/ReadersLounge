@@ -41,10 +41,12 @@ func (s *Server) Signup(ctx echo.Context) error {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
 
+	profileImage := user.ProfileImage.ClassifyPathType()
+
 	resUser := openapi.User{
 		UserId:       user.UserID,
 		Name:         user.Name,
-		ProfileImage: user.ProfileImage,
+		ProfileImage: profileImage,
 	}
 
 	utils.SetJwtTokenInCookie(ctx, tokenString)
@@ -66,10 +68,12 @@ func (s *Server) Login(ctx echo.Context) error {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
 
+	profileImage := user.ProfileImage.ClassifyPathType()
+
 	resUser := openapi.User{
 		UserId:       user.UserID,
 		Name:         user.Name,
-		ProfileImage: user.ProfileImage,
+		ProfileImage: profileImage,
 	}
 
 	utils.SetJwtTokenInCookie(ctx, tokenString)
@@ -125,10 +129,12 @@ func (s *Server) GetUser(ctx echo.Context) error {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
 
+	profileImage := loginUser.ProfileImage.ClassifyPathType()
+
 	resUser := openapi.User{
 		UserId:       loginUser.UserID,
 		Name:         loginUser.Name,
-		ProfileImage: loginUser.ProfileImage,
+		ProfileImage: profileImage,
 	}
 
 	return ctx.JSON(http.StatusOK, resUser)
@@ -172,8 +178,8 @@ func (s *Server) UpdateUser(ctx echo.Context) error {
 			generatedFileName := fmt.Sprintf("%s_%s.%s", fileName, uuid.New().String(), extension)
 
 			image := models.ProfileImage{
-				Source:   data,
-				FileName: &generatedFileName,
+				Source:   &data,
+				FileName: generatedFileName,
 			}
 			fmt.Println(image)
 
@@ -190,10 +196,12 @@ func (s *Server) UpdateUser(ctx echo.Context) error {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
 
+	profileImage := updateUser.ProfileImage.ClassifyPathType()
+
 	resUser := openapi.User{
 		UserId:       updateUser.UserID,
 		Name:         updateUser.Name,
-		ProfileImage: updateUser.ProfileImage,
+		ProfileImage: profileImage,
 	}
 	return ctx.JSON(http.StatusOK, resUser)
 }

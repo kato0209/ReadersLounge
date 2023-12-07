@@ -120,9 +120,10 @@ func (uu *userUsecase) GoogleOAuthCallback(ctx echo.Context, code string) (strin
 		return "", errors.WithStack(err)
 	}
 
+	profileImage := models.ProfileImage{FileName: userInfo.Picture}
 	user := models.User{
 		Name:         userInfo.Name,
-		ProfileImage: userInfo.Picture,
+		ProfileImage: profileImage,
 		IdentityType: "GoogleOAuth",
 		Identifier:   userInfo.Email,
 		Credential:   "",

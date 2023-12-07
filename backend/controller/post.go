@@ -21,10 +21,13 @@ func (s *Server) GetPosts(ctx echo.Context) error {
 	}
 	resPosts := []openapi.Post{}
 	for _, post := range posts {
+
+		profileImage := post.User.ProfileImage.ClassifyPathType()
+
 		resUser := openapi.User{
 			UserId:       post.User.UserID,
 			Name:         post.User.Name,
-			ProfileImage: post.User.ProfileImage,
+			ProfileImage: profileImage,
 		}
 		resBook := openapi.Book{
 			BookId:      post.Book.BookID,
@@ -113,7 +116,7 @@ func (s *Server) CreatePost(ctx echo.Context) error {
 			generatedFileName := fmt.Sprintf("%s_%s.%s", fileName, uuid.New().String(), extension)
 
 			image := models.PostImage{
-				Source:   data,
+				Source:   &data,
 				FileName: &generatedFileName,
 			}
 			post.Image = &image

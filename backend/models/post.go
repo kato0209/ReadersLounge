@@ -15,7 +15,7 @@ type Post struct {
 }
 
 type PostImage struct {
-	Source       []byte
+	Source       *[]byte
 	FileName     *string `db:"image"`
 	EncodedImage *string
 }
