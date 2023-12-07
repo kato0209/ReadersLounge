@@ -1,6 +1,9 @@
 package models
 
-import "time"
+import (
+	"backend/utils"
+	"time"
+)
 
 type User struct {
 	UserID       int     `db:"user_id"`
@@ -22,10 +25,11 @@ type ProfileImage struct {
 
 func (pi ProfileImage) ClassifyPathType() string {
 	var result string
-	if pi.EncodedImage != nil {
-		result = *pi.EncodedImage
-	} else {
+
+	if utils.IsRemotePath(pi.FileName) {
 		result = pi.FileName
+	} else {
+		result = *pi.EncodedImage
 	}
 
 	return result
