@@ -2,7 +2,6 @@ package models
 
 import (
 	"backend/utils"
-	"fmt"
 	"time"
 )
 
@@ -27,12 +26,9 @@ type ProfileImage struct {
 func (pi ProfileImage) ClassifyPathType() string {
 	var result string
 
-	fmt.Println(7777)
-	fmt.Println(pi.FileName)
 	if utils.IsRemotePath(pi.FileName) {
 		result = pi.FileName
 	} else {
-		fmt.Println(999)
 		result = *pi.EncodedImage
 	}
 

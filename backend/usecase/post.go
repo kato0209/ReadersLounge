@@ -4,7 +4,6 @@ import (
 	"backend/models"
 	"backend/repository"
 	"backend/utils"
-	"fmt"
 
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
@@ -29,22 +28,20 @@ func (pu *postUsecase) GetAllPosts(ctx echo.Context, posts *[]models.Post) error
 	if err := pu.pr.GetAllPosts(ctx, posts); err != nil {
 		return errors.WithStack(err)
 	}
-	for _, post := range *posts {
-		if !utils.IsRemotePath(post.User.ProfileImage.FileName) {
-			profileImage, err := pu.pr.LoadPostImage(ctx, post.User.ProfileImage.FileName)
+	for i := range *posts {
+		if !utils.IsRemotePath((*posts)[i].User.ProfileImage.FileName) {
+			profileImage, err := pu.pr.LoadPostImage(ctx, (*posts)[i].User.ProfileImage.FileName)
 			if err != nil {
 				return errors.WithStack(err)
 			}
-			post.User.ProfileImage.EncodedImage = &profileImage
-			fmt.Println(444444)
-			fmt.Println(post.User.ProfileImage.EncodedImage)
+			(*posts)[i].User.ProfileImage.EncodedImage = &profileImage
 		}
-		if post.Image != nil && post.Image.FileName != nil {
-			postImage, err := pu.pr.LoadPostImage(ctx, *post.Image.FileName)
+		if (*posts)[i].Image != nil && (*posts)[i].Image.FileName != nil {
+			postImage, err := pu.pr.LoadPostImage(ctx, *(*posts)[i].Image.FileName)
 			if err != nil {
 				return errors.WithStack(err)
 			}
-			post.Image.EncodedImage = &postImage
+			(*posts)[i].Image.EncodedImage = &postImage
 		}
 	}
 	return nil
