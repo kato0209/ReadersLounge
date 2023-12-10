@@ -176,7 +176,7 @@ paths:
           schema:
             type: integer
       responses:
-        "200":
+        "204":
           description: OK, post deleted successfully
           
   /books:
