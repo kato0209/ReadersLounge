@@ -223,6 +223,19 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/BookGenreNode"
+  /chats:
+    get:
+      servers:
+        - url: "ws://localhost:8080"
+      security:
+        - X-CSRF-TOKEN: []
+        - jwtAuth: []
+      summary: WebSocket Connection for chat
+      operationId: chat-socket
+      responses:
+        "101":
+          description: OK
+          
       
 components:
   securitySchemes:
@@ -382,6 +395,6 @@ components:
         - parent_genre_id
         - children
         
-        
+  
     
                   
