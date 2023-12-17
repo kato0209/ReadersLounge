@@ -1,7 +1,7 @@
 package repository
 
 import (
-	models "backend/models/chat"
+	"backend/models/chat"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -17,6 +17,6 @@ func NewChatRepository(db *sqlx.DB) IChatRepository {
 	return &chatRepository{db}
 }
 
-func (cr *chatRepository) SaveMessage(*models.Message) error {
+func (cr *chatRepository) SaveMessage(*chat.Message) error {
 	return nil
 }

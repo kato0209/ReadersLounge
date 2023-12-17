@@ -38,7 +38,10 @@ func main() {
 
 	bookRepository := repository.NewBookRepository(db)
 	bookUsecase := usecase.NewBookUsecase(bookRepository)
-	server := controller.NewServer(userUsecase, postUsecase, bookUsecase)
+
+	chatRepository := repository.NewChatRepository(db)
+	chatUsecase := usecase.NewChatUsecase(chatRepository)
+	server := controller.NewServer(userUsecase, postUsecase, bookUsecase, chatUsecase)
 
 	e := router.NewRouter(server)
 

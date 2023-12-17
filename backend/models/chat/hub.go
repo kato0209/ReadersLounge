@@ -1,4 +1,4 @@
-package models
+package chat
 
 type Hub struct {
 	Clients      map[*Client]bool
