@@ -235,6 +235,28 @@ paths:
       responses:
         "101":
           description: OK
+      x-websocket-doc:
+        messageTypes:
+          - type: "req-message"
+            description: "Chat message sent by a user"
+            payload:
+              type: object
+              properties:
+                user_id:
+                  type: int
+                content:
+                  type: string
+                room_id:
+                  type: int
+          - type: "res-message"
+            description: "Chat message recieve from a user"
+            payload:
+              type: object
+              properties:
+                user_id:
+                  type: int
+                content:
+                  type: string
           
       
 components:
