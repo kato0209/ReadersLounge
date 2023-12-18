@@ -234,7 +234,7 @@ paths:
       operationId: chat-socket
       responses:
         "101":
-          description: OK
+          description: Switching Protocols
       x-websocket-doc:
         messageTypes:
           - type: "req-message"

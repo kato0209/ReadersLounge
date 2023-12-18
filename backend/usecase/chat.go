@@ -6,14 +6,13 @@ import (
 	"log"
 
 	"github.com/gorilla/websocket"
-	"github.com/pkg/errors"
 )
 
 type IChatUsecase interface {
 	SaveMessage(*chat.Message) error
-	RunLoop(*chat.Hub) error
-	ReadLoop(client *chat.Client, broadCast chan<- []byte, unregister chan<- *chat.Client) error
-	WriteLoop(client *chat.Client) error
+	RunLoop(*chat.Hub)
+	ReadLoop(client *chat.Client, broadCast chan<- []byte, unregister chan<- *chat.Client)
+	WriteLoop(client *chat.Client)
 }
 
 type chatUsecase struct {
@@ -28,7 +27,7 @@ func (cu *chatUsecase) SaveMessage(*chat.Message) error {
 	return nil
 }
 
-func (cu *chatUsecase) RunLoop(h *chat.Hub) error {
+func (cu *chatUsecase) RunLoop(h *chat.Hub) {
 	for {
 		select {
 		case client := <-h.RegisterCh:
@@ -43,7 +42,7 @@ func (cu *chatUsecase) RunLoop(h *chat.Hub) error {
 	}
 }
 
-func (cu *chatUsecase) ReadLoop(client *chat.Client, broadCast chan<- []byte, unregister chan<- *chat.Client) error {
+func (cu *chatUsecase) ReadLoop(client *chat.Client, broadCast chan<- []byte, unregister chan<- *chat.Client) {
 	defer func() {
 		client.Disconnect(unregister)
 	}()
@@ -54,14 +53,14 @@ func (cu *chatUsecase) ReadLoop(client *chat.Client, broadCast chan<- []byte, un
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 				log.Printf("unexpected close error: %v", err)
 			}
-			return errors.WithStack(err)
+			break
 		}
 
 		broadCast <- jsonMsg
 	}
 }
 
-func (cu *chatUsecase) WriteLoop(client *chat.Client) error {
+func (cu *chatUsecase) WriteLoop(client *chat.Client) {
 	defer func() {
 		client.WsConnect.Close()
 	}()
@@ -70,12 +69,12 @@ func (cu *chatUsecase) WriteLoop(client *chat.Client) error {
 		message := <-client.SendCh
 		w, err := client.WsConnect.NextWriter(websocket.TextMessage)
 		if err != nil {
-			return errors.WithStack(err)
+			return
 		}
 		w.Write(message)
 
 		if err := w.Close(); err != nil {
-			return errors.WithStack(err)
+			return
 		}
 	}
 }
