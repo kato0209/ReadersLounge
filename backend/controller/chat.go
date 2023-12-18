@@ -21,11 +21,11 @@ func (s *Server) ChatSocket(ctx echo.Context) error {
 	}
 
 	hub := models.NewHub()
-	go hub.RunLoop()
+	go s.cu.RunLoop(hub)
 
 	client := models.NewClient(ws)
-	go client.ReadLoop(hub.BroadcastCh, hub.UnRegisterCh)
-	go client.WriteLoop()
+	go s.cu.ReadLoop(client, hub.BroadcastCh, hub.UnRegisterCh)
+	go s.cu.WriteLoop(client)
 	hub.RegisterCh <- client
 
 	return nil
