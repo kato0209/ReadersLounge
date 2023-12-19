@@ -4,6 +4,7 @@ import Box from '@mui/material/Box';
 import { apiInstance } from '../../lib/api/apiInstance';
 import { useErrorHandler } from 'react-error-boundary';
 import { ChatRoom } from '../../openapi';
+import { Link } from "react-router-dom"
 
 export default function RoomList() {
 
@@ -46,7 +47,9 @@ export default function RoomList() {
           <>
             {chatRooms.map(chatRoom => (
                 <Box key={chatRoom.room_id}>
-                    {chatRoom.room_id}
+                    <Link to={"/chat-room"} state={{ roomID: chatRoom.room_id }}>
+                        room
+                    </Link>
                 </Box>
             ))}
           </>
