@@ -97,6 +97,12 @@ type FetchBookDataParams struct {
 	Keyword *string `form:"keyword,omitempty" json:"keyword,omitempty"`
 }
 
+// ChatSocketParams defines parameters for ChatSocket.
+type ChatSocketParams struct {
+	// RoomId ID to specify the chat room
+	RoomId int `form:"room_id" json:"room_id"`
+}
+
 // LogoutJSONBody defines parameters for Logout.
 type LogoutJSONBody = map[string]interface{}
 

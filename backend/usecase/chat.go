@@ -1,18 +1,21 @@
 package usecase
 
 import (
+	"backend/models"
 	"backend/models/chat"
 	"backend/repository"
 	"log"
 
 	"github.com/gorilla/websocket"
+	"github.com/labstack/echo/v4"
+	"github.com/pkg/errors"
 )
 
 type IChatUsecase interface {
-	SaveMessage(*chat.Message) error
-	RunLoop(*chat.Hub)
+	RunLoop(hub *chat.Hub)
 	ReadLoop(client *chat.Client, broadCast chan<- []byte, unregister chan<- *chat.Client)
 	WriteLoop(client *chat.Client)
+	CheckRoomAccessPermission(ctx echo.Context, userID, roomID int) (bool, error)
 }
 
 type chatUsecase struct {
@@ -21,10 +24,6 @@ type chatUsecase struct {
 
 func NewChatUsecase(cr repository.IChatRepository) IChatUsecase {
 	return &chatUsecase{cr}
-}
-
-func (cu *chatUsecase) SaveMessage(*chat.Message) error {
-	return nil
 }
 
 func (cu *chatUsecase) RunLoop(h *chat.Hub) {
@@ -57,6 +56,16 @@ func (cu *chatUsecase) ReadLoop(client *chat.Client, broadCast chan<- []byte, un
 		}
 
 		broadCast <- jsonMsg
+
+		message := chat.Message{
+			User:    models.User{UserID: client.ClientID},
+			Content: string(jsonMsg),
+		}
+		if err := cu.cr.SaveMessage(&message); err != nil {
+			log.Printf("failed to save message: %v", err)
+			break
+		}
+
 	}
 }
 
@@ -77,4 +86,12 @@ func (cu *chatUsecase) WriteLoop(client *chat.Client) {
 			return
 		}
 	}
+}
+
+func (cu *chatUsecase) CheckRoomAccessPermission(ctx echo.Context, userID, roomID int) (bool, error) {
+	hasPermission, err := cu.cr.CheckRoomAccessPermission(ctx, userID, roomID)
+	if err != nil {
+		return false, errors.WithStack(err)
+	}
+	return hasPermission, nil
 }

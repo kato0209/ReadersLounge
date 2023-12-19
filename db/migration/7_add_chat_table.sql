@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS entries (
     entry_id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     chat_room_id integer NOT NULL,
     user_id integer NOT NULL,
+    joined_at timestamptz NOT NULL DEFAULT current_timestamp,
     created_at timestamptz NOT NULL DEFAULT current_timestamp,
     FOREIGN KEY (chat_room_id) REFERENCES chat_rooms(chat_room_id),
     FOREIGN KEY (user_id) REFERENCES users(user_id)

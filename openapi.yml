@@ -232,9 +232,18 @@ paths:
         - jwtAuth: []
       summary: WebSocket Connection for chat
       operationId: chat-socket
+      parameters:
+        - name: room_id
+          in: query
+          required: true
+          description: ID to specify the chat room
+          schema:
+            type: integer
       responses:
         "101":
           description: Switching Protocols
+        "401":
+          description: You don't have permission to access this room 
       x-websocket-doc:
         messageTypes:
           - type: "req-message"
