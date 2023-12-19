@@ -28,7 +28,6 @@ type BookSearchDialogProps  = {
 };
 
 export const BookSearchDialog: React.FC<BookSearchDialogProps> = ({ formData }) => {
-  console.log(777);
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {

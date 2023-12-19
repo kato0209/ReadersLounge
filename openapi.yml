@@ -266,7 +266,22 @@ paths:
                   type: int
                 content:
                   type: string
-          
+  /chat-rooms:
+    get:
+      security:
+        - X-CSRF-TOKEN: []
+        - jwtAuth: []
+      summary: return users chat room list
+      operationId: get-chat-rooms
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ChatRoom"
       
 components:
   securitySchemes:
@@ -425,6 +440,13 @@ components:
         - genre_level
         - parent_genre_id
         - children
+    ChatRoom:
+      type: object
+      properties:
+        room_id:
+          type: integer
+      required:
+        - room_id
         
   
     

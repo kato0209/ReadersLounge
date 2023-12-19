@@ -43,7 +43,17 @@ export default function Sidebar() {
           </ListItemIcon>
           <ListItemText primary="Notifications" />
         </ListItem>
-        <ListItem button sx={{ borderRadius: '50px' }}>
+        <ListItem 
+          button 
+          component={Link} 
+          sx={{ 
+            borderRadius: '50px',
+            '&:hover': {
+              color: 'black',
+            },
+          }} 
+          to="/chat-room-list"
+        >
           <ListItemIcon>
             <MailIcon />
           </ListItemIcon>

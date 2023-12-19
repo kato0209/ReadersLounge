@@ -16,6 +16,7 @@ type IChatUsecase interface {
 	ReadLoop(client *chat.Client, broadCast chan<- []byte, unregister chan<- *chat.Client)
 	WriteLoop(client *chat.Client)
 	CheckRoomAccessPermission(ctx echo.Context, userID, roomID int) (bool, error)
+	GetChatRooms(ctx echo.Context, userID int) ([]chat.Room, error)
 }
 
 type chatUsecase struct {
@@ -94,4 +95,12 @@ func (cu *chatUsecase) CheckRoomAccessPermission(ctx echo.Context, userID, roomI
 		return false, errors.WithStack(err)
 	}
 	return hasPermission, nil
+}
+
+func (cu *chatUsecase) GetChatRooms(ctx echo.Context, userID int) ([]chat.Room, error) {
+	rooms, err := cu.cr.GetAllChatRooms(ctx, userID)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	return rooms, nil
 }

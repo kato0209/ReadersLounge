@@ -26,6 +26,8 @@ import { Book } from '../models';
 // @ts-ignore
 import { BookGenreNode } from '../models';
 // @ts-ignore
+import { ChatRoom } from '../models';
+// @ts-ignore
 import { Post } from '../models';
 // @ts-ignore
 import { ReqLoginBody } from '../models';
@@ -41,6 +43,48 @@ import { User } from '../models';
  */
 export const DefaultApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
+        /**
+         * 
+         * @summary WebSocket Connection for chat
+         * @param {number} roomId ID to specify the chat room
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        chatSocket: async (roomId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'roomId' is not null or undefined
+            assertParamExists('chatSocket', 'roomId', roomId)
+            const localVarPath = `/chats`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication X-CSRF-TOKEN required
+            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
+
+            // authentication jwtAuth required
+
+            if (roomId !== undefined) {
+                localVarQueryParameter['room_id'] = roomId;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
         /**
          * 
          * @summary create post
@@ -228,6 +272,41 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          */
         getBooksGenres: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/books-genres`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication X-CSRF-TOKEN required
+            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
+
+            // authentication jwtAuth required
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary return users chat room list
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getChatRooms: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/chat-rooms`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -556,6 +635,17 @@ export const DefaultApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
+         * @summary WebSocket Connection for chat
+         * @param {number} roomId ID to specify the chat room
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async chatSocket(roomId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.chatSocket(roomId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary create post
          * @param {string} content 
          * @param {number} rating 
@@ -609,6 +699,16 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          */
         async getBooksGenres(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<BookGenreNode>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getBooksGenres(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary return users chat room list
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getChatRooms(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ChatRoom>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getChatRooms(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -701,6 +801,16 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
     return {
         /**
          * 
+         * @summary WebSocket Connection for chat
+         * @param {number} roomId ID to specify the chat room
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        chatSocket(roomId: number, options?: any): AxiosPromise<void> {
+            return localVarFp.chatSocket(roomId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary create post
          * @param {string} content 
          * @param {number} rating 
@@ -750,6 +860,15 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         getBooksGenres(options?: any): AxiosPromise<Array<BookGenreNode>> {
             return localVarFp.getBooksGenres(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary return users chat room list
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getChatRooms(options?: any): AxiosPromise<Array<ChatRoom>> {
+            return localVarFp.getChatRooms(options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -834,6 +953,18 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
 export class DefaultApi extends BaseAPI {
     /**
      * 
+     * @summary WebSocket Connection for chat
+     * @param {number} roomId ID to specify the chat room
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public chatSocket(roomId: number, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).chatSocket(roomId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @summary create post
      * @param {string} content 
      * @param {number} rating 
@@ -892,6 +1023,17 @@ export class DefaultApi extends BaseAPI {
      */
     public getBooksGenres(options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).getBooksGenres(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary return users chat room list
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getChatRooms(options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getChatRooms(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

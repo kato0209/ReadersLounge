@@ -8,6 +8,7 @@ configuration.ts
 index.ts
 models/book-genre-node.ts
 models/book.ts
+models/chat-room.ts
 models/index.ts
 models/post.ts
 models/req-login-body.ts

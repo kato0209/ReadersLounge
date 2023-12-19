@@ -1,5 +1,6 @@
 export * from './book';
 export * from './book-genre-node';
+export * from './chat-room';
 export * from './post';
 export * from './req-login-body';
 export * from './req-signup-body';

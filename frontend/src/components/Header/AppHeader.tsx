@@ -84,7 +84,7 @@ export default function AppHeader() {
                 <NotificationsIcon sx={{marginRight:'0.5rem'}}/>
                 Notifications
               </MenuItem>
-              <MenuItem onClick={handleMenuClose} sx={{display: 'flex'}}>
+              <MenuItem component={Link} to="/chat-room-list" sx={{display: 'flex', '&:hover': { color: 'black'}}}>
                 <MailIcon sx={{marginRight:'0.5rem'}}/>
                 Messages
               </MenuItem>

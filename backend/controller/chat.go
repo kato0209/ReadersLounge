@@ -46,3 +46,25 @@ func (s *Server) ChatSocket(ctx echo.Context, params openapi.ChatSocketParams) e
 
 	return nil
 }
+
+func (s *Server) GetChatRooms(ctx echo.Context) error {
+	userID, err := utils.ExtractUserID(ctx)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	rooms, err := s.cu.GetChatRooms(ctx, userID)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	resRooms := []openapi.ChatRoom{}
+	for _, room := range rooms {
+		resRoom := openapi.ChatRoom{
+			RoomId: room.RoomID,
+		}
+		resRooms = append(resRooms, resRoom)
+	}
+
+	return ctx.JSON(http.StatusOK, resRooms)
+}

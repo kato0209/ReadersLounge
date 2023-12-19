@@ -37,6 +37,11 @@ type BookGenreNode struct {
 	ParentGenreId  string          `json:"parent_genre_id"`
 }
 
+// ChatRoom defines model for ChatRoom.
+type ChatRoom struct {
+	RoomId int `json:"room_id"`
+}
+
 // Post defines model for Post.
 type Post struct {
 	Book      Book    `json:"book"`

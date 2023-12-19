@@ -21,3 +21,12 @@ INSERT INTO posts (user_id, book_id) VALUES (2, 2);
 -- post_details テーブルに投稿詳細を挿入
 INSERT INTO post_details (post_id, content, rating, image) VALUES (1, 'This book is great!', 5, 'https://www.example.com/image1.jpg');
 INSERT INTO post_details (post_id, content, rating, image) VALUES (2, 'Highly recommend!', 4, 'https://www.example.com/image2.jpg');
+
+-- chat_rooms テーブルにチャットルームを挿入
+INSERT INTO chat_rooms DEFAULT VALUES;
+
+-- entries テーブルにチャットルーム参加者を挿入
+INSERT INTO entries (chat_room_id, user_id) VALUES (1, 1);
+
+-- chat_messages テーブルにチャットメッセージを挿入
+INSERT INTO chat_messages (chat_room_id, user_id, content) VALUES (1, 1, 'Hello!');

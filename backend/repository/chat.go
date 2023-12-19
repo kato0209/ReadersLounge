@@ -11,6 +11,7 @@ import (
 type IChatRepository interface {
 	SaveMessage(message *chat.Message) error
 	CheckRoomAccessPermission(ctx echo.Context, userID, roomID int) (bool, error)
+	GetAllChatRooms(ctx echo.Context, userID int) ([]chat.Room, error)
 }
 
 type chatRepository struct {
@@ -52,4 +53,20 @@ func (cr *chatRepository) CheckRoomAccessPermission(ctx echo.Context, userID, ro
 		return false, errors.WithStack(err)
 	}
 	return exists, nil
+}
+
+func (cr *chatRepository) GetAllChatRooms(ctx echo.Context, userID int) ([]chat.Room, error) {
+	query := `SELECT 
+				chat_rooms.chat_room_id 
+			FROM chat_rooms 
+			INNER JOIN entries 
+			ON chat_rooms.chat_room_id = entries.chat_room_id 
+			WHERE entries.user_id = $1;`
+
+	var rooms []chat.Room
+	err := cr.db.SelectContext(ctx.Request().Context(), &rooms, query, userID)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	return rooms, nil
 }
