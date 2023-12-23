@@ -8,52 +8,58 @@ import { useLocation } from "react-router-dom"
 import SendIcon from '@mui/icons-material/Send';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import * as WebSocket from "websocket";
-
+import ReconnectingWebSocket from 'reconnecting-websocket'
 
 export default function Room() {
 
     const errorHandler = useErrorHandler();
-    const location = useLocation();
     const { state } = useLocation();
     const [input, setInput] = React.useState<string>("");
-    const [webSocket, setWebSocket] = React.useState<WebSocket.w3cwebsocket>();
     const [messages, setMessages] = React.useState<string[]>([]);
+    const socketRef = React.useRef<ReconnectingWebSocket | null>(null);
+    const isConnectedRef = React.useRef<boolean>(false);
+
 
     React.useEffect(() => {
-        const connect = (): Promise<WebSocket.w3cwebsocket> => {
+        const connect = (): Promise<ReconnectingWebSocket> => {
+            isConnectedRef.current = false;
             return new Promise((resolve, reject) => {
-              const socket = new WebSocket.w3cwebsocket(`${import.meta.env.VITE_WEBSOCKET_URL}/chats?room_id=${state.roomID}`);
-              socket.onopen = () => {
-                console.log("connected");
-                resolve(socket);
-              };
-              socket.onclose = () => {
-                alert("接続が切れました。");
-                console.log("disconnected");
-              };
-              socket.onerror = (err: unknown) => {
-                reject(err);
-              };
+                socketRef.current = new ReconnectingWebSocket(`${import.meta.env.VITE_WEBSOCKET_URL}/chats?room_id=${state.roomID}`);
+                
+                if (socketRef.current) {
+                    socketRef.current.onopen = () => {
+                        isConnectedRef.current = true;
+                        resolve(socketRef.current);
+                    };
+                    socketRef.current.onerror = (err: unknown) => {
+                        reject(err);
+                    };
+                }
             });
         };
-        
+
         connect().then((socket) => {
             socket.onmessage = (msg: MessageEvent) => {
                 const newMessage = JSON.parse(msg.data as string);
                 setMessages(prevMessages => [...prevMessages, newMessage]);
             };
-            setWebSocket(socket);
+            
         }).catch((err) => {
             errorHandler(err);
         });
+
+        return () => {
+            if (isConnectedRef.current) {
+                socketRef.current.close();
+            }
+        };
     }, []);
 
-    const handleSendMessage = () => {
+    const handleSendMessage = React.useCallback(() => {
         if (input.length === 0) return;
-        webSocket.send(JSON.stringify(input));
+        socketRef.current.send(JSON.stringify(input));
         setInput("");
-    };
+    }, [input]);
 
     return (
     <Container component="main">

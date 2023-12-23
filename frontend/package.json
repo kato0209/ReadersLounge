@@ -26,6 +26,7 @@
     "react-hook-form": "^7.47.0",
     "react-icons": "^4.11.0",
     "react-router-dom": "^6.16.0",
+    "reconnecting-websocket": "^4.4.0",
     "websocket": "^1.0.34",
     "zod": "^3.22.4",
     "zod-form-data": "^2.0.2"

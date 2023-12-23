@@ -52,7 +52,6 @@ func (s *Server) GetChatRooms(ctx echo.Context) error {
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
-
 	rooms, err := s.cu.GetChatRooms(ctx, userID)
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
