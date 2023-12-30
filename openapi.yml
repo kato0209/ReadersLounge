@@ -445,8 +445,23 @@ components:
       properties:
         room_id:
           type: integer
+        target_user_id:
+          type: integer
+        target_user_name:
+          type: string
+        target_user_profile_image:
+          type: string
+        last_message:
+          type: string
+        last_message_sent_at:
+          type: string
       required:
         - room_id
+        - target_user_id
+        - target_user_name
+        - target_user_profile_image
+        - last_message
+        - last_message_sent_at
         
   
     

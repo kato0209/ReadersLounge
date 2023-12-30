@@ -1,10 +1,11 @@
 import * as React from 'react';
-import Sidebar from './Sidebar';
+import Sidebar from '../../components/Sidebar/Sidebar';
 import PostList from './PostList';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { useIsMobileContext } from '../../providers/mobile/isMobile';
 
 export default function Home() {
-    const isMobile = useMediaQuery('(max-width:500px)');
+    const isMobile = useIsMobileContext();
 
   return (
     <div style={{ display: 'flex'}}>

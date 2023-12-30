@@ -7,7 +7,7 @@ import ListItemText from '@mui/material/ListItemText';
 import HomeIcon from '@mui/icons-material/Home';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MailIcon from '@mui/icons-material/Mail';
-import { CreatePost }  from './CreatePost';
+import { CreatePost }  from '../../features/home/CreatePost';
 import SearchIcon from '@mui/icons-material/Search';
 import { Link } from 'react-router-dom';
 
@@ -31,7 +31,17 @@ export default function Sidebar() {
         anchor="left"
     >
       <List sx={{ width: '60%' }}>
-        <ListItem button sx={{ borderRadius: '50px' }}>
+        <ListItem 
+          button 
+          component={Link} 
+          to="/"
+          sx={{ 
+            borderRadius: '50px',
+            '&:hover': {
+              color: 'black',
+            },
+          }}
+        >
           <ListItemIcon>
             <HomeIcon />
           </ListItemIcon>

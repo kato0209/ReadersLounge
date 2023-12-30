@@ -76,7 +76,7 @@ export default function AppHeader() {
               open={Boolean(MenuAnchorEl)}
               onClose={handleMenuClose}
             >
-              <MenuItem onClick={handleMenuClose} sx={{display: 'flex'}}>
+              <MenuItem component={Link} to="/" sx={{display: 'flex', '&:hover': { color: 'black'}}}>
                 <HomeIcon sx={{marginRight:'0.5rem'}}/>
                 Home
               </MenuItem>

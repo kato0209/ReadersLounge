@@ -16,11 +16,12 @@ import Rating from '@mui/material/Rating';
 import { apiInstance } from '../../lib/api/apiInstance';
 import { useErrorHandler } from 'react-error-boundary';
 import { Post } from '../../openapi';
-import Sidebar from './Sidebar';
+import Sidebar from '../../components/Sidebar/Sidebar';
 import Box from '@mui/material/Box';
 import { isValidUrl } from '../../utils/isValidUrl';
 import Link from '@mui/material/Link';
 import { Menu, MenuItem } from '@mui/material';
+import UserAvatar from '../../components/Avatar/UserAvatar';
 
 const PostListContainer = {
     display: 'flex', 
@@ -100,10 +101,7 @@ export default function PostList() {
                             minWidth: '600',
                             backgroundColor: '#EFEBE5', 
                             boxShadow: 'none',  
-                            borderTop: '1px solid #BDBDBD', 
-                            borderRight: '1px solid #BDBDBD',
-                            borderLeft: '1px solid #BDBDBD',
-                            borderBottom: '1px solid #BDBDBD',
+                            border: '1px solid #BDBDBD',
                             cursor: 'pointer',
                             '&:hover': {
                                 color: 'inherit',
@@ -116,9 +114,7 @@ export default function PostList() {
                         key={post.post_id}>
                     <CardHeader
                         avatar={
-                        <Avatar 
-                            src={isValidUrl(post.user.profile_image) ? post.user.profile_image : `data:image/png;base64,${post.user.profile_image}` }>                  
-                        </Avatar>
+                            <UserAvatar image={post.user.profile_image}/>
                         }
                         action={
                         <>

@@ -4,6 +4,8 @@ import (
 	"backend/models"
 	"backend/models/chat"
 	"backend/repository"
+	"backend/utils"
+	"encoding/json"
 	"log"
 
 	"github.com/gorilla/websocket"
@@ -58,9 +60,16 @@ func (cu *chatUsecase) ReadLoop(client *chat.Client, broadCast chan<- []byte, un
 
 		broadCast <- jsonMsg
 
+		var decodedMessage string
+		err = json.Unmarshal([]byte(jsonMsg), &decodedMessage)
+		if err != nil {
+			log.Printf("failed to decode message: %v", err)
+			break
+		}
+
 		message := chat.Message{
 			User:    models.User{UserID: client.ClientID},
-			Content: string(jsonMsg),
+			Content: decodedMessage,
 		}
 		if err := cu.cr.SaveMessage(&message); err != nil {
 			log.Printf("failed to save message: %v", err)
@@ -101,6 +110,16 @@ func (cu *chatUsecase) GetChatRooms(ctx echo.Context, userID int) ([]chat.Room, 
 	rooms, err := cu.cr.GetAllChatRooms(ctx, userID)
 	if err != nil {
 		return nil, errors.WithStack(err)
+	}
+	for i := range rooms {
+		room := &rooms[i]
+		if !utils.IsRemotePath(room.ChatPartner.ProfileImage.FileName) {
+			profileImage, err := utils.LoadImage(ctx, room.ChatPartner.ProfileImage.FileName)
+			if err != nil {
+				return []chat.Room{}, errors.WithStack(err)
+			}
+			room.ChatPartner.ProfileImage.EncodedImage = &profileImage
+		}
 	}
 	return rooms, nil
 }

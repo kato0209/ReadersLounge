@@ -60,7 +60,12 @@ func (s *Server) GetChatRooms(ctx echo.Context) error {
 	resRooms := []openapi.ChatRoom{}
 	for _, room := range rooms {
 		resRoom := openapi.ChatRoom{
-			RoomId: room.RoomID,
+			RoomId:                 room.RoomID,
+			TargetUserId:           room.ChatPartner.UserID,
+			TargetUserName:         room.ChatPartner.Name,
+			TargetUserProfileImage: room.ChatPartner.ProfileImage.ClassifyPathType(),
+			LastMessage:            room.LastMessage.Content,
+			LastMessageSentAt:      room.LastMessage.CreatedAt.Format("2006-01-02 15:04"),
 		}
 		resRooms = append(resRooms, resRoom)
 	}

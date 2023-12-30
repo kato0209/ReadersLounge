@@ -39,7 +39,12 @@ type BookGenreNode struct {
 
 // ChatRoom defines model for ChatRoom.
 type ChatRoom struct {
-	RoomId int `json:"room_id"`
+	LastMessage            string `json:"last_message"`
+	LastMessageSentAt      string `json:"last_message_sent_at"`
+	RoomId                 int    `json:"room_id"`
+	TargetUserId           int    `json:"target_user_id"`
+	TargetUserName         string `json:"target_user_name"`
+	TargetUserProfileImage string `json:"target_user_profile_image"`
 }
 
 // Post defines model for Post.

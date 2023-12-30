@@ -1,6 +1,7 @@
 # dev
 FROM node:19.8.1-buster-slim AS dev
 RUN apt-get update && apt-get install -y openjdk-11-jre-headless && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install make
 WORKDIR /readers-lounge/frontend
 COPY package*.json ./
 

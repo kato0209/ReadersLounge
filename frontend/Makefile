@@ -10,8 +10,7 @@ prettier:
 prettier/write:
 	npx prettier --write src
 
-codegen: deps
+codegen:
 	npx openapi-generator-cli generate -i ../openapi.yml -o ./src/openapi -g typescript-axios -c ./docs/config.yml
-
 typecheck:
 	npx tsc --noEmit

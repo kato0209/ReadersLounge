@@ -26,5 +26,35 @@ export interface ChatRoom {
      * @memberof ChatRoom
      */
     'room_id': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ChatRoom
+     */
+    'target_user_id': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof ChatRoom
+     */
+    'target_user_name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ChatRoom
+     */
+    'target_user_profile_image': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ChatRoom
+     */
+    'last_message': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ChatRoom
+     */
+    'last_message_sent_at': string;
 }
 
