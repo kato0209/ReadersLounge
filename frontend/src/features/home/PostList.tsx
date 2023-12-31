@@ -22,6 +22,7 @@ import { isValidUrl } from '../../utils/isValidUrl';
 import Link from '@mui/material/Link';
 import { Menu, MenuItem } from '@mui/material';
 import UserAvatar from '../../components/Avatar/UserAvatar';
+import { useAuthUserContext } from '../../lib/auth/auth';
 
 const PostListContainer = {
     display: 'flex', 
@@ -38,6 +39,7 @@ export default function PostList() {
     const errorHandler = useErrorHandler();
     const [postAnchorEl, setPostAnchorEl] = React.useState<null | HTMLElement>(null);
     const [selectedPostID, setSelectedPostID] = React.useState<number>(0);
+    const { user } = useAuthUserContext();
 
     const handleSettingClick = (event: React.MouseEvent<HTMLElement>, postID: number) => {
         setPostAnchorEl(event.currentTarget);
@@ -54,7 +56,7 @@ export default function PostList() {
             try {
                 const api = await apiInstance;
                 const res = await api.deletePost(selectedPostID);
-                window.location.reload();
+                setPosts(currentPosts => currentPosts.filter(post => post.post_id !== selectedPostID));
             } catch (error: unknown) {
                 errorHandler(error);
             }
@@ -118,27 +120,31 @@ export default function PostList() {
                         }
                         action={
                         <>
-                            <IconButton onClick={(e) => handleSettingClick(e, post.post_id)}>
-                                <MoreVertIcon />
-                            </IconButton>
-                            <Menu
-                                anchorEl={postAnchorEl}
-                                open={Boolean(postAnchorEl)}
-                                onClose={handleSettingClose}
-                                sx={{
-                                    '& .MuiPaper-root': {
-                                        boxShadow: 'none', 
-                                        border: 'none'
-                                    }
-                                }}
-                            >
-                                <MenuItem onClick={() => {
-                                    DeletePost();
-                                }}
-                                >
-                                    投稿を削除
-                                </MenuItem>
-                            </Menu>
+                            {post.user.user_id === user.user_id && 
+                                <>
+                                    <IconButton onClick={(e) => handleSettingClick(e, post.post_id)}>
+                                        <MoreVertIcon />
+                                    </IconButton>
+                                    <Menu
+                                        anchorEl={postAnchorEl}
+                                        open={Boolean(postAnchorEl)}
+                                        onClose={handleSettingClose}
+                                        sx={{
+                                            '& .MuiPaper-root': {
+                                                boxShadow: 'none', 
+                                                border: 'none'
+                                            }
+                                        }}
+                                    >
+                                        <MenuItem onClick={() => {
+                                            DeletePost();
+                                        }}
+                                        >
+                                            投稿を削除
+                                        </MenuItem>
+                                    </Menu>
+                                </>
+                            }
                         </>
                         }
                         title={post.user.name}

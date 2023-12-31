@@ -247,24 +247,26 @@ paths:
       x-websocket-doc:
         messageTypes:
           - type: "req-message"
-            description: "Chat message sent by a user"
+            description: "Chat message sent by a user (schema: #/components/schemas/SendMessageReqBody)"
             payload:
               type: object
               properties:
-                user_id:
-                  type: int
                 content:
                   type: string
                 room_id:
                   type: int
           - type: "res-message"
-            description: "Chat message recieve from a user"
+            description: "Chat message recieve from a user (schema: #/components/schemas/Message)"
             payload:
               type: object
               properties:
+                message_id:
+                  type: int
                 user_id:
                   type: int
                 content:
+                  type: string
+                sent_at:
                   type: string
   /chat-rooms:
     get:
@@ -282,6 +284,29 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ChatRoom"
+  /messages:
+    get:
+      security:
+        - X-CSRF-TOKEN: []
+        - jwtAuth: []
+      summary: return messages in a chat room
+      operationId: get-messages
+      parameters:
+        - name: room_id
+          in: query
+          required: true
+          description: ID to specify the chat room
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Message"
       
 components:
   securitySchemes:
@@ -462,7 +487,31 @@ components:
         - target_user_profile_image
         - last_message
         - last_message_sent_at
-        
+    Message:
+      type: object
+      properties:
+        message_id:
+          type: integer
+        user_id:
+          type: integer
+        content:
+          type: string
+        sent_at:
+          type: string
+      required:
+        - message_id
+        - user_id
+        - content
+        - sent_at
+    SendMessageReqBody:
+      properties:
+        content:
+          type: string
+        room_id:
+          type: integer
+      required:
+        - content
+        - room_id
   
     
                   

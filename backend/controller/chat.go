@@ -2,6 +2,7 @@ package controller
 
 import (
 	"backend/controller/openapi"
+	"backend/models/chat"
 	models "backend/models/chat"
 	"backend/utils"
 	"net/http"
@@ -9,6 +10,21 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo/v4"
 )
+
+func (s *Server) RunLoop(h *chat.Hub) {
+	for {
+		select {
+		case client := <-h.RegisterCh:
+			h.Register(client)
+
+		case client := <-h.UnRegisterCh:
+			h.Unregister(client)
+
+		case msg := <-h.BroadcastCh:
+			h.BroadCastToAllClient(msg)
+		}
+	}
+}
 
 func (s *Server) ChatSocket(ctx echo.Context, params openapi.ChatSocketParams) error {
 
@@ -36,13 +52,10 @@ func (s *Server) ChatSocket(ctx echo.Context, params openapi.ChatSocketParams) e
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	hub := models.NewHub()
-	go s.cu.RunLoop(hub)
-
 	client := models.NewClient(ws, userID, roomID)
-	go s.cu.ReadLoop(client, hub.BroadcastCh, hub.UnRegisterCh)
+	go s.cu.ReadLoop(client, s.hub.BroadcastCh, s.hub.UnRegisterCh)
 	go s.cu.WriteLoop(client)
-	hub.RegisterCh <- client
+	s.hub.RegisterCh <- client
 
 	return nil
 }
@@ -71,4 +84,24 @@ func (s *Server) GetChatRooms(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(http.StatusOK, resRooms)
+}
+
+func (s *Server) GetMessages(ctx echo.Context, params openapi.GetMessagesParams) error {
+	roomID := params.RoomId
+	messages, err := s.cu.GetMessages(ctx, roomID)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	resMessages := []openapi.Message{}
+	for _, message := range messages {
+		resMessage := openapi.Message{
+			MessageId: message.MessageID,
+			UserId:    message.User.UserID,
+			Content:   message.Content,
+			SentAt:    message.CreatedAt.Format("2006-01-02 15:04"),
+		}
+		resMessages = append(resMessages, resMessage)
+	}
+	return ctx.JSON(http.StatusOK, resMessages)
 }

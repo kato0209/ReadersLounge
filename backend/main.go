@@ -5,6 +5,7 @@ import (
 	"backend/controller/openapi"
 	"backend/db"
 	"backend/initialize"
+	"backend/models/chat"
 	"backend/repository"
 	"backend/router"
 	"backend/usecase"
@@ -41,7 +42,11 @@ func main() {
 
 	chatRepository := repository.NewChatRepository(db)
 	chatUsecase := usecase.NewChatUsecase(chatRepository)
-	server := controller.NewServer(userUsecase, postUsecase, bookUsecase, chatUsecase)
+
+	hub := chat.NewHub()
+	server := controller.NewServer(userUsecase, postUsecase, bookUsecase, chatUsecase, *hub)
+
+	go server.RunLoop(hub)
 
 	e := router.NewRouter(server)
 

@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"backend/controller/openapi"
 	"backend/models"
 	"backend/models/chat"
 	"backend/repository"
@@ -14,11 +15,11 @@ import (
 )
 
 type IChatUsecase interface {
-	RunLoop(hub *chat.Hub)
 	ReadLoop(client *chat.Client, broadCast chan<- []byte, unregister chan<- *chat.Client)
 	WriteLoop(client *chat.Client)
 	CheckRoomAccessPermission(ctx echo.Context, userID, roomID int) (bool, error)
 	GetChatRooms(ctx echo.Context, userID int) ([]chat.Room, error)
+	GetMessages(ctx echo.Context, roomID int) ([]chat.Message, error)
 }
 
 type chatUsecase struct {
@@ -27,21 +28,6 @@ type chatUsecase struct {
 
 func NewChatUsecase(cr repository.IChatRepository) IChatUsecase {
 	return &chatUsecase{cr}
-}
-
-func (cu *chatUsecase) RunLoop(h *chat.Hub) {
-	for {
-		select {
-		case client := <-h.RegisterCh:
-			h.Register(client)
-
-		case client := <-h.UnRegisterCh:
-			h.Unregister(client)
-
-		case msg := <-h.BroadcastCh:
-			h.BroadCastToAllClient(msg)
-		}
-	}
 }
 
 func (cu *chatUsecase) ReadLoop(client *chat.Client, broadCast chan<- []byte, unregister chan<- *chat.Client) {
@@ -58,23 +44,33 @@ func (cu *chatUsecase) ReadLoop(client *chat.Client, broadCast chan<- []byte, un
 			break
 		}
 
-		broadCast <- jsonMsg
-
-		var decodedMessage string
+		var decodedMessage chat.Message
 		err = json.Unmarshal([]byte(jsonMsg), &decodedMessage)
 		if err != nil {
 			log.Printf("failed to decode message: %v", err)
 			break
 		}
 
-		message := chat.Message{
-			User:    models.User{UserID: client.ClientID},
-			Content: decodedMessage,
-		}
-		if err := cu.cr.SaveMessage(&message); err != nil {
+		decodedMessage.User = models.User{UserID: client.ClientID}
+		if err := cu.cr.SaveMessage(&decodedMessage); err != nil {
 			log.Printf("failed to save message: %v", err)
 			break
 		}
+
+		resMessage := openapi.Message{
+			MessageId: decodedMessage.MessageID,
+			UserId:    decodedMessage.User.UserID,
+			Content:   decodedMessage.Content,
+			SentAt:    decodedMessage.CreatedAt.Format("2006-01-02 15:04"),
+		}
+
+		encodedMessage, err := json.Marshal(resMessage)
+		if err != nil {
+			log.Printf("failed to encode message: %v", err)
+			break
+		}
+
+		broadCast <- encodedMessage
 
 	}
 }
@@ -122,4 +118,13 @@ func (cu *chatUsecase) GetChatRooms(ctx echo.Context, userID int) ([]chat.Room, 
 		}
 	}
 	return rooms, nil
+}
+
+func (cu *chatUsecase) GetMessages(ctx echo.Context, roomID int) ([]chat.Message, error) {
+	messages := []chat.Message{}
+	err := cu.cr.GetMessagesByRoomID(ctx, roomID, &messages)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	return messages, nil
 }

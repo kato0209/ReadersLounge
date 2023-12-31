@@ -12,6 +12,7 @@ type IChatRepository interface {
 	SaveMessage(message *chat.Message) error
 	CheckRoomAccessPermission(ctx echo.Context, userID, roomID int) (bool, error)
 	GetAllChatRooms(ctx echo.Context, userID int) ([]chat.Room, error)
+	GetMessagesByRoomID(ctx echo.Context, roomID int, messaegs *[]chat.Message) error
 }
 
 type chatRepository struct {
@@ -25,15 +26,14 @@ func NewChatRepository(db *sqlx.DB) IChatRepository {
 func (cr *chatRepository) SaveMessage(message *chat.Message) error {
 	query := `INSERT INTO chat_messages (
 				user_id, chat_room_id, content
-			) VALUES ($1, $2, $3) RETURNING chat_message_id;`
+			) VALUES ($1, $2, $3) RETURNING chat_message_id, created_at;`
 
-	chatRoomID := 1
 	err := cr.db.QueryRowx(
 		query,
 		message.User.UserID,
-		chatRoomID,
+		message.RoomID,
 		message.Content,
-	).Scan(&message.MessageID)
+	).Scan(&message.MessageID, &message.CreatedAt)
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -48,10 +48,11 @@ func (cr *chatRepository) CheckRoomAccessPermission(ctx echo.Context, userID, ro
 			);`
 
 	var exists bool
-	err := cr.db.QueryRowxContext(ctx.Request().Context(), query, userID, roomID).Scan(&exists)
+	err := cr.db.QueryRowxContext(ctx.Request().Context(), query, roomID, userID).Scan(&exists)
 	if err != nil {
 		return false, errors.WithStack(err)
 	}
+
 	return exists, nil
 }
 
@@ -109,4 +110,37 @@ func (cr *chatRepository) GetAllChatRooms(ctx echo.Context, userID int) ([]chat.
 		return nil, errors.WithStack(err)
 	}
 	return rooms, nil
+}
+
+func (cr *chatRepository) GetMessagesByRoomID(ctx echo.Context, roomID int, messages *[]chat.Message) error {
+	query := `
+		SELECT
+			chat_message_id, user_id, content, created_at
+		FROM chat_messages
+		WHERE chat_room_id = $1
+		ORDER BY created_at;
+	`
+	rows, err := cr.db.QueryContext(ctx.Request().Context(), query, roomID)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		message := chat.Message{}
+		err := rows.Scan(
+			&message.MessageID,
+			&message.User.UserID,
+			&message.Content,
+			&message.CreatedAt,
+		)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+		*messages = append(*messages, message)
+	}
+	if err := rows.Err(); err != nil {
+		return errors.WithStack(err)
+	}
+	return nil
 }

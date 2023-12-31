@@ -4,11 +4,16 @@ import Box from '@mui/material/Box';
 import { apiInstance } from '../../lib/api/apiInstance';
 import { useErrorHandler } from 'react-error-boundary';
 import { ChatRoom } from '../../openapi';
+import { Message } from '../../openapi';
+import { SendMessageReqBody } from '../../openapi';
 import { useLocation } from "react-router-dom"
 import SendIcon from '@mui/icons-material/Send';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import ReconnectingWebSocket from 'reconnecting-websocket'
+import { useAuthUserContext } from '../../lib/auth/auth';
+import { Avatar, Typography, Paper } from '@mui/material';
+
 
 type RoomProps = {
     roomID: number;
@@ -18,9 +23,10 @@ export default function Room(props: RoomProps) {
 
     const errorHandler = useErrorHandler();
     const [input, setInput] = React.useState<string>("");
-    const [messages, setMessages] = React.useState<string[]>([]);
+    const [messages, setMessages] = React.useState<Message[]>([]);
     const socketRef = React.useRef<ReconnectingWebSocket | null>(null);
     const isConnectedRef = React.useRef<boolean>(false);
+    const { user } = useAuthUserContext();
 
 
     React.useEffect(() => {
@@ -45,7 +51,13 @@ export default function Room(props: RoomProps) {
 
         connect().then((socket) => {
             socket.onmessage = (msg: MessageEvent) => {
-                const newMessage = JSON.parse(msg.data as string);
+                const newMessageJson = JSON.parse(msg.data);
+                const newMessage: Message = {
+                    message_id: newMessageJson.message_id,
+                    user_id: newMessageJson.user_id,
+                    content: newMessageJson.content,
+                    sent_at: newMessageJson.sent_at,
+                };
                 setMessages(prevMessages => [...prevMessages, newMessage]);
             };
             
@@ -60,9 +72,43 @@ export default function Room(props: RoomProps) {
         };
     }, []);
 
+    React.useEffect(() => {
+        const fetchMessages = async () => {
+        
+            try {
+                const api = await apiInstance;
+                const res = await api.getMessages(props.roomID);
+                
+                if (res.data && Array.isArray(res.data)) {
+                    const fetchedMessages: Message[] = res.data.map(item => ({
+                        message_id: item.message_id,
+                        user_id: item.user_id,
+                        content: item.content,
+                        sent_at: item.sent_at,
+                    }));
+                    setMessages(fetchedMessages);
+                }
+            } catch (error: unknown) {
+                errorHandler(error);
+            }
+                
+        };
+    
+        fetchMessages();
+    }, []);
+
+    const messagesEndRef = React.useRef<HTMLDivElement>(null); 
+    React.useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
+    }, [messages]);
+
     const handleSendMessage = React.useCallback(() => {
         if (input.length === 0) return;
-        socketRef.current?.send(JSON.stringify(input));
+        const inputMessage: SendMessageReqBody = {
+            room_id: props.roomID,
+            content: input,
+        };
+        socketRef.current?.send(JSON.stringify(inputMessage));
         setInput("");
     }, [input]);
 
@@ -73,23 +119,66 @@ export default function Room(props: RoomProps) {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
+            height: 'calc(100vh - 3rem - 8rem)',
+            overflowY: 'auto',
+            MsOverflowStyle: 'none',
+            scrollbarWidth: 'none',
+            '&::-webkit-scrollbar': {
+                display: 'none',
+            },
         }}
     >
         <Box
             sx={{
                 display: 'flex',
                 flexDirection: 'column',
-                alignItems: 'center',
                 width: '100%',
                 flex: 1,
-                overflowY: 'auto',
             }}
         >
             <>
-                {messages.map((message, index) => (
-                    <div key={index}>{message}</div>
+                {messages.map((message) => (
+                    <Box key={message.message_id} sx={{mb:2}}>
+                        <Box 
+                            sx={{
+                                display: "flex",
+                                justifyContent: message.user_id === user.user_id ? "flex-end" : "flex-start",
+                            }}
+                        >
+                            <Box sx={{
+                                    display: "flex",
+                                    flexDirection: message.user_id === user.user_id ? "row-reverse" : "row",
+                                    alignItems: "center",
+                                }}
+                            >
+                                <Paper
+                                    variant="outlined"
+                                    sx={{
+                                        p: 2,
+                                        ml: message.user_id === user.user_id ? 0 : 1,
+                                        mr: message.user_id === user.user_id ? 1 : 0,
+                                        borderRadius: message.user_id === user.user_id ? "20px 20px 5px 20px" : "20px 20px 20px 5px",
+                                    }}
+                                >
+                                    <Typography variant="body1">{message.content}</Typography>
+                                </Paper>
+                            </Box>
+                        </Box>
+                        <span 
+                            style={{
+                                display: "flex",
+                                justifyContent: message.user_id === user.user_id ? "flex-end" : "flex-start",
+                                fontSize: "0.7rem",
+                                color: "gray",
+                                margin: "0.5rem",
+                            }}
+                        >
+                            {message.sent_at}
+                        </span>
+                    </Box>
                 ))}
             </>
+            <div ref={messagesEndRef}/>
         </Box> 
         <Box 
             component="form" 

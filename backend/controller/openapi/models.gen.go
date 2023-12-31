@@ -47,6 +47,14 @@ type ChatRoom struct {
 	TargetUserProfileImage string `json:"target_user_profile_image"`
 }
 
+// Message defines model for Message.
+type Message struct {
+	Content   string `json:"content"`
+	MessageId int    `json:"message_id"`
+	SentAt    string `json:"sent_at"`
+	UserId    int    `json:"user_id"`
+}
+
 // Post defines model for Post.
 type Post struct {
 	Book      Book    `json:"book"`
@@ -84,6 +92,12 @@ type ResCsrfToken struct {
 	CsrfToken *string `json:"csrf_token,omitempty"`
 }
 
+// SendMessageReqBody defines model for SendMessageReqBody.
+type SendMessageReqBody struct {
+	Content string `json:"content"`
+	RoomId  int    `json:"room_id"`
+}
+
 // UpdateUserReqBody defines model for UpdateUserReqBody.
 type UpdateUserReqBody struct {
 	Name         *string `json:"name,omitempty"`
@@ -115,6 +129,12 @@ type ChatSocketParams struct {
 
 // LogoutJSONBody defines parameters for Logout.
 type LogoutJSONBody = map[string]interface{}
+
+// GetMessagesParams defines parameters for GetMessages.
+type GetMessagesParams struct {
+	// RoomId ID to specify the chat room
+	RoomId int `form:"room_id" json:"room_id"`
+}
 
 // GoogleOauthCallbackParams defines parameters for GoogleOauthCallback.
 type GoogleOauthCallbackParams struct {

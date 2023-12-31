@@ -6,7 +6,7 @@ import (
 )
 
 type User struct {
-	UserID       int     `db:"user_id"`
+	UserID       int     `json:"user_id" db:"user_id"`
 	Name         string  `db:"name"`
 	ProfileText  *string `db:"profile_text"`
 	ProfileImage ProfileImage
