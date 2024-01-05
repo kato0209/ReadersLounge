@@ -101,7 +101,7 @@ paths:
         - X-CSRF-TOKEN: []
         - jwtAuth: []
       summary: get user
-      operationId: get-user
+      operationId: get-login-user
       responses:
         "200":
           description: OK
@@ -121,6 +121,28 @@ paths:
             schema:
               $ref: "#/components/schemas/UpdateUserReqBody"
         required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+                
+  /user/{userId}:
+    get:
+      security:
+        - X-CSRF-TOKEN: []
+        - jwtAuth: []
+      summary: get user by user_id
+      operationId: get-user
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: Unique identifier of the user
+          schema:
+            type: integer
       responses:
         "200":
           description: OK

@@ -338,6 +338,41 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
+         * @summary get user
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getLoginUser: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/user`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication X-CSRF-TOKEN required
+            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
+
+            // authentication jwtAuth required
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary return messages in a chat room
          * @param {number} roomId ID to specify the chat room
          * @param {*} [options] Override http request option.
@@ -415,12 +450,16 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
-         * @summary get user
+         * @summary get user by user_id
+         * @param {number} userId Unique identifier of the user
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getUser: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/user`;
+        getUser: async (userId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'userId' is not null or undefined
+            assertParamExists('getUser', 'userId', userId)
+            const localVarPath = `/user/{userId}`
+                .replace(`{${"userId"}}`, encodeURIComponent(String(userId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -757,6 +796,16 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary get user
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getLoginUser(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<User>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getLoginUser(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary return messages in a chat room
          * @param {number} roomId ID to specify the chat room
          * @param {*} [options] Override http request option.
@@ -778,12 +827,13 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary get user
+         * @summary get user by user_id
+         * @param {number} userId Unique identifier of the user
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getUser(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<User>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getUser(options);
+        async getUser(userId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<User>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getUser(userId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -927,6 +977,15 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * 
+         * @summary get user
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getLoginUser(options?: any): AxiosPromise<User> {
+            return localVarFp.getLoginUser(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary return messages in a chat room
          * @param {number} roomId ID to specify the chat room
          * @param {*} [options] Override http request option.
@@ -946,12 +1005,13 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * 
-         * @summary get user
+         * @summary get user by user_id
+         * @param {number} userId Unique identifier of the user
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getUser(options?: any): AxiosPromise<User> {
-            return localVarFp.getUser(options).then((request) => request(axios, basePath));
+        getUser(userId: number, options?: any): AxiosPromise<User> {
+            return localVarFp.getUser(userId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1103,6 +1163,17 @@ export class DefaultApi extends BaseAPI {
 
     /**
      * 
+     * @summary get user
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getLoginUser(options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getLoginUser(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @summary return messages in a chat room
      * @param {number} roomId ID to specify the chat room
      * @param {*} [options] Override http request option.
@@ -1126,13 +1197,14 @@ export class DefaultApi extends BaseAPI {
 
     /**
      * 
-     * @summary get user
+     * @summary get user by user_id
+     * @param {number} userId Unique identifier of the user
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public getUser(options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).getUser(options).then((request) => request(this.axios, this.basePath));
+    public getUser(userId: number, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getUser(userId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

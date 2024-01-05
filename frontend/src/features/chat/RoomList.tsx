@@ -19,30 +19,30 @@ export default function RoomList() {
     const isMobile = useIsMobileContext();
 
     React.useEffect(() => {
-    const fetchPosts = async () => {
-    
-        try {
-            const api = await apiInstance;
-            const res = await api.getChatRooms();
-            
-            if (res.data && Array.isArray(res.data)) {
-                const fetchedRooms: ChatRoom[] = res.data.map(item => ({
-                    room_id: item.room_id,
-                    target_user_id: item.target_user_id,
-                    target_user_name: item.target_user_name,
-                    target_user_profile_image: item.target_user_profile_image,
-                    last_message: item.last_message,
-                    last_message_sent_at: item.last_message_sent_at,
-                }));
-                setChatRooms(fetchedRooms);
+        const fetchPosts = async () => {
+        
+            try {
+                const api = await apiInstance;
+                const res = await api.getChatRooms();
+                
+                if (res.data && Array.isArray(res.data)) {
+                    const fetchedRooms: ChatRoom[] = res.data.map(item => ({
+                        room_id: item.room_id,
+                        target_user_id: item.target_user_id,
+                        target_user_name: item.target_user_name,
+                        target_user_profile_image: item.target_user_profile_image,
+                        last_message: item.last_message,
+                        last_message_sent_at: item.last_message_sent_at,
+                    }));
+                    setChatRooms(fetchedRooms);
+                }
+            } catch (error: unknown) {
+                errorHandler(error);
             }
-        } catch (error: unknown) {
-            errorHandler(error);
-        }
-            
-    };
+                
+        };
 
-    fetchPosts();
+        fetchPosts();
     }, []);
 
     return (

@@ -13,7 +13,7 @@ export const protectedRoutes = [
         element: <SearchBook />,
     },  
     {
-        path: '/user-profile',
+        path: '/user-profile/:id',
         element: <UserProfile />,
     },  
     {

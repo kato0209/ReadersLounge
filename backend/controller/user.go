@@ -118,7 +118,7 @@ func (s *Server) GoogleOauthCallback(ctx echo.Context, params openapi.GoogleOaut
 	return ctx.Redirect(http.StatusMovedPermanently, os.Getenv("FE_URL"))
 }
 
-func (s *Server) GetUser(ctx echo.Context) error {
+func (s *Server) GetLoginUser(ctx echo.Context) error {
 	userID, err := utils.ExtractUserID(ctx)
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
@@ -134,6 +134,23 @@ func (s *Server) GetUser(ctx echo.Context) error {
 	resUser := openapi.User{
 		UserId:       loginUser.UserID,
 		Name:         loginUser.Name,
+		ProfileImage: profileImage,
+	}
+
+	return ctx.JSON(http.StatusOK, resUser)
+}
+
+func (s *Server) GetUser(ctx echo.Context, userId int) error {
+	user, err := s.uu.GetUserByUserID(ctx, userId)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	profileImage := user.ProfileImage.ClassifyPathType()
+
+	resUser := openapi.User{
+		UserId:       user.UserID,
+		Name:         user.Name,
 		ProfileImage: profileImage,
 	}
 

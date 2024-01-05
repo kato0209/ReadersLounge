@@ -17,11 +17,12 @@ import HomeIcon from '@mui/icons-material/Home';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MailIcon from '@mui/icons-material/Mail';
 import SearchIcon from '@mui/icons-material/Search';
+import { useAuthUserContext } from '../../lib/auth/auth';
 
 export default function AppHeader() {
   const [profileAnchorEl, setProfileAnchorEl] = React.useState<null | HTMLElement>(null);
   const [MenuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(null);
-
+  const { user } = useAuthUserContext();
 
   const handleProfile = (event: React.MouseEvent<HTMLElement>) => {
     setProfileAnchorEl(event.currentTarget);
@@ -44,7 +45,15 @@ export default function AppHeader() {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="fixed" sx={{ backgroundColor: '#FF7E73', boxShadow: 'none' }}>
+      <AppBar 
+        position="fixed" 
+        sx={{ 
+          backgroundColor: '#FF7E73', 
+          boxShadow: 'none', 
+          '& .MuiPaper-root': {
+            padding: '0px!important',
+          },
+        }}>
         <Toolbar sx={{ alignItems: 'center', height: '3rem', minHeight: '28px !important' }}>
           <>
             <IconButton
@@ -139,7 +148,7 @@ export default function AppHeader() {
               open={Boolean(profileAnchorEl)}
               onClose={handleProfileClose}
             >
-              <MenuItem component={Link} to="/user-profile" sx={{display: 'flex', '&:hover': { color: 'black'}}}>プロフィール</MenuItem>
+              <MenuItem component={Link} to={`/user-profile/${user.user_id}`} sx={{display: 'flex', '&:hover': { color: 'black'}}}>プロフィール</MenuItem>
               <MenuItem onClick={handleLogout}>ログアウト</MenuItem>
             </Menu>
           </>
