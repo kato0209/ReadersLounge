@@ -128,5 +128,5 @@ func (s *Server) CreateChatRoom(ctx echo.Context) error {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.NoContent(http.StatusCreated)
+	return ctx.JSON(http.StatusCreated, room.RoomID)
 }

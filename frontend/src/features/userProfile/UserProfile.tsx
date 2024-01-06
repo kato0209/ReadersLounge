@@ -51,7 +51,7 @@ export default function UserProfile() {
       const api = await apiInstance;
       const res = await api.createChatRoom(req);
       if (res.status === 201) {
-        navigate('/chat-room-list');
+        navigate(`/chat-room-list/${res.data}`);
       }
     } catch (error: unknown) {
         errorHandler(error);
