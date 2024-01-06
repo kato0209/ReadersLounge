@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS entries (
     joined_at timestamptz NOT NULL DEFAULT current_timestamp,
     created_at timestamptz NOT NULL DEFAULT current_timestamp,
     FOREIGN KEY (chat_room_id) REFERENCES chat_rooms(chat_room_id),
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS chat_messages (
@@ -22,5 +22,5 @@ CREATE TABLE IF NOT EXISTS chat_messages (
     created_at timestamptz NOT NULL DEFAULT current_timestamp,
     updated_at timestamptz NOT NULL DEFAULT current_timestamp,
     FOREIGN KEY (user_id) REFERENCES users(user_id),
-    FOREIGN KEY (chat_room_id) REFERENCES chat_rooms(chat_room_id)
+    FOREIGN KEY (chat_room_id) REFERENCES chat_rooms(chat_room_id) ON DELETE CASCADE
 );

@@ -20,6 +20,7 @@ type IChatUsecase interface {
 	CheckRoomAccessPermission(ctx echo.Context, userID, roomID int) (bool, error)
 	GetChatRooms(ctx echo.Context, userID int) ([]chat.Room, error)
 	GetMessages(ctx echo.Context, roomID int) ([]chat.Message, error)
+	CreateChatRoom(ctx echo.Context, userID, chatPartnerID int, room *chat.Room) error
 }
 
 type chatUsecase struct {
@@ -127,4 +128,27 @@ func (cu *chatUsecase) GetMessages(ctx echo.Context, roomID int) ([]chat.Message
 		return nil, errors.WithStack(err)
 	}
 	return messages, nil
+}
+
+func (cu *chatUsecase) CreateChatRoom(ctx echo.Context, userID, chatPartnerID int, room *chat.Room) error {
+
+	roomExists, roomID, err := cu.cr.CheckRoomExists(ctx, userID, chatPartnerID)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	room.RoomID = roomID
+
+	if roomExists {
+		err = cu.cr.UpdateRoomAccessTime(ctx, roomID, userID)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+		return nil
+	}
+
+	err = cu.cr.CreateChatRoom(ctx, userID, chatPartnerID, room)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	return nil
 }

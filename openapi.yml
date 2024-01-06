@@ -306,6 +306,33 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ChatRoom"
+    post:
+      security:
+        - X-CSRF-TOKEN: []
+        - jwtAuth: []
+      summary: create chat room
+      operationId: create-chat-room
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "object"
+              required:
+                - "chat_partner_id"
+              properties:
+                chat_partner_id:
+                  type: integer
+      responses:
+        "201":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  room_id:
+                    type: integer
+              
   /messages:
     get:
       security:
@@ -507,8 +534,6 @@ components:
         - target_user_id
         - target_user_name
         - target_user_profile_image
-        - last_message
-        - last_message_sent_at
     Message:
       type: object
       properties:

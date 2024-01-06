@@ -70,7 +70,7 @@ export default function Room(props: RoomProps) {
                 socketRef.current?.close();
             }
         };
-    }, []);
+    }, [props.roomID]);
 
     React.useEffect(() => {
         const fetchMessages = async () => {
@@ -95,7 +95,7 @@ export default function Room(props: RoomProps) {
         };
     
         fetchMessages();
-    }, []);
+    }, [props.roomID]);
 
     const messagesEndRef = React.useRef<HTMLDivElement>(null); 
     React.useEffect(() => {

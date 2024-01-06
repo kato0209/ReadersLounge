@@ -10,13 +10,17 @@ import { useIsMobileContext } from '../../providers/mobile/isMobile';
 import UserAvatar from '../../components/Avatar/UserAvatar';
 import Typography from '@mui/material/Typography';
 import Room from './Room';
+import { useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export default function RoomList() {
 
     const errorHandler = useErrorHandler();
     const [chatRooms, setChatRooms] = React.useState<ChatRoom[]>([]);
-    const [roomID, setRoomID] = React.useState<number>();
+    const { id } = useParams<{ id: string }>();
+    const roomID = id ? parseInt(id, 10) : 0;
     const isMobile = useIsMobileContext();
+    const navigate = useNavigate();
 
     React.useEffect(() => {
         const fetchPosts = async () => {
@@ -72,7 +76,7 @@ export default function RoomList() {
                 {chatRooms.map(chatRoom => (
                     <Box 
                         key={chatRoom.room_id}
-                        onClick={() => setRoomID(chatRoom.room_id)}
+                        onClick={() => navigate(`/chat-room-list/${chatRoom.room_id}`)}
                         sx={{
                             display: 'flex',
                             alignItems: 'center',
@@ -84,7 +88,7 @@ export default function RoomList() {
                             },
                         }}
                     >
-                        <UserAvatar image={chatRoom.target_user_profile_image}/>
+                        <UserAvatar image={chatRoom.target_user_profile_image} userID={chatRoom.target_user_id}/>
                         <Box sx={{margin: "0.5rem"}}>
                             <Box sx={{display: "flex", alignItems: "center"}}>
                                 <Typography variant="h6" color="black">
@@ -102,7 +106,9 @@ export default function RoomList() {
                 ))}
             </>
                 ) : (
-                    <h2>チャットルームがありません</h2>
+                    <Box sx={{marginLeft: "1rem"}}>
+                        <h2>チャットルームがありません</h2>
+                    </Box>
                 )}
             </Box> 
         </div>

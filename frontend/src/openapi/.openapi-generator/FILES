@@ -9,6 +9,7 @@ index.ts
 models/book-genre-node.ts
 models/book.ts
 models/chat-room.ts
+models/create-chat-room-request.ts
 models/index.ts
 models/message.ts
 models/post.ts

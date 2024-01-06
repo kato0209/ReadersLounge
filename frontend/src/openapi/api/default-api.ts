@@ -28,6 +28,8 @@ import { BookGenreNode } from '../models';
 // @ts-ignore
 import { ChatRoom } from '../models';
 // @ts-ignore
+import { CreateChatRoomRequest } from '../models';
+// @ts-ignore
 import { Message } from '../models';
 // @ts-ignore
 import { Post } from '../models';
@@ -81,6 +83,45 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary create chat room
+         * @param {CreateChatRoomRequest} [createChatRoomRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createChatRoom: async (createChatRoomRequest?: CreateChatRoomRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/chat-rooms`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication X-CSRF-TOKEN required
+            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
+
+            // authentication jwtAuth required
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(createChatRoomRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -729,6 +770,17 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary create chat room
+         * @param {CreateChatRoomRequest} [createChatRoomRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createChatRoom(createChatRoomRequest?: CreateChatRoomRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ChatRoom>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createChatRoom(createChatRoomRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary create post
          * @param {string} content 
          * @param {number} rating 
@@ -916,6 +968,16 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * 
+         * @summary create chat room
+         * @param {CreateChatRoomRequest} [createChatRoomRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createChatRoom(createChatRoomRequest?: CreateChatRoomRequest, options?: any): AxiosPromise<ChatRoom> {
+            return localVarFp.createChatRoom(createChatRoomRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary create post
          * @param {string} content 
          * @param {number} rating 
@@ -1086,6 +1148,18 @@ export class DefaultApi extends BaseAPI {
      */
     public chatSocket(roomId: number, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).chatSocket(roomId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary create chat room
+     * @param {CreateChatRoomRequest} [createChatRoomRequest] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public createChatRoom(createChatRoomRequest?: CreateChatRoomRequest, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).createChatRoom(createChatRoomRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

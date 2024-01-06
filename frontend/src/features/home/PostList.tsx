@@ -116,7 +116,7 @@ export default function PostList() {
                         key={post.post_id}>
                     <CardHeader
                         avatar={
-                            <UserAvatar image={post.user.profile_image}/>
+                            <UserAvatar image={post.user.profile_image} userID={post.user.user_id}/>
                         }
                         action={
                         <>

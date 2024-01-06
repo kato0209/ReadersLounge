@@ -72,13 +72,18 @@ func (s *Server) GetChatRooms(ctx echo.Context) error {
 
 	resRooms := []openapi.ChatRoom{}
 	for _, room := range rooms {
+		var lastMessageSentAt *string
+		if room.LastMessage.CreatedAt != nil {
+			formattedTime := room.LastMessage.CreatedAt.Format("2006-01-02 15:04")
+			lastMessageSentAt = &formattedTime
+		}
 		resRoom := openapi.ChatRoom{
 			RoomId:                 room.RoomID,
 			TargetUserId:           room.ChatPartner.UserID,
 			TargetUserName:         room.ChatPartner.Name,
 			TargetUserProfileImage: room.ChatPartner.ProfileImage.ClassifyPathType(),
 			LastMessage:            room.LastMessage.Content,
-			LastMessageSentAt:      room.LastMessage.CreatedAt.Format("2006-01-02 15:04"),
+			LastMessageSentAt:      lastMessageSentAt,
 		}
 		resRooms = append(resRooms, resRoom)
 	}
@@ -104,4 +109,24 @@ func (s *Server) GetMessages(ctx echo.Context, params openapi.GetMessagesParams)
 		resMessages = append(resMessages, resMessage)
 	}
 	return ctx.JSON(http.StatusOK, resMessages)
+}
+
+func (s *Server) CreateChatRoom(ctx echo.Context) error {
+	userID, err := utils.ExtractUserID(ctx)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	reqCreateChatRoomBody := openapi.CreateChatRoomJSONBody{}
+	if err := ctx.Bind(&reqCreateChatRoomBody); err != nil {
+		return ctx.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	room := chat.Room{}
+	err = s.cu.CreateChatRoom(ctx, userID, reqCreateChatRoomBody.ChatPartnerId, &room)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.NoContent(http.StatusCreated)
 }

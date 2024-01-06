@@ -1,12 +1,15 @@
 import React from 'react';
 import Avatar from '@mui/material/Avatar';
 import { isValidUrl } from '../../utils/isValidUrl';
+import { Link } from 'react-router-dom';
 
-function UserAvatar(props: { image: string }) {
+function UserAvatar(props: { image: string, userID: number }) {
     return (
-        <Avatar 
-            src={isValidUrl(props.image) ? props.image : `data:image/png;base64,${props.image}` }>                  
-        </Avatar>
+        <Link to={`/user-profile/${props.userID}`}>
+            <Avatar 
+                src={isValidUrl(props.image) ? props.image : `data:image/png;base64,${props.image}` }>                  
+            </Avatar>
+        </Link>
     );
 }
 

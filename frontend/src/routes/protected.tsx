@@ -15,9 +15,13 @@ export const protectedRoutes = [
     {
         path: '/user-profile/:id',
         element: <UserProfile />,
-    },  
+    }, 
     {
         path: '/chat-room-list',
+        element: <RoomList />,
+    }, 
+    {
+        path: '/chat-room-list/:id',
         element: <RoomList />,
     },
 ];

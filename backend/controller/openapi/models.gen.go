@@ -39,12 +39,12 @@ type BookGenreNode struct {
 
 // ChatRoom defines model for ChatRoom.
 type ChatRoom struct {
-	LastMessage            string `json:"last_message"`
-	LastMessageSentAt      string `json:"last_message_sent_at"`
-	RoomId                 int    `json:"room_id"`
-	TargetUserId           int    `json:"target_user_id"`
-	TargetUserName         string `json:"target_user_name"`
-	TargetUserProfileImage string `json:"target_user_profile_image"`
+	LastMessage            *string `json:"last_message,omitempty"`
+	LastMessageSentAt      *string `json:"last_message_sent_at,omitempty"`
+	RoomId                 int     `json:"room_id"`
+	TargetUserId           int     `json:"target_user_id"`
+	TargetUserName         string  `json:"target_user_name"`
+	TargetUserProfileImage string  `json:"target_user_profile_image"`
 }
 
 // Message defines model for Message.
@@ -121,6 +121,11 @@ type FetchBookDataParams struct {
 	Keyword *string `form:"keyword,omitempty" json:"keyword,omitempty"`
 }
 
+// CreateChatRoomJSONBody defines parameters for CreateChatRoom.
+type CreateChatRoomJSONBody struct {
+	ChatPartnerId int `json:"chat_partner_id"`
+}
+
 // ChatSocketParams defines parameters for ChatSocket.
 type ChatSocketParams struct {
 	// RoomId ID to specify the chat room
@@ -144,6 +149,9 @@ type GoogleOauthCallbackParams struct {
 	// Code Authorization code returned by Google auth server
 	Code string `form:"code" json:"code"`
 }
+
+// CreateChatRoomJSONRequestBody defines body for CreateChatRoom for application/json ContentType.
+type CreateChatRoomJSONRequestBody CreateChatRoomJSONBody
 
 // LoginJSONRequestBody defines body for Login for application/json ContentType.
 type LoginJSONRequestBody = ReqLoginBody

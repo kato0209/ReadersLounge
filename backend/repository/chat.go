@@ -2,6 +2,7 @@ package repository
 
 import (
 	"backend/models/chat"
+	"database/sql"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
@@ -13,6 +14,9 @@ type IChatRepository interface {
 	CheckRoomAccessPermission(ctx echo.Context, userID, roomID int) (bool, error)
 	GetAllChatRooms(ctx echo.Context, userID int) ([]chat.Room, error)
 	GetMessagesByRoomID(ctx echo.Context, roomID int, messaegs *[]chat.Message) error
+	CreateChatRoom(ctx echo.Context, userID, chatPartnerID int, room *chat.Room) error
+	CheckRoomExists(ctx echo.Context, userID, chatPartnerID int) (bool, int, error)
+	UpdateRoomAccessTime(ctx echo.Context, roomID, userID int) error
 }
 
 type chatRepository struct {
@@ -71,17 +75,24 @@ func (cr *chatRepository) GetAllChatRooms(ctx echo.Context, userID int) ([]chat.
 			INNER JOIN user_details AS other_user_details ON other_users.user_id = other_user_details.user_id
 			LEFT JOIN (
 				SELECT 
-					chat_room_id, 
-					content, 
-					created_at
-				FROM chat_messages
-				WHERE chat_room_id IN (
-					SELECT chat_room_id FROM entries WHERE user_id = $1
-				)
-				ORDER BY created_at DESC
-				LIMIT 1
+					inner_chat_messages.chat_room_id, 
+					inner_chat_messages.content, 
+					inner_chat_messages.created_at
+				FROM (
+					SELECT 
+						chat_room_id, 
+						content, 
+						created_at,
+						ROW_NUMBER() OVER (PARTITION BY chat_room_id ORDER BY created_at DESC) AS rn
+					FROM chat_messages
+					WHERE chat_room_id IN (
+						SELECT chat_room_id FROM entries WHERE user_id = $1
+					)
+				) AS inner_chat_messages
+				WHERE inner_chat_messages.rn = 1
 			) AS latest_messages ON chat_rooms.chat_room_id = latest_messages.chat_room_id
-			WHERE entries.user_id = $1;
+			WHERE entries.user_id = $1
+			ORDER BY latest_messages.created_at DESC;
 			`
 
 	rows, err := cr.db.QueryContext(ctx.Request().Context(), query, userID)
@@ -92,17 +103,25 @@ func (cr *chatRepository) GetAllChatRooms(ctx echo.Context, userID int) ([]chat.
 
 	var rooms []chat.Room
 	for rows.Next() {
+		var lastMessageContent sql.NullString
+		var lastMessageCreatedAt sql.NullTime
 		room := chat.Room{}
 		err := rows.Scan(
 			&room.RoomID,
 			&room.ChatPartner.UserID,
 			&room.ChatPartner.Name,
 			&room.ChatPartner.ProfileImage.FileName,
-			&room.LastMessage.Content,
-			&room.LastMessage.CreatedAt,
+			&lastMessageContent,
+			&lastMessageCreatedAt,
 		)
 		if err != nil {
 			return nil, errors.WithStack(err)
+		}
+		if lastMessageContent.Valid {
+			room.LastMessage.Content = &lastMessageContent.String
+		}
+		if lastMessageCreatedAt.Valid {
+			room.LastMessage.CreatedAt = &lastMessageCreatedAt.Time
 		}
 		rooms = append(rooms, room)
 	}
@@ -140,6 +159,73 @@ func (cr *chatRepository) GetMessagesByRoomID(ctx echo.Context, roomID int, mess
 		*messages = append(*messages, message)
 	}
 	if err := rows.Err(); err != nil {
+		return errors.WithStack(err)
+	}
+	return nil
+}
+
+func (cr *chatRepository) CreateChatRoom(ctx echo.Context, userID, chatPartnerID int, room *chat.Room) error {
+	tx, err := cr.db.BeginTxx(ctx.Request().Context(), nil)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	defer tx.Rollback()
+
+	query := `
+		INSERT INTO chat_rooms VALUES (DEFAULT) RETURNING chat_room_id;
+	`
+	err = tx.QueryRowxContext(ctx.Request().Context(), query).Scan(&room.RoomID)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	query = `
+		INSERT INTO entries (user_id, chat_room_id) VALUES ($1, $2);
+	`
+	_, err = tx.ExecContext(ctx.Request().Context(), query, userID, room.RoomID)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	query = `
+		INSERT INTO entries (user_id, chat_room_id) VALUES ($1, $2);
+	`
+	_, err = tx.ExecContext(ctx.Request().Context(), query, chatPartnerID, room.RoomID)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return errors.WithStack(err)
+	}
+
+	return nil
+}
+
+func (cr *chatRepository) CheckRoomExists(ctx echo.Context, userID, chatPartnerID int) (bool, int, error) {
+	var roomID int
+	query := `
+		SELECT e.chat_room_id FROM entries e
+		INNER JOIN entries e2 ON e.chat_room_id = e2.chat_room_id
+		WHERE e.user_id = $1 AND e2.user_id = $2
+		LIMIT 1;
+	`
+	err := cr.db.GetContext(ctx.Request().Context(), &roomID, query, userID, chatPartnerID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return false, 0, nil
+		}
+		return false, 0, errors.WithStack(err)
+	}
+	return true, roomID, nil
+}
+
+func (cr *chatRepository) UpdateRoomAccessTime(ctx echo.Context, roomID, userID int) error {
+	query := `
+		UPDATE entries SET joined_at = CURRENT_TIMESTAMP WHERE chat_room_id = $1 AND user_id = $2;
+	`
+	_, err := cr.db.ExecContext(ctx.Request().Context(), query, roomID, userID)
+	if err != nil {
 		return errors.WithStack(err)
 	}
 	return nil
