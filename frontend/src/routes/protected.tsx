@@ -1,6 +1,6 @@
 import Home from '../features/home/Home';
 import { SearchBook } from '../features/searchBook/SearchBook';
-import UserProfile  from '../features/userProfile/UserProfile';
+import UserProfile  from '../features/userProfile/UserProfileMain';
 import RoomList from '../features/chat/RoomList';
 
 export const protectedRoutes = [
