@@ -18,6 +18,8 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import MailIcon from '@mui/icons-material/Mail';
 import SearchIcon from '@mui/icons-material/Search';
 import { useAuthUserContext } from '../../lib/auth/auth';
+import { Avatar, Button } from '@mui/material';
+import { isValidUrl } from '../../utils/isValidUrl';
 
 export default function AppHeader() {
   const [profileAnchorEl, setProfileAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -123,16 +125,23 @@ export default function AppHeader() {
           </Box>
           <div style={{ flexGrow: 1 }}></div>
           <>
-            <IconButton
+            <Button
               size="large"
               aria-label="account of current user"
               aria-controls="menu-appbar"
               aria-haspopup="true"
               onClick={handleProfile}
               color="inherit"
+              sx={{borderRadius: '50%'}}
             >
-              <AccountCircle />
-            </IconButton>
+              <Avatar 
+                sx={{
+                  border: "1px solid rgba(0, 0, 0, 0.2)",
+                  boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
+                }} 
+                src={isValidUrl(user.profile_image) ? user.profile_image : `data:image/png;base64,${user.profile_image}` } 
+              />
+            </Button>
             <Menu
               id="menu-appbar"
               anchorEl={profileAnchorEl}

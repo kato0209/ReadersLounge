@@ -152,6 +152,7 @@ func (s *Server) GetUser(ctx echo.Context, userId int) error {
 		UserId:       user.UserID,
 		Name:         user.Name,
 		ProfileImage: profileImage,
+		ProfileText:  user.ProfileText,
 	}
 
 	return ctx.JSON(http.StatusOK, resUser)
@@ -169,11 +170,12 @@ func (s *Server) UpdateUser(ctx echo.Context) error {
 	}
 
 	updateUser := models.User{
+		UserID:      userID,
 		Name:        form.Value["name"][0],
 		ProfileText: &form.Value["profile_text"][0],
 	}
 
-	file, err := ctx.FormFile("image")
+	file, err := ctx.FormFile("profile_image")
 	if err == nil {
 		src, err := file.Open()
 		if err != nil {
@@ -198,7 +200,7 @@ func (s *Server) UpdateUser(ctx echo.Context) error {
 				Source:   &data,
 				FileName: generatedFileName,
 			}
-			fmt.Println(image)
+			updateUser.ProfileImage = image
 
 		} else {
 			return ctx.JSON(http.StatusBadRequest, "Unsupported file type")
@@ -208,17 +210,10 @@ func (s *Server) UpdateUser(ctx echo.Context) error {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	err = s.uu.UpdateUser(ctx, &updateUser, userID)
+	err = s.uu.UpdateUser(ctx, &updateUser)
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	profileImage := updateUser.ProfileImage.ClassifyPathType()
-
-	resUser := openapi.User{
-		UserId:       updateUser.UserID,
-		Name:         updateUser.Name,
-		ProfileImage: profileImage,
-	}
-	return ctx.JSON(http.StatusOK, resUser)
+	return ctx.NoContent(http.StatusNoContent)
 }

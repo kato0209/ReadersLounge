@@ -100,16 +100,17 @@ type SendMessageReqBody struct {
 
 // UpdateUserReqBody defines model for UpdateUserReqBody.
 type UpdateUserReqBody struct {
-	Name         *string `json:"name,omitempty"`
-	ProfileImage *string `json:"profile_image,omitempty"`
-	ProfileText  *string `json:"profile_text,omitempty"`
+	Name         *string             `json:"name,omitempty"`
+	ProfileImage *openapi_types.File `json:"profile_image,omitempty"`
+	ProfileText  *string             `json:"profile_text,omitempty"`
 }
 
 // User defines model for User.
 type User struct {
-	Name         string `json:"name"`
-	ProfileImage string `json:"profile_image"`
-	UserId       int    `json:"user_id"`
+	Name         string  `json:"name"`
+	ProfileImage string  `json:"profile_image"`
+	ProfileText  *string `json:"profile_text,omitempty"`
+	UserId       int     `json:"user_id"`
 }
 
 // FetchBookDataParams defines parameters for FetchBookData.

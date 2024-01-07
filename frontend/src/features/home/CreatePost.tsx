@@ -38,7 +38,6 @@ export const CreatePost: React.FC<CreatePostProps> = ({ displayString, book, for
   const [openCreatePostDialog, setOpenCreatePostDialog] = React.useState(false);
   const { user } = useAuthUserContext();
   const [imagePreview, setImagePreview] = React.useState<string | null>(null);
-  const [isFormEdit, setIsFormEdit] = React.useState<boolean>(false);
 
   const { register, handleSubmit, setValue, getValues, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(PostSchema),
@@ -108,24 +107,20 @@ export const CreatePost: React.FC<CreatePostProps> = ({ displayString, book, for
         setImagePreview(reader.result as string);
       };
       reader.readAsDataURL(file);
-      setIsFormEdit(true);
     }
   };
 
   const handleImageRemove = () => {
     setValue('postImage', undefined, { shouldValidate: true });
     setImagePreview(null);
-    setIsFormEdit(true);
   };
 
   const handleRatingChange = (newValue: number) => {
     setValue('rating', newValue, { shouldValidate: true });
-    setIsFormEdit(true);
   };
 
   const handlePostTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setValue('content', event.target.value, { shouldValidate: true });
-    setIsFormEdit(true);
   };
   
 
@@ -188,7 +183,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({ displayString, book, for
               >
                 {book && (
                   <Box sx={{marginBottom: '1rem', justifyContent: 'center', display: 'flex'}}>
-                    <ImportContactsIcon/>：
+                    <ImportContactsIcon/>
                     {book.title}
                   </Box>
                 )}

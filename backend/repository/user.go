@@ -17,7 +17,7 @@ type IUserRepository interface {
 	GetUserByIdentifier(ctx echo.Context, user *models.User, identifier string) error
 	GetUserByUserID(ctx echo.Context, user *models.User, userID int) error
 	CheckExistsUserByIdentifier(ctx echo.Context, identifier string) (bool, error)
-	UpdateUserByUserID(ctx echo.Context, user *models.User, userID int) error
+	UpdateUserByUserID(ctx echo.Context, user *models.User) error
 	SaveProfileImage(ctx echo.Context, image *models.ProfileImage) error
 	LoadProfileImage(ctx echo.Context, fileName string) (string, error)
 }
@@ -132,7 +132,8 @@ func (ur *userRepository) GetUserByUserID(ctx echo.Context, user *models.User, u
 		select
 			users.user_id,
 			ud.name,
-			ud.profile_image
+			ud.profile_image,
+			ud.profile_text
 		from users
 		inner join user_details ud using (user_id)
 		where users.user_id = $1 ;
@@ -145,7 +146,7 @@ func (ur *userRepository) GetUserByUserID(ctx echo.Context, user *models.User, u
 	user.UserID = userWithProfileImage.UserID
 	user.Name = userWithProfileImage.Name
 	user.ProfileImage = models.ProfileImage{FileName: userWithProfileImage.ProfileImageFileName}
-
+	user.ProfileText = userWithProfileImage.ProfileText
 	return nil
 }
 
@@ -188,6 +189,19 @@ func (ur *userRepository) LoadProfileImage(ctx echo.Context, fileName string) (s
 	return res, nil
 }
 
-func (ur *userRepository) UpdateUserByUserID(ctx echo.Context, user *models.User, userID int) error {
+func (ur *userRepository) UpdateUserByUserID(ctx echo.Context, user *models.User) error {
+	if user.ProfileImage.FileName == "" {
+		query := `UPDATE user_details SET name = $1, profile_text = $2 WHERE user_id = $3;`
+		_, err := ur.db.ExecContext(ctx.Request().Context(), query, user.Name, user.ProfileText, user.UserID)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+	} else {
+		query := `UPDATE user_details SET name = $1, profile_text = $2, profile_image = $3 WHERE user_id = $4;`
+		_, err := ur.db.ExecContext(ctx.Request().Context(), query, user.Name, user.ProfileText, user.ProfileImage.FileName, user.UserID)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+	}
 	return nil
 }

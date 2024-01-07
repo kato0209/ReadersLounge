@@ -28,7 +28,7 @@ func NewRouter(server *controller.Server) *echo.Echo {
 		CookieHTTPOnly: true,
 		//CookieSecure:   false,
 		CookieSameSite: http.SameSiteDefaultMode,
-		CookieMaxAge:   60,
+		CookieMaxAge:   24 * 60 * 60,
 	}))
 
 	openapi.RegisterHandlers(e, server)

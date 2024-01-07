@@ -17,32 +17,14 @@
 /**
  * 
  * @export
- * @interface User
+ * @interface CreateChatRoom201Response
  */
-export interface User {
+export interface CreateChatRoom201Response {
     /**
      * 
      * @type {number}
-     * @memberof User
+     * @memberof CreateChatRoom201Response
      */
-    'user_id': number;
-    /**
-     * 
-     * @type {string}
-     * @memberof User
-     */
-    'name': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof User
-     */
-    'profile_image': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof User
-     */
-    'profile_text'?: string;
+    'room_id'?: number;
 }
 

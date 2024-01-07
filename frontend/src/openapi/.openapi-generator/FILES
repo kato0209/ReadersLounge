@@ -10,6 +10,7 @@ models/book-genre-node.ts
 models/book.ts
 models/chat-room.ts
 models/create-chat-room-request.ts
+models/create-chat-room201-response.ts
 models/index.ts
 models/message.ts
 models/post.ts

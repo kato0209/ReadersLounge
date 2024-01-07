@@ -28,6 +28,8 @@ import { BookGenreNode } from '../models';
 // @ts-ignore
 import { ChatRoom } from '../models';
 // @ts-ignore
+import { CreateChatRoom201Response } from '../models';
+// @ts-ignore
 import { CreateChatRoomRequest } from '../models';
 // @ts-ignore
 import { Message } from '../models';
@@ -697,12 +699,12 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
          * 
          * @summary update user
          * @param {string} [name] 
-         * @param {string} [profileImage] 
+         * @param {File} [profileImage] 
          * @param {string} [profileText] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateUser: async (name?: string, profileImage?: string, profileText?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        updateUser: async (name?: string, profileImage?: File, profileText?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/user`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -775,7 +777,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createChatRoom(createChatRoomRequest?: CreateChatRoomRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ChatRoom>> {
+        async createChatRoom(createChatRoomRequest?: CreateChatRoomRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateChatRoom201Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createChatRoom(createChatRoomRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -937,12 +939,12 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * 
          * @summary update user
          * @param {string} [name] 
-         * @param {string} [profileImage] 
+         * @param {File} [profileImage] 
          * @param {string} [profileText] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updateUser(name?: string, profileImage?: string, profileText?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<User>> {
+        async updateUser(name?: string, profileImage?: File, profileText?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.updateUser(name, profileImage, profileText, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -973,7 +975,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createChatRoom(createChatRoomRequest?: CreateChatRoomRequest, options?: any): AxiosPromise<ChatRoom> {
+        createChatRoom(createChatRoomRequest?: CreateChatRoomRequest, options?: any): AxiosPromise<CreateChatRoom201Response> {
             return localVarFp.createChatRoom(createChatRoomRequest, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1120,12 +1122,12 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * 
          * @summary update user
          * @param {string} [name] 
-         * @param {string} [profileImage] 
+         * @param {File} [profileImage] 
          * @param {string} [profileText] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateUser(name?: string, profileImage?: string, profileText?: string, options?: any): AxiosPromise<User> {
+        updateUser(name?: string, profileImage?: File, profileText?: string, options?: any): AxiosPromise<void> {
             return localVarFp.updateUser(name, profileImage, profileText, options).then((request) => request(axios, basePath));
         },
     };
@@ -1334,13 +1336,13 @@ export class DefaultApi extends BaseAPI {
      * 
      * @summary update user
      * @param {string} [name] 
-     * @param {string} [profileImage] 
+     * @param {File} [profileImage] 
      * @param {string} [profileText] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public updateUser(name?: string, profileImage?: string, profileText?: string, options?: AxiosRequestConfig) {
+    public updateUser(name?: string, profileImage?: File, profileText?: string, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).updateUser(name, profileImage, profileText, options).then((request) => request(this.axios, this.basePath));
     }
 }

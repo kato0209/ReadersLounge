@@ -49,12 +49,12 @@ export interface ChatRoom {
      * @type {string}
      * @memberof ChatRoom
      */
-    'last_message': string;
+    'last_message'?: string;
     /**
      * 
      * @type {string}
      * @memberof ChatRoom
      */
-    'last_message_sent_at': string;
+    'last_message_sent_at'?: string;
 }
 

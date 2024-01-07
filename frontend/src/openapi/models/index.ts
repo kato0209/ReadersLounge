@@ -1,6 +1,7 @@
 export * from './book';
 export * from './book-genre-node';
 export * from './chat-room';
+export * from './create-chat-room201-response';
 export * from './create-chat-room-request';
 export * from './message';
 export * from './post';

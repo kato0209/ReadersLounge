@@ -122,12 +122,8 @@ paths:
               $ref: "#/components/schemas/UpdateUserReqBody"
         required: true
       responses:
-        "200":
+        "204":
           description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/User"
                 
   /user/{userId}:
     get:
@@ -408,6 +404,8 @@ components:
           type: string
         profile_image:
           type: string
+        profile_text:
+          type: string
       required:
       - user_id
       - name
@@ -418,6 +416,7 @@ components:
           type: string
         profile_image:
           type: string
+          format: binary
         profile_text:
           type: string
     Post:
