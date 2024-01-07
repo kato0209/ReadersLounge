@@ -3,15 +3,17 @@ package usecase
 import (
 	"backend/models"
 	"backend/repository"
+	"backend/utils"
 
 	"github.com/labstack/echo/v4"
+	"github.com/pkg/errors"
 )
 
 type IConnectionUsecase interface {
 	CreateConnection(ctx echo.Context, followerID, followingID int) error
 	DeleteConnection(ctx echo.Context, connectionId int) error
-	GetFollowingList(ctx echo.Context, userID int) ([]models.Connection, error)
-	GetFollowerList(ctx echo.Context, userID int) ([]models.Connection, error)
+	GetFollowingConnections(ctx echo.Context, userID int) ([]models.Connection, error)
+	GetFollowerConnections(ctx echo.Context, userID int) ([]models.Connection, error)
 }
 
 type connectionUsecase struct {
@@ -38,22 +40,40 @@ func (cu *connectionUsecase) DeleteConnection(ctx echo.Context, connectionId int
 	return nil
 }
 
-func (cu *connectionUsecase) GetFollowingList(ctx echo.Context, userID int) ([]models.Connection, error) {
-	followingList := []models.Connection{}
-	err := cu.cr.GetFollowingList(ctx, userID, &followingList)
+func (cu *connectionUsecase) GetFollowingConnections(ctx echo.Context, userID int) ([]models.Connection, error) {
+	followingConnections := []models.Connection{}
+	err := cu.cr.GetFollowingConnections(ctx, userID, &followingConnections)
 	if err != nil {
 		return nil, err
 	}
+	for i := range followingConnections {
+		if !utils.IsRemotePath((followingConnections)[i].Following.ProfileImage.FileName) {
+			profileImage, err := utils.LoadImage(ctx, (followingConnections)[i].Following.ProfileImage.FileName)
+			if err != nil {
+				return []models.Connection{}, errors.WithStack(err)
+			}
+			(followingConnections)[i].Following.ProfileImage.EncodedImage = &profileImage
+		}
+	}
 
-	return followingList, nil
+	return followingConnections, nil
 }
 
-func (cu *connectionUsecase) GetFollowerList(ctx echo.Context, userID int) ([]models.Connection, error) {
-	followerList := []models.Connection{}
-	err := cu.cr.GetFollowerList(ctx, userID, &followerList)
+func (cu *connectionUsecase) GetFollowerConnections(ctx echo.Context, userID int) ([]models.Connection, error) {
+	followerConnections := []models.Connection{}
+	err := cu.cr.GetFollowerConnections(ctx, userID, &followerConnections)
 	if err != nil {
 		return nil, err
 	}
+	for i := range followerConnections {
+		if !utils.IsRemotePath((followerConnections)[i].Follower.ProfileImage.FileName) {
+			profileImage, err := utils.LoadImage(ctx, (followerConnections)[i].Follower.ProfileImage.FileName)
+			if err != nil {
+				return []models.Connection{}, errors.WithStack(err)
+			}
+			(followerConnections)[i].Follower.ProfileImage.EncodedImage = &profileImage
+		}
+	}
 
-	return followerList, nil
+	return followerConnections, nil
 }

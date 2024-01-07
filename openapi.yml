@@ -396,8 +396,15 @@ paths:
       security:
         - X-CSRF-TOKEN: []
         - jwtAuth: []
-      summary: get following list
-      operationId: get-following-list
+      summary: get following connections
+      operationId: get-following-connections
+      parameters:
+        - name: user_id
+          in: query
+          required: true
+          description: ID to specify the user
+          schema:
+            type: integer
       responses:
         "200":
           description: OK
@@ -412,8 +419,15 @@ paths:
       security:
         - X-CSRF-TOKEN: []
         - jwtAuth: []
-      summary: get followers list
-      operationId: get-follower-list
+      summary: get followers connections
+      operationId: get-follower-connections
+      parameters:
+        - name: user_id
+          in: query
+          required: true
+          description: ID to specify the user
+          schema:
+            type: integer
       responses:
         "200":
           description: OK
@@ -632,14 +646,17 @@ components:
       properties:
         connection_id:
           type: integer
-        following_id:
+        target_user_id:
           type: integer
-        follower_id:
-          type: integer
+        target_user_name:
+          type: string
+        target_user_profile_image:
+          type: string
       required:
         - connection_id
-        - following_id
-        - follower_id
+        - target_user_id
+        - target_user_name
+        - target_user_profile_image
   
     
                   

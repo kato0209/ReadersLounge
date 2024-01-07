@@ -19,11 +19,12 @@ func (s *Server) CreateConnection(ctx echo.Context) error {
 	if err := ctx.Bind(&CreateConnectionBody); err != nil {
 		return ctx.JSON(http.StatusBadRequest, err.Error())
 	}
-	fmt.Println(CreateConnectionBody.TargetUserId)
 
+	fmt.Println(11)
 	if err := s.cnu.CreateConnection(ctx, userID, CreateConnectionBody.TargetUserId); err != nil {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
+	fmt.Println(22)
 
 	return ctx.NoContent(http.StatusCreated)
 }
@@ -36,30 +37,44 @@ func (s *Server) DeleteConnection(ctx echo.Context, connectionId int) error {
 	return ctx.NoContent(http.StatusNoContent)
 }
 
-func (s *Server) GetFollowingList(ctx echo.Context) error {
-	userID, err := utils.ExtractUserID(ctx)
+func (s *Server) GetFollowingConnections(ctx echo.Context, params openapi.GetFollowingConnectionsParams) error {
+	userID := params.UserId
+
+	followingConnections, err := s.cnu.GetFollowingConnections(ctx, userID)
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	followingList, err := s.cnu.GetFollowingList(ctx, userID)
-	if err != nil {
-		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	res := []openapi.Connection{}
+	for _, connection := range followingConnections {
+		res = append(res, openapi.Connection{
+			ConnectionId:           connection.ConnectionID,
+			TargetUserId:           connection.Following.UserID,
+			TargetUserName:         connection.Following.Name,
+			TargetUserProfileImage: connection.Following.ProfileImage.ClassifyPathType(),
+		})
 	}
 
-	return ctx.JSON(http.StatusOK, followingList)
+	return ctx.JSON(http.StatusOK, res)
 }
 
-func (s *Server) GetFollowerList(ctx echo.Context) error {
-	userID, err := utils.ExtractUserID(ctx)
+func (s *Server) GetFollowerConnections(ctx echo.Context, params openapi.GetFollowerConnectionsParams) error {
+	userID := params.UserId
+
+	followerConnections, err := s.cnu.GetFollowerConnections(ctx, userID)
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	followerList, err := s.cnu.GetFollowerList(ctx, userID)
-	if err != nil {
-		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	res := []openapi.Connection{}
+	for _, connection := range followerConnections {
+		res = append(res, openapi.Connection{
+			ConnectionId:           connection.ConnectionID,
+			TargetUserId:           connection.Follower.UserID,
+			TargetUserName:         connection.Follower.Name,
+			TargetUserProfileImage: connection.Follower.ProfileImage.ClassifyPathType(),
+		})
 	}
 
-	return ctx.JSON(http.StatusOK, followerList)
+	return ctx.JSON(http.StatusOK, res)
 }

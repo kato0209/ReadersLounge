@@ -14,7 +14,6 @@ type IPostRepository interface {
 	GetAllPosts(ctx echo.Context, posts *[]models.Post) error
 	CreatePost(ctx echo.Context, post *models.Post) error
 	SavePostImage(ctx echo.Context, image *models.PostImage) error
-	LoadPostImage(ctx echo.Context, fileName string) (string, error)
 	DeletePost(ctx echo.Context, postID int) error
 }
 
@@ -161,15 +160,6 @@ func (pr *postRepository) SavePostImage(ctx echo.Context, image *models.PostImag
 		return errors.WithStack(err)
 	}
 	return nil
-}
-
-func (pr *postRepository) LoadPostImage(ctx echo.Context, fileName string) (string, error) {
-	res, err := utils.LoadImage(ctx, fileName)
-	if err != nil {
-		return "", errors.WithStack(err)
-	}
-
-	return res, nil
 }
 
 func (pr *postRepository) DeletePost(ctx echo.Context, postID int) error {

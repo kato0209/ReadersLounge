@@ -30,14 +30,14 @@ func (pu *postUsecase) GetAllPosts(ctx echo.Context, posts *[]models.Post) error
 	}
 	for i := range *posts {
 		if !utils.IsRemotePath((*posts)[i].User.ProfileImage.FileName) {
-			profileImage, err := pu.pr.LoadPostImage(ctx, (*posts)[i].User.ProfileImage.FileName)
+			profileImage, err := utils.LoadImage(ctx, (*posts)[i].User.ProfileImage.FileName)
 			if err != nil {
 				return errors.WithStack(err)
 			}
 			(*posts)[i].User.ProfileImage.EncodedImage = &profileImage
 		}
 		if (*posts)[i].Image != nil && (*posts)[i].Image.FileName != nil {
-			postImage, err := pu.pr.LoadPostImage(ctx, *(*posts)[i].Image.FileName)
+			postImage, err := utils.LoadImage(ctx, *(*posts)[i].Image.FileName)
 			if err != nil {
 				return errors.WithStack(err)
 			}

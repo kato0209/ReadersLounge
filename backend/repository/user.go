@@ -19,7 +19,6 @@ type IUserRepository interface {
 	CheckExistsUserByIdentifier(ctx echo.Context, identifier string) (bool, error)
 	UpdateUserByUserID(ctx echo.Context, user *models.User) error
 	SaveProfileImage(ctx echo.Context, image *models.ProfileImage) error
-	LoadProfileImage(ctx echo.Context, fileName string) (string, error)
 }
 
 type userRepository struct {
@@ -178,15 +177,6 @@ func (ur *userRepository) SaveProfileImage(ctx echo.Context, image *models.Profi
 		return errors.WithStack(err)
 	}
 	return nil
-}
-
-func (ur *userRepository) LoadProfileImage(ctx echo.Context, fileName string) (string, error) {
-	res, err := utils.LoadImage(ctx, fileName)
-	if err != nil {
-		return "", errors.WithStack(err)
-	}
-
-	return res, nil
 }
 
 func (ur *userRepository) UpdateUserByUserID(ctx echo.Context, user *models.User) error {

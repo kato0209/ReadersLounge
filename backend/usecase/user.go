@@ -60,7 +60,7 @@ func (uu *userUsecase) Signup(ctx echo.Context, user models.User) error {
 	}
 
 	if !utils.IsRemotePath(user.ProfileImage.FileName) {
-		profileImage, err := uu.ur.LoadProfileImage(ctx, user.ProfileImage.FileName)
+		profileImage, err := utils.LoadImage(ctx, user.ProfileImage.FileName)
 		if err != nil {
 			return errors.WithStack(err)
 		}
@@ -90,7 +90,7 @@ func (uu *userUsecase) Login(ctx echo.Context, user models.User) (string, models
 	}
 
 	if !utils.IsRemotePath(storedUser.ProfileImage.FileName) {
-		profileImage, err := uu.ur.LoadProfileImage(ctx, storedUser.ProfileImage.FileName)
+		profileImage, err := utils.LoadImage(ctx, storedUser.ProfileImage.FileName)
 		if err != nil {
 			return "", models.User{}, errors.WithStack(err)
 		}
@@ -177,7 +177,7 @@ func (uu *userUsecase) GetUserByUserID(ctx echo.Context, userID int) (models.Use
 	}
 
 	if !utils.IsRemotePath(resUser.ProfileImage.FileName) {
-		profileImage, err := uu.ur.LoadProfileImage(ctx, resUser.ProfileImage.FileName)
+		profileImage, err := utils.LoadImage(ctx, resUser.ProfileImage.FileName)
 		if err != nil {
 			return models.User{}, errors.WithStack(err)
 		}

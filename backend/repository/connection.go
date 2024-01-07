@@ -5,13 +5,14 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
+	"github.com/pkg/errors"
 )
 
 type IConnectionRepository interface {
 	CreateConnection(ctx echo.Context, followerID, followingID int) error
 	DeleteConnection(ctx echo.Context, connectionId int) error
-	GetFollowingList(ctx echo.Context, userID int, followingList *[]models.Connection) error
-	GetFollowerList(ctx echo.Context, userID int, followerList *[]models.Connection) error
+	GetFollowingConnections(ctx echo.Context, userID int, followingList *[]models.Connection) error
+	GetFollowerConnections(ctx echo.Context, userID int, followerList *[]models.Connection) error
 }
 
 type connectionRepository struct {
@@ -42,47 +43,87 @@ func (cr *connectionRepository) DeleteConnection(ctx echo.Context, connectionId 
 	return nil
 }
 
-func (cr *connectionRepository) GetFollowingList(ctx echo.Context, userID int, followingList *[]models.Connection) error {
+func (cr *connectionRepository) GetFollowingConnections(ctx echo.Context, userID int, followingConnections *[]models.Connection) error {
 	query := `
 		SELECT
 			c.connection_id,
-			c.follower_id,
 			c.following_id,
-			u.user_id,
+			ud.name,
+			ud.profile_image
 		FROM
 			connections c
 		INNER JOIN
-			users u
-		ON
-			c.following_id = u.user_id
+			users u ON u.user_id = c.following_id
+		INNER JOIN
+			user_details ud ON u.user_id = ud.user_id
 		WHERE
 			c.follower_id = $1
 	`
-	if err := cr.db.SelectContext(ctx.Request().Context(), followingList, query, userID); err != nil {
-		return err
+
+	rows, err := cr.db.QueryContext(ctx.Request().Context(), query, userID)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		connection := models.Connection{}
+		err := rows.Scan(
+			&connection.ConnectionID,
+			&connection.Following.UserID,
+			&connection.Following.Name,
+			&connection.Following.ProfileImage.FileName,
+		)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+		*followingConnections = append(*followingConnections, connection)
+	}
+	if err := rows.Err(); err != nil {
+		return errors.WithStack(err)
 	}
 
 	return nil
 }
 
-func (cr *connectionRepository) GetFollowerList(ctx echo.Context, userID int, followerList *[]models.Connection) error {
+func (cr *connectionRepository) GetFollowerConnections(ctx echo.Context, userID int, followerConnections *[]models.Connection) error {
 	query := `
 		SELECT
 			c.connection_id,
 			c.follower_id,
-			c.following_id,
-			u.user_id,
+			ud.name,
+			ud.profile_image
 		FROM
 			connections c
 		INNER JOIN
-			users u
-		ON
-			c.follower_id = u.user_id
+			users u ON u.user_id = c.follower_id
+		INNER JOIN
+			user_details ud ON u.user_id = ud.user_id
 		WHERE
 			c.following_id = $1
 	`
-	if err := cr.db.SelectContext(ctx.Request().Context(), followerList, query, userID); err != nil {
-		return err
+
+	rows, err := cr.db.QueryContext(ctx.Request().Context(), query, userID)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		connection := models.Connection{}
+		err := rows.Scan(
+			&connection.ConnectionID,
+			&connection.Follower.UserID,
+			&connection.Follower.Name,
+			&connection.Follower.ProfileImage.FileName,
+		)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+		*followerConnections = append(*followerConnections, connection)
+	}
+	if err := rows.Err(); err != nil {
+		return errors.WithStack(err)
 	}
 
 	return nil

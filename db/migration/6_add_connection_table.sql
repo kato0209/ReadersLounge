@@ -5,5 +5,6 @@ CREATE TABLE IF NOT EXISTS connections (
     follower_id integer NOT NULL,
     created_at timestamptz NOT NULL DEFAULT current_timestamp,
     FOREIGN KEY (following_id) REFERENCES users(user_id),
-    FOREIGN KEY (follower_id) REFERENCES users(user_id)
+    FOREIGN KEY (follower_id) REFERENCES users(user_id),
+    UNIQUE (following_id, follower_id)
 );

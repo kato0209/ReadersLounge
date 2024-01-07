@@ -28,6 +28,8 @@ import { BookGenreNode } from '../models';
 // @ts-ignore
 import { ChatRoom } from '../models';
 // @ts-ignore
+import { Connection } from '../models';
+// @ts-ignore
 import { CreateChatRoom201Response } from '../models';
 // @ts-ignore
 import { CreateChatRoomRequest } from '../models';
@@ -268,6 +270,45 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
+         * @summary delete connection of following
+         * @param {number} connectionId Unique identifier of the connection to be deleted
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteConnection: async (connectionId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'connectionId' is not null or undefined
+            assertParamExists('deleteConnection', 'connectionId', connectionId)
+            const localVarPath = `/follows/{connectionId}`
+                .replace(`{${"connectionId"}}`, encodeURIComponent(String(connectionId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication X-CSRF-TOKEN required
+            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
+
+            // authentication jwtAuth required
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary delete a post
          * @param {number} postId Unique identifier of the post to be deleted
          * @param {*} [options] Override http request option.
@@ -408,6 +449,90 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
 
             // authentication jwtAuth required
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary get followers connections
+         * @param {number} userId ID to specify the user
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getFollowerConnections: async (userId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'userId' is not null or undefined
+            assertParamExists('getFollowerConnections', 'userId', userId)
+            const localVarPath = `/followers`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication X-CSRF-TOKEN required
+            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
+
+            // authentication jwtAuth required
+
+            if (userId !== undefined) {
+                localVarQueryParameter['user_id'] = userId;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary get following connections
+         * @param {number} userId ID to specify the user
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getFollowingConnections: async (userId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'userId' is not null or undefined
+            assertParamExists('getFollowingConnections', 'userId', userId)
+            const localVarPath = `/followings`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication X-CSRF-TOKEN required
+            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
+
+            // authentication jwtAuth required
+
+            if (userId !== undefined) {
+                localVarQueryParameter['user_id'] = userId;
+            }
 
 
     
@@ -859,6 +984,17 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary delete connection of following
+         * @param {number} connectionId Unique identifier of the connection to be deleted
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteConnection(connectionId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteConnection(connectionId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary delete a post
          * @param {number} postId Unique identifier of the post to be deleted
          * @param {*} [options] Override http request option.
@@ -898,6 +1034,28 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          */
         async getChatRooms(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ChatRoom>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getChatRooms(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary get followers connections
+         * @param {number} userId ID to specify the user
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getFollowerConnections(userId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Connection>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getFollowerConnections(userId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary get following connections
+         * @param {number} userId ID to specify the user
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getFollowingConnections(userId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Connection>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getFollowingConnections(userId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1064,6 +1222,16 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * 
+         * @summary delete connection of following
+         * @param {number} connectionId Unique identifier of the connection to be deleted
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteConnection(connectionId: number, options?: any): AxiosPromise<void> {
+            return localVarFp.deleteConnection(connectionId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary delete a post
          * @param {number} postId Unique identifier of the post to be deleted
          * @param {*} [options] Override http request option.
@@ -1100,6 +1268,26 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         getChatRooms(options?: any): AxiosPromise<Array<ChatRoom>> {
             return localVarFp.getChatRooms(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary get followers connections
+         * @param {number} userId ID to specify the user
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getFollowerConnections(userId: number, options?: any): AxiosPromise<Array<Connection>> {
+            return localVarFp.getFollowerConnections(userId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary get following connections
+         * @param {number} userId ID to specify the user
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getFollowingConnections(userId: number, options?: any): AxiosPromise<Array<Connection>> {
+            return localVarFp.getFollowingConnections(userId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1266,6 +1454,18 @@ export class DefaultApi extends BaseAPI {
 
     /**
      * 
+     * @summary delete connection of following
+     * @param {number} connectionId Unique identifier of the connection to be deleted
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public deleteConnection(connectionId: number, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).deleteConnection(connectionId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @summary delete a post
      * @param {number} postId Unique identifier of the post to be deleted
      * @param {*} [options] Override http request option.
@@ -1309,6 +1509,30 @@ export class DefaultApi extends BaseAPI {
      */
     public getChatRooms(options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).getChatRooms(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary get followers connections
+     * @param {number} userId ID to specify the user
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getFollowerConnections(userId: number, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getFollowerConnections(userId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary get following connections
+     * @param {number} userId ID to specify the user
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getFollowingConnections(userId: number, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getFollowingConnections(userId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

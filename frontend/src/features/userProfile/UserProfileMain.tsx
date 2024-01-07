@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom';
 import { apiInstance } from '../../lib/api/apiInstance';
 import { useErrorHandler } from 'react-error-boundary';
 import { User } from '../../openapi';
-import { CreateConnectionRequest } from '../../openapi/';
+import { CreateConnectionRequest, Connection } from '../../openapi/';
 import { Box, Card, CardContent, Typography, Button, Avatar, Stack, CardMedia } from '@mui/material';
 import UserHeaderImage from '../../assets/images/UserProfileHeader.jpg';
 import { useAuthUserContext } from '../../lib/auth/auth';
@@ -19,11 +19,14 @@ export default function UserProfileMain() {
   const idNumber = id ? parseInt(id, 10) : 0;
   const { user: loginUser } = useAuthUserContext();
   const [user, setUser] = React.useState<User | null>(null);
+  const [followerConnections, setfollowerConnections] = React.useState<Connection[]>([]);
+  const [followingConnections, setfollowingConnections] = React.useState<Connection[]>([]);
+  const [followingConnection, setFollowingConnection] = React.useState<Connection | null>(null);
+  const [isFollowActionLoading, setIsFollowActionLoading] = React.useState<boolean>(false);
   const errorHandler = useErrorHandler();
   const navigate = useNavigate();
 
   const fetchUser = async () => {
-    
     try {
         const api = await apiInstance;
         const res = await api.getUser(idNumber);
@@ -40,10 +43,72 @@ export default function UserProfileMain() {
         errorHandler(error);
     }
         
-};
+  };
+
+  const fetchfollowerConnections = async () => {
+    try {
+        setIsFollowActionLoading(true);
+        const api = await apiInstance;
+        const res = await api.getFollowerConnections(idNumber);
+        if (res.data && res.data.length > 0) {
+          const followerConnections: Connection[] = res.data.map((connection) => {
+            return {
+              connection_id: connection.connection_id,
+              target_user_id: connection.target_user_id,
+              target_user_name: connection.target_user_name,
+              target_user_profile_image: connection.target_user_profile_image,
+            }
+          });
+          setfollowerConnections(followerConnections);
+        } else {
+          setfollowerConnections([]);
+        }
+    } catch (error: unknown) {
+        errorHandler(error);
+    } finally {
+      setIsFollowActionLoading(false);
+    }
+  }
+
+  const fetchfollowingConnections = async () => {
+    try {
+        setIsFollowActionLoading(true);
+        const api = await apiInstance;
+        const res = await api.getFollowingConnections(idNumber);
+        if (res.data && res.data.length > 0) {
+          const followingConnections: Connection[] = res.data.map((connection) => {
+            return {
+              connection_id: connection.connection_id,
+              target_user_id: connection.target_user_id,
+              target_user_name: connection.target_user_name,
+              target_user_profile_image: connection.target_user_profile_image,
+            }
+          });
+          setfollowingConnections(followingConnections);
+        } else {
+          setfollowerConnections([]);
+        }
+    } catch (error: unknown) {
+        errorHandler(error);
+    } finally {
+      setIsFollowActionLoading(false);
+    }
+  }
+
   React.useEffect(() => {
     fetchUser();
-  }, []);
+    fetchfollowerConnections();
+    fetchfollowingConnections();
+  }, [idNumber]);
+
+  React.useEffect(() => {
+    const connection = followerConnections.find(connection => connection.target_user_id === loginUser.user_id);
+    if (connection) {
+      setFollowingConnection(connection);
+    } else {
+      setFollowingConnection(null);
+    }
+  }, [followerConnections]);
 
   const handleMessageClick = async () => {
     try {
@@ -68,13 +133,24 @@ export default function UserProfileMain() {
       const api = await apiInstance;
       const res = await api.createConnection(req);
       if (res.status === 201) {
-        console.log(res.data);
+        fetchfollowerConnections();
       }
     } catch (error: unknown) {
         errorHandler(error);
     }
   }
 
+  const handleUnFollowClick = async (connectionID: number) => {
+    try {
+      const api = await apiInstance;
+      const res = await api.deleteConnection(connectionID);
+      if (res.status === 204) {
+        fetchfollowerConnections();
+      }
+    } catch (error: unknown) {
+        errorHandler(error);
+    }
+  }
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', p: 2 }}>
@@ -108,14 +184,18 @@ export default function UserProfileMain() {
           <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2} mt={2}>
             {loginUser?.user_id !== idNumber ? (
               <Box sx={{display: "flex"}}>
-                <Button variant="outlined" onClick={handleFollowClick} sx={{marginRight: "1rem", color: "black", borderColor: "black","&:hover": {borderColor: "black", color: 'black', backgroundColor: "rgba(0, 0, 0, 0.1)" }  }}>Follow</Button>
+                {followingConnection 
+                  ? (<Button disabled={isFollowActionLoading} variant="outlined" onClick={() => handleUnFollowClick(followingConnection.connection_id)} sx={{marginRight: "1rem", color: "black", borderColor: "black","&:hover": {borderColor: "black", color: 'black', backgroundColor: "rgba(0, 0, 0, 0.1)" }  }}>UnFollow</Button>)
+                  : (<Button disabled={isFollowActionLoading} variant="outlined" onClick={handleFollowClick} sx={{marginRight: "1rem", color: "black", borderColor: "black","&:hover": {borderColor: "black", color: 'black', backgroundColor: "rgba(0, 0, 0, 0.1)" }  }}>Follow</Button>)
+                }
+                
                 <Button variant="outlined" onClick={handleMessageClick} sx={{color: "black", borderColor: "black","&:hover": {borderColor: "black", color: 'black', backgroundColor: "rgba(0, 0, 0, 0.1)" }  }}>Message</Button>
               </Box>
             ): <div></div>}
             <Box sx={{display: "flex"}}>
               <Box sx={{marginRight: "1rem"}}>
                 <Typography variant="h6" component="div">
-                  120
+                  {followerConnections.length}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   Followers
@@ -123,7 +203,7 @@ export default function UserProfileMain() {
               </Box>
               <Box>
                 <Typography variant="h6" component="div">
-                  80
+                  {followingConnections.length}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   Following

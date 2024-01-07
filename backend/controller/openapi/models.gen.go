@@ -49,9 +49,10 @@ type ChatRoom struct {
 
 // Connection defines model for Connection.
 type Connection struct {
-	ConnectionId int `json:"connection_id"`
-	FollowerId   int `json:"follower_id"`
-	FollowingId  int `json:"following_id"`
+	ConnectionId           int    `json:"connection_id"`
+	TargetUserId           int    `json:"target_user_id"`
+	TargetUserName         string `json:"target_user_name"`
+	TargetUserProfileImage string `json:"target_user_profile_image"`
 }
 
 // Message defines model for Message.
@@ -138,6 +139,18 @@ type CreateChatRoomJSONBody struct {
 type ChatSocketParams struct {
 	// RoomId ID to specify the chat room
 	RoomId int `form:"room_id" json:"room_id"`
+}
+
+// GetFollowerConnectionsParams defines parameters for GetFollowerConnections.
+type GetFollowerConnectionsParams struct {
+	// UserId ID to specify the user
+	UserId int `form:"user_id" json:"user_id"`
+}
+
+// GetFollowingConnectionsParams defines parameters for GetFollowingConnections.
+type GetFollowingConnectionsParams struct {
+	// UserId ID to specify the user
+	UserId int `form:"user_id" json:"user_id"`
 }
 
 // CreateConnectionJSONBody defines parameters for CreateConnection.
