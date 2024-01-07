@@ -32,6 +32,8 @@ import { CreateChatRoom201Response } from '../models';
 // @ts-ignore
 import { CreateChatRoomRequest } from '../models';
 // @ts-ignore
+import { CreateConnectionRequest } from '../models';
+// @ts-ignore
 import { Message } from '../models';
 // @ts-ignore
 import { Post } from '../models';
@@ -124,6 +126,45 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(createChatRoomRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary create connection of following
+         * @param {CreateConnectionRequest} [createConnectionRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createConnection: async (createConnectionRequest?: CreateConnectionRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/follows`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication X-CSRF-TOKEN required
+            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
+
+            // authentication jwtAuth required
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(createConnectionRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -783,6 +824,17 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary create connection of following
+         * @param {CreateConnectionRequest} [createConnectionRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createConnection(createConnectionRequest?: CreateConnectionRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createConnection(createConnectionRequest, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary create post
          * @param {string} content 
          * @param {number} rating 
@@ -980,6 +1032,16 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * 
+         * @summary create connection of following
+         * @param {CreateConnectionRequest} [createConnectionRequest] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createConnection(createConnectionRequest?: CreateConnectionRequest, options?: any): AxiosPromise<void> {
+            return localVarFp.createConnection(createConnectionRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary create post
          * @param {string} content 
          * @param {number} rating 
@@ -1162,6 +1224,18 @@ export class DefaultApi extends BaseAPI {
      */
     public createChatRoom(createChatRoomRequest?: CreateChatRoomRequest, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).createChatRoom(createChatRoomRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary create connection of following
+     * @param {CreateConnectionRequest} [createConnectionRequest] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public createConnection(createConnectionRequest?: CreateConnectionRequest, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).createConnection(createConnectionRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

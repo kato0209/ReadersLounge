@@ -352,7 +352,77 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Message"
+  
+  /follows:
+    post:
+      security:
+        - X-CSRF-TOKEN: []
+        - jwtAuth: []
+      summary: create connection of following
+      operationId: create-connection
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "object"
+              required:
+                - "target_user_id"
+              properties:
+                target_user_id:
+                  type: integer
+      responses:
+        "201":
+          description: OK
+  /follows/{connectionId}:
+    delete:
+      security:
+        - X-CSRF-TOKEN: []
+        - jwtAuth: []
+      summary: delete connection of following
+      operationId: delete-connection
+      parameters:
+        - name: connectionId
+          in: path
+          required: true
+          description: Unique identifier of the connection to be deleted
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: OK, connection deleted successfully
       
+  /followings:
+    get:
+      security:
+        - X-CSRF-TOKEN: []
+        - jwtAuth: []
+      summary: get following list
+      operationId: get-following-list
+      responses:
+        "200":
+          description: OK
+          content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/Connection"
+  /followers:
+    get:
+      security:
+        - X-CSRF-TOKEN: []
+        - jwtAuth: []
+      summary: get followers list
+      operationId: get-follower-list
+      responses:
+        "200":
+          description: OK
+          content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/Connection"
 components:
   securitySchemes:
     X-CSRF-TOKEN:
@@ -558,6 +628,18 @@ components:
       required:
         - content
         - room_id
+    Connection:
+      properties:
+        connection_id:
+          type: integer
+        following_id:
+          type: integer
+        follower_id:
+          type: integer
+      required:
+        - connection_id
+        - following_id
+        - follower_id
   
     
                   

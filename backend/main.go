@@ -43,8 +43,11 @@ func main() {
 	chatRepository := repository.NewChatRepository(db)
 	chatUsecase := usecase.NewChatUsecase(chatRepository)
 
+	connectionRepository := repository.NewConnectionRepository(db)
+	connectionUsecase := usecase.NewConnectionUsecase(connectionRepository)
+
 	hub := chat.NewHub()
-	server := controller.NewServer(userUsecase, postUsecase, bookUsecase, chatUsecase, *hub)
+	server := controller.NewServer(userUsecase, postUsecase, bookUsecase, chatUsecase, connectionUsecase, *hub)
 
 	go server.RunLoop(hub)
 

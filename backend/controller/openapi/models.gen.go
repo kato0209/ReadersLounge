@@ -47,6 +47,13 @@ type ChatRoom struct {
 	TargetUserProfileImage string  `json:"target_user_profile_image"`
 }
 
+// Connection defines model for Connection.
+type Connection struct {
+	ConnectionId int `json:"connection_id"`
+	FollowerId   int `json:"follower_id"`
+	FollowingId  int `json:"following_id"`
+}
+
 // Message defines model for Message.
 type Message struct {
 	Content   string `json:"content"`
@@ -133,6 +140,11 @@ type ChatSocketParams struct {
 	RoomId int `form:"room_id" json:"room_id"`
 }
 
+// CreateConnectionJSONBody defines parameters for CreateConnection.
+type CreateConnectionJSONBody struct {
+	TargetUserId int `json:"target_user_id"`
+}
+
 // LogoutJSONBody defines parameters for Logout.
 type LogoutJSONBody = map[string]interface{}
 
@@ -153,6 +165,9 @@ type GoogleOauthCallbackParams struct {
 
 // CreateChatRoomJSONRequestBody defines body for CreateChatRoom for application/json ContentType.
 type CreateChatRoomJSONRequestBody CreateChatRoomJSONBody
+
+// CreateConnectionJSONRequestBody defines body for CreateConnection for application/json ContentType.
+type CreateConnectionJSONRequestBody CreateConnectionJSONBody
 
 // LoginJSONRequestBody defines body for Login for application/json ContentType.
 type LoginJSONRequestBody = ReqLoginBody
