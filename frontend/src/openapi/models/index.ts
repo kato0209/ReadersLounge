@@ -5,6 +5,7 @@ export * from './connection';
 export * from './create-chat-room201-response';
 export * from './create-chat-room-request';
 export * from './create-connection-request';
+export * from './create-post-like201-response';
 export * from './create-post-like-req-body';
 export * from './delete-post-like-req-body';
 export * from './get-liked-post-list200-response';

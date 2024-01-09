@@ -36,6 +36,8 @@ import { CreateChatRoomRequest } from '../models';
 // @ts-ignore
 import { CreateConnectionRequest } from '../models';
 // @ts-ignore
+import { CreatePostLike201Response } from '../models';
+// @ts-ignore
 import { CreatePostLikeReqBody } from '../models';
 // @ts-ignore
 import { DeletePostLikeReqBody } from '../models';
@@ -1098,7 +1100,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createPostLike(createPostLikeReqBody?: CreatePostLikeReqBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async createPostLike(createPostLikeReqBody?: CreatePostLikeReqBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreatePostLike201Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createPostLike(createPostLikeReqBody, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -1369,7 +1371,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createPostLike(createPostLikeReqBody?: CreatePostLikeReqBody, options?: any): AxiosPromise<void> {
+        createPostLike(createPostLikeReqBody?: CreatePostLikeReqBody, options?: any): AxiosPromise<CreatePostLike201Response> {
             return localVarFp.createPostLike(createPostLikeReqBody, options).then((request) => request(axios, basePath));
         },
         /**

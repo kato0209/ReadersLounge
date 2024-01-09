@@ -24,7 +24,7 @@ import { Menu, MenuItem } from '@mui/material';
 import UserAvatar from '../../components/Avatar/UserAvatar';
 import { useAuthUserContext } from '../../lib/auth/auth';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import { CreatePostLikeReqBody, DeletePostLikeReqBody } from '../../openapi';
+import { CreatePostLikeReqBody, DeletePostLikeReqBody, PostLike } from '../../openapi';
 
 const PostListContainer = {
     display: 'flex', 
@@ -118,9 +118,22 @@ export default function PostList() {
             };
             const api = await apiInstance;
             const res = await api.createPostLike(req);
-            if (res.status === 201) {
-                fetchPosts();
-                fetchLikedPostIDs();
+            if (res.status === 201 && res.data) {
+                const newLike: PostLike = {
+                    post_like_id: res.data.post_like_id,
+                    user_id: user.user_id,
+                };
+                setLikedPostIDs(currentLikedPostIDs => [...currentLikedPostIDs, postID]);
+                setPosts(currentPosts =>
+                    currentPosts.map(post =>
+                        post.post_id === postID
+                            ? {
+                                ...post,
+                                likes: Array.isArray(post.likes) ? [...post.likes, newLike] : [newLike]
+                              }
+                            : post
+                    )
+                );
             }
         } catch (error: unknown) {
             errorHandler(error);
@@ -135,8 +148,14 @@ export default function PostList() {
             const api = await apiInstance;
             const res = await api.deletePostLike(req);
             if (res.status === 204) {
-                fetchPosts();
-                fetchLikedPostIDs();
+                setLikedPostIDs(currentLikedPostIDs => 
+                    currentLikedPostIDs.filter(id => id !== postID)
+                );
+                setPosts(currentPosts => 
+                    currentPosts.map(post => 
+                        post.post_id === postID ? { ...post, likes: post.likes?.filter(like => like.user_id !== user.user_id) } : post
+                    )
+                );
             }
         } catch (error: unknown) {
             errorHandler(error);

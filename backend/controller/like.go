@@ -18,11 +18,16 @@ func (s *Server) CreatePostLike(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, err.Error())
 	}
 
-	if err := s.lu.CreatePostLike(ctx, userID, createPostLikeBody.PostId); err != nil {
+	postLike, err := s.lu.CreatePostLike(ctx, userID, createPostLikeBody.PostId)
+	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.NoContent(http.StatusCreated)
+	resPostLike := openapi.PostLike{
+		PostLikeId: postLike.PostLikeID,
+	}
+
+	return ctx.JSON(http.StatusCreated, resPostLike)
 }
 
 func (s *Server) DeletePostLike(ctx echo.Context) error {

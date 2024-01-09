@@ -17,20 +17,14 @@
 /**
  * 
  * @export
- * @interface PostLike
+ * @interface CreatePostLike201Response
  */
-export interface PostLike {
+export interface CreatePostLike201Response {
     /**
      * 
      * @type {number}
-     * @memberof PostLike
+     * @memberof CreatePostLike201Response
      */
     'post_like_id': number;
-    /**
-     * 
-     * @type {number}
-     * @memberof PostLike
-     */
-    'user_id': number;
 }
 

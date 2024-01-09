@@ -44,6 +44,7 @@ func (s *Server) GetPosts(ctx echo.Context) error {
 		for _, like := range post.Like {
 			resLike = append(resLike, openapi.PostLike{
 				PostLikeId: like.PostLikeID,
+				UserId:     like.User.UserID,
 			})
 		}
 		var encodedImage *string

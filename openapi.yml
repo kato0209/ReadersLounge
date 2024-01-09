@@ -453,6 +453,16 @@ paths:
       responses:
         "201":
           description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  post_like_id:
+                    type: integer
+                required:
+                  - post_like_id
+
     delete:
       security:
         - X-CSRF-TOKEN: []
@@ -714,8 +724,11 @@ components:
       properties:
         post_like_id:
           type: integer
+        user_id:
+          type: integer
       required:
         - post_like_id
+        - user_id
     CreatePostLikeReqBody:
       properties:
         post_id:

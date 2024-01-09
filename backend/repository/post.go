@@ -47,7 +47,8 @@ func (pr *postRepository) GetAllPosts(ctx echo.Context, posts *[]models.Post) er
 			b.published_at AS published_at,
 			b.image AS book_image,
 			b.item_url AS item_url,
-			pl.post_like_id
+			pl.post_like_id,
+			pl.user_id AS like_user_id
 		FROM 
 			posts AS p
 		INNER JOIN
@@ -77,6 +78,7 @@ func (pr *postRepository) GetAllPosts(ctx echo.Context, posts *[]models.Post) er
 		var postID int
 		var fileName sql.NullString
 		var likeID sql.NullInt64
+		var likeUserID sql.NullInt64
 
 		err := rows.Scan(
 			&postID,
@@ -97,6 +99,7 @@ func (pr *postRepository) GetAllPosts(ctx echo.Context, posts *[]models.Post) er
 			&post.Book.Image,
 			&post.Book.ItemURL,
 			&likeID,
+			&likeUserID,
 		)
 		if err != nil {
 			return errors.WithStack(err)
@@ -109,6 +112,7 @@ func (pr *postRepository) GetAllPosts(ctx echo.Context, posts *[]models.Post) er
 			if likeID.Valid {
 				existingPost.Like = append(existingPost.Like, models.PostLike{
 					PostLikeID: int(likeID.Int64),
+					User:       models.User{UserID: int(likeUserID.Int64)},
 				})
 			}
 		} else {
@@ -119,6 +123,7 @@ func (pr *postRepository) GetAllPosts(ctx echo.Context, posts *[]models.Post) er
 			if likeID.Valid {
 				post.Like = append(post.Like, models.PostLike{
 					PostLikeID: int(likeID.Int64),
+					User:       models.User{UserID: int(likeUserID.Int64)},
 				})
 			}
 		}

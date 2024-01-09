@@ -88,6 +88,7 @@ type Post struct {
 // PostLike defines model for PostLike.
 type PostLike struct {
 	PostLikeId int `json:"post_like_id"`
+	UserId     int `json:"user_id"`
 }
 
 // ReqCreatePostBody defines model for ReqCreatePostBody.

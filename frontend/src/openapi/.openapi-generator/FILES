@@ -14,6 +14,7 @@ models/create-chat-room-request.ts
 models/create-chat-room201-response.ts
 models/create-connection-request.ts
 models/create-post-like-req-body.ts
+models/create-post-like201-response.ts
 models/delete-post-like-req-body.ts
 models/get-liked-post-list200-response.ts
 models/index.ts

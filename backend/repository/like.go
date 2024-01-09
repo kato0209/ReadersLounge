@@ -1,12 +1,15 @@
 package repository
 
 import (
+	"backend/models"
+
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
+	"github.com/pkg/errors"
 )
 
 type ILikeRepository interface {
-	CreatePostLike(ctx echo.Context, userID, postID int) error
+	CreatePostLike(ctx echo.Context, userID, postID int, postLike *models.PostLike) error
 	DeletePostLike(ctx echo.Context, postID, userID int) error
 }
 
@@ -18,12 +21,12 @@ func NewLikeRepository(db *sqlx.DB) ILikeRepository {
 	return &likeRepository{db}
 }
 
-func (lr *likeRepository) CreatePostLike(ctx echo.Context, userID, postID int) error {
-	query := "INSERT INTO post_likes (user_id, post_id) VALUES ($1, $2);"
+func (lr *likeRepository) CreatePostLike(ctx echo.Context, userID, postID int, postLike *models.PostLike) error {
+	query := "INSERT INTO post_likes (user_id, post_id) VALUES ($1, $2) RETURNING post_like_id;"
 
-	_, err := lr.db.ExecContext(ctx.Request().Context(), query, userID, postID)
+	err := lr.db.QueryRowContext(ctx.Request().Context(), query, userID, postID).Scan(&postLike.PostLikeID)
 	if err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
 	return nil
@@ -34,7 +37,7 @@ func (lr *likeRepository) DeletePostLike(ctx echo.Context, postID, userID int) e
 
 	_, err := lr.db.ExecContext(ctx.Request().Context(), query, postID, userID)
 	if err != nil {
-		return err
+		return errors.WithStack(err)
 	}
 
 	return nil
