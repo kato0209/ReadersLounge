@@ -55,6 +55,16 @@ type Connection struct {
 	TargetUserProfileImage string `json:"target_user_profile_image"`
 }
 
+// CreatePostLikeReqBody defines model for CreatePostLikeReqBody.
+type CreatePostLikeReqBody struct {
+	PostId int `json:"post_id"`
+}
+
+// DeletePostLikeReqBody defines model for DeletePostLikeReqBody.
+type DeletePostLikeReqBody struct {
+	PostId int `json:"post_id"`
+}
+
 // Message defines model for Message.
 type Message struct {
 	Content   string `json:"content"`
@@ -65,13 +75,19 @@ type Message struct {
 
 // Post defines model for Post.
 type Post struct {
-	Book      Book    `json:"book"`
-	Content   string  `json:"content"`
-	CreatedAt string  `json:"created_at"`
-	Image     *string `json:"image,omitempty"`
-	PostId    int     `json:"post_id"`
-	Rating    int     `json:"rating"`
-	User      User    `json:"user"`
+	Book      Book        `json:"book"`
+	Content   string      `json:"content"`
+	CreatedAt string      `json:"created_at"`
+	Image     *string     `json:"image,omitempty"`
+	Likes     *[]PostLike `json:"likes,omitempty"`
+	PostId    int         `json:"post_id"`
+	Rating    int         `json:"rating"`
+	User      User        `json:"user"`
+}
+
+// PostLike defines model for PostLike.
+type PostLike struct {
+	PostLikeId int `json:"post_like_id"`
 }
 
 // ReqCreatePostBody defines model for ReqCreatePostBody.
@@ -187,6 +203,12 @@ type LoginJSONRequestBody = ReqLoginBody
 
 // LogoutJSONRequestBody defines body for Logout for application/json ContentType.
 type LogoutJSONRequestBody = LogoutJSONBody
+
+// DeletePostLikeJSONRequestBody defines body for DeletePostLike for application/json ContentType.
+type DeletePostLikeJSONRequestBody = DeletePostLikeReqBody
+
+// CreatePostLikeJSONRequestBody defines body for CreatePostLike for application/json ContentType.
+type CreatePostLikeJSONRequestBody = CreatePostLikeReqBody
 
 // CreatePostMultipartRequestBody defines body for CreatePost for multipart/form-data ContentType.
 type CreatePostMultipartRequestBody = ReqCreatePostBody

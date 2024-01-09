@@ -18,6 +18,9 @@
 import { Book } from './book';
 // May contain unused imports in some cases
 // @ts-ignore
+import { PostLike } from './post-like';
+// May contain unused imports in some cases
+// @ts-ignore
 import { User } from './user';
 
 /**
@@ -68,5 +71,11 @@ export interface Post {
      * @memberof Post
      */
     'book': Book;
+    /**
+     * 
+     * @type {Array<PostLike>}
+     * @memberof Post
+     */
+    'likes'?: Array<PostLike>;
 }
 

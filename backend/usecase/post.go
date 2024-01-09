@@ -13,6 +13,7 @@ type IPostUsecase interface {
 	GetAllPosts(ctx echo.Context, posts *[]models.Post) error
 	CreatePost(ctx echo.Context, post *models.Post) error
 	DeletePost(ctx echo.Context, postID int) error
+	GetLikedPostList(ctx echo.Context, userID int, posts *[]models.Post) error
 }
 
 type postUsecase struct {
@@ -64,5 +65,13 @@ func (pu *postUsecase) DeletePost(ctx echo.Context, postID int) error {
 	if err := pu.pr.DeletePost(ctx, postID); err != nil {
 		return errors.WithStack(err)
 	}
+	return nil
+}
+
+func (pu *postUsecase) GetLikedPostList(ctx echo.Context, userID int, posts *[]models.Post) error {
+	if err := pu.pr.GetLikedPostList(ctx, userID, posts); err != nil {
+		return errors.WithStack(err)
+	}
+
 	return nil
 }

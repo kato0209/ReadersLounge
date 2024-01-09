@@ -437,6 +437,55 @@ paths:
                   type: array
                   items:
                     $ref: "#/components/schemas/Connection"
+  
+  /post-likes:
+    post:
+      security:
+        - X-CSRF-TOKEN: []
+        - jwtAuth: []
+      summary: Create like of Post
+      operationId: create-post-like
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePostLikeReqBody"
+      responses:
+        "201":
+          description: OK
+    delete:
+      security:
+        - X-CSRF-TOKEN: []
+        - jwtAuth: []
+      summary: delete like of Post
+      operationId: delete-post-like
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeletePostLikeReqBody"
+      responses:
+        "204":
+          description: OK, connection deleted successfully
+  
+  /liked-posts:
+    get:
+      security:
+        - X-CSRF-TOKEN: []
+        - jwtAuth: []
+      summary: Get postID list of User liked
+      operationId: get-liked-post-list
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  post_id:
+                    type: integer
+          
 components:
   securitySchemes:
     X-CSRF-TOKEN:
@@ -520,6 +569,10 @@ components:
           type: string
         book:
           $ref: "#/components/schemas/Book"
+        likes:
+          type: array
+          items:
+            $ref: "#/components/schemas/PostLike"
       required:
       - post_id
       - user
@@ -657,6 +710,24 @@ components:
         - target_user_id
         - target_user_name
         - target_user_profile_image
+    PostLike:
+      properties:
+        post_like_id:
+          type: integer
+      required:
+        - post_like_id
+    CreatePostLikeReqBody:
+      properties:
+        post_id:
+          type: integer
+      required:
+        - post_id
+    DeletePostLikeReqBody:
+      properties:
+        post_id:
+          type: integer
+      required:
+        - post_id
   
     
                   

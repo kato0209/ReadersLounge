@@ -23,6 +23,8 @@ import Link from '@mui/material/Link';
 import { Menu, MenuItem } from '@mui/material';
 import UserAvatar from '../../components/Avatar/UserAvatar';
 import { useAuthUserContext } from '../../lib/auth/auth';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import { CreatePostLikeReqBody, DeletePostLikeReqBody } from '../../openapi';
 
 const PostListContainer = {
     display: 'flex', 
@@ -40,6 +42,7 @@ export default function PostList() {
     const [postAnchorEl, setPostAnchorEl] = React.useState<null | HTMLElement>(null);
     const [selectedPostID, setSelectedPostID] = React.useState<number>(0);
     const { user } = useAuthUserContext();
+    const [likedPostIDs, setLikedPostIDs] = React.useState<number[]>([]);
 
     const handleSettingClick = (event: React.MouseEvent<HTMLElement>, postID: number) => {
         setPostAnchorEl(event.currentTarget);
@@ -64,33 +67,81 @@ export default function PostList() {
     }
 
     const [posts, setPosts] = React.useState<Post[]>([]);
-    React.useEffect(() => {
-        const fetchPosts = async () => {
-        
-            try {
-                const api = await apiInstance;
-                const res = await api.getPosts();
-                
-                if (res.data && Array.isArray(res.data)) {
-                    const fetchedPosts: Post[] = res.data.map(item => ({
-                      post_id: item.post_id,
-                      user: item.user,
-                      content: item.content,
-                      rating: item.rating,
-                      image: item.image,
-                      created_at: item.created_at,
-                      book: item.book,
-                    }));
-                    setPosts(fetchedPosts);
-                }
-            } catch (error: unknown) {
-                errorHandler(error);
-            }
-                
-        };
     
+    const fetchPosts = async () => {
+        
+        try {
+            const api = await apiInstance;
+            const res = await api.getPosts();
+            
+            if (res.data && Array.isArray(res.data)) {
+                const fetchedPosts: Post[] = res.data.map(item => ({
+                  post_id: item.post_id,
+                  user: item.user,
+                  content: item.content,
+                  rating: item.rating,
+                  image: item.image,
+                  created_at: item.created_at,
+                  book: item.book,
+                  likes: item.likes,
+                }));
+                setPosts(fetchedPosts);
+            }
+        } catch (error: unknown) {
+            errorHandler(error);
+        }
+            
+    };
+
+    const fetchLikedPostIDs = async () => {
+        try {
+            const api = await apiInstance;
+            const res = await api.getLikedPostList();
+            if (res.data && Array.isArray(res.data)) {
+                const fetchedLikedPostIDs: number[] = res.data.map(item => item.post_id);
+                setLikedPostIDs(fetchedLikedPostIDs);
+            }
+        } catch (error: unknown) {
+            errorHandler(error);
+        }
+    }
+    
+    React.useEffect(() => {
         fetchPosts();
-      }, []);
+        fetchLikedPostIDs();
+    }, []);
+
+    const handleLikeClick = async (postID: number) => {
+        try {
+            const req: CreatePostLikeReqBody = {
+                post_id: postID,
+            };
+            const api = await apiInstance;
+            const res = await api.createPostLike(req);
+            if (res.status === 201) {
+                fetchPosts();
+                fetchLikedPostIDs();
+            }
+        } catch (error: unknown) {
+            errorHandler(error);
+        }
+    };
+
+    const handleUnLikeClick = async (postID: number) => {
+        try {
+            const req: DeletePostLikeReqBody = {
+                post_id: postID,
+            }
+            const api = await apiInstance;
+            const res = await api.deletePostLike(req);
+            if (res.status === 204) {
+                fetchPosts();
+                fetchLikedPostIDs();
+            }
+        } catch (error: unknown) {
+            errorHandler(error);
+        }
+    }
 
   return (
         <Box sx={PostListContainer}>
@@ -227,9 +278,20 @@ export default function PostList() {
                             justifyContent: 'space-between',
                         }}
                     >
-                        <IconButton aria-label="add to favorites">
-                        <FavoriteIcon />
-                        </IconButton>
+                        <Box>
+                            {likedPostIDs.includes(post.post_id) 
+                            ? (
+                                <IconButton onClick={() => handleUnLikeClick(post.post_id)}>
+                                    <FavoriteIcon sx={{color: "#FF69B4"}} />
+                                </IconButton>) : (
+                                <IconButton onClick={() => handleLikeClick(post.post_id)}>
+                                    <FavoriteBorderIcon />
+                                </IconButton>
+                                )
+                            }
+                            
+                            {post.likes?.length}
+                        </Box>
                         <Rating name="read-only" value={post.rating} readOnly />
                     </CardActions>
                     </Card>

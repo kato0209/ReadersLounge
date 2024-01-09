@@ -140,7 +140,7 @@ export default function UserProfileMain() {
     } catch (error: unknown) {
         errorHandler(error);
     }
-  }
+  };
 
   const handleUnFollowClick = async (connectionID: number) => {
     try {
@@ -152,7 +152,7 @@ export default function UserProfileMain() {
     } catch (error: unknown) {
         errorHandler(error);
     }
-  }
+  };
 
   const handleFollowerClick = () => {
     setActiveConnectionList(activeConnectionList === 'followers' ? null : 'followers');

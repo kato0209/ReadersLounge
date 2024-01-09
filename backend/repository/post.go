@@ -15,6 +15,7 @@ type IPostRepository interface {
 	CreatePost(ctx echo.Context, post *models.Post) error
 	SavePostImage(ctx echo.Context, image *models.PostImage) error
 	DeletePost(ctx echo.Context, postID int) error
+	GetLikedPostList(ctx echo.Context, userID int, posts *[]models.Post) error
 }
 
 type postRepository struct {
@@ -45,7 +46,8 @@ func (pr *postRepository) GetAllPosts(ctx echo.Context, posts *[]models.Post) er
 			b.publisher AS publisher,
 			b.published_at AS published_at,
 			b.image AS book_image,
-			b.item_url AS item_url
+			b.item_url AS item_url,
+			pl.post_like_id
 		FROM 
 			posts AS p
 		INNER JOIN
@@ -56,7 +58,9 @@ func (pr *postRepository) GetAllPosts(ctx echo.Context, posts *[]models.Post) er
 			user_details AS ud ON u.user_id = ud.user_id
 		INNER JOIN
 			books AS b ON p.book_id = b.book_id
-		ORDER BY pd.updated_at DESC;
+		LEFT JOIN
+            post_likes AS pl ON p.post_id = pl.post_id
+		ORDER BY p.created_at DESC;
 	`
 	rows, err := pr.db.QueryContext(c, query)
 	if err != nil {
@@ -64,19 +68,18 @@ func (pr *postRepository) GetAllPosts(ctx echo.Context, posts *[]models.Post) er
 	}
 	defer rows.Close()
 
+	postMap := make(map[int]*models.Post)
+	var orderedPostIDs []int
+
 	for rows.Next() {
 		post := models.Post{}
-		book := models.Book{}
-		profileImage := models.ProfileImage{}
-		user := models.User{}
 
-		user.ProfileImage = profileImage
-		post.Book = book
-		post.User = user
+		var postID int
 		var fileName sql.NullString
+		var likeID sql.NullInt64
 
 		err := rows.Scan(
-			&post.PostID,
+			&postID,
 			&post.Content,
 			&post.Rating,
 			&fileName,
@@ -93,6 +96,7 @@ func (pr *postRepository) GetAllPosts(ctx echo.Context, posts *[]models.Post) er
 			&post.Book.PublishedAt,
 			&post.Book.Image,
 			&post.Book.ItemURL,
+			&likeID,
 		)
 		if err != nil {
 			return errors.WithStack(err)
@@ -100,10 +104,32 @@ func (pr *postRepository) GetAllPosts(ctx echo.Context, posts *[]models.Post) er
 		if fileName.Valid {
 			post.Image = &models.PostImage{FileName: &fileName.String}
 		}
-		*posts = append(*posts, post)
+
+		if existingPost, exists := postMap[postID]; exists {
+			if likeID.Valid {
+				existingPost.Like = append(existingPost.Like, models.PostLike{
+					PostLikeID: int(likeID.Int64),
+				})
+			}
+		} else {
+			post.PostID = postID
+			postMap[postID] = &post
+			orderedPostIDs = append(orderedPostIDs, postID)
+
+			if likeID.Valid {
+				post.Like = append(post.Like, models.PostLike{
+					PostLikeID: int(likeID.Int64),
+				})
+			}
+		}
 	}
+
 	if err := rows.Err(); err != nil {
 		return errors.WithStack(err)
+	}
+
+	for _, id := range orderedPostIDs {
+		*posts = append(*posts, *postMap[id])
 	}
 
 	return nil
@@ -172,6 +198,38 @@ func (pr *postRepository) DeletePost(ctx echo.Context, postID int) error {
 		postID,
 	)
 	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	return nil
+}
+
+func (pr *postRepository) GetLikedPostList(ctx echo.Context, userID int, posts *[]models.Post) error {
+	query := `
+			SELECT post_id
+			FROM post_likes
+			WHERE user_id = $1;
+		`
+
+	rows, err := pr.db.QueryContext(ctx.Request().Context(), query, userID)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		post := models.Post{}
+
+		err := rows.Scan(
+			&post.PostID,
+		)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+		*posts = append(*posts, post)
+	}
+
+	if err := rows.Err(); err != nil {
 		return errors.WithStack(err)
 	}
 

@@ -36,6 +36,12 @@ import { CreateChatRoomRequest } from '../models';
 // @ts-ignore
 import { CreateConnectionRequest } from '../models';
 // @ts-ignore
+import { CreatePostLikeReqBody } from '../models';
+// @ts-ignore
+import { DeletePostLikeReqBody } from '../models';
+// @ts-ignore
+import { GetLikedPostList200Response } from '../models';
+// @ts-ignore
 import { Message } from '../models';
 // @ts-ignore
 import { Post } from '../models';
@@ -240,6 +246,45 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
+         * @summary Create like of Post
+         * @param {CreatePostLikeReqBody} [createPostLikeReqBody] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createPostLike: async (createPostLikeReqBody?: CreatePostLikeReqBody, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/post-likes`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication X-CSRF-TOKEN required
+            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
+
+            // authentication jwtAuth required
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(createPostLikeReqBody, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary get csrf token
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -340,6 +385,45 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary delete like of Post
+         * @param {DeletePostLikeReqBody} [deletePostLikeReqBody] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deletePostLike: async (deletePostLikeReqBody?: DeletePostLikeReqBody, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/post-likes`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication X-CSRF-TOKEN required
+            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
+
+            // authentication jwtAuth required
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(deletePostLikeReqBody, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -533,6 +617,41 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             if (userId !== undefined) {
                 localVarQueryParameter['user_id'] = userId;
             }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Get postID list of User liked
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getLikedPostList: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/liked-posts`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication X-CSRF-TOKEN required
+            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
+
+            // authentication jwtAuth required
 
 
     
@@ -974,6 +1093,17 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary Create like of Post
+         * @param {CreatePostLikeReqBody} [createPostLikeReqBody] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createPostLike(createPostLikeReqBody?: CreatePostLikeReqBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createPostLike(createPostLikeReqBody, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary get csrf token
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1002,6 +1132,17 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          */
         async deletePost(postId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.deletePost(postId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary delete like of Post
+         * @param {DeletePostLikeReqBody} [deletePostLikeReqBody] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deletePostLike(deletePostLikeReqBody?: DeletePostLikeReqBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deletePostLike(deletePostLikeReqBody, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1056,6 +1197,16 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          */
         async getFollowingConnections(userId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Connection>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getFollowingConnections(userId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Get postID list of User liked
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getLikedPostList(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetLikedPostList200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getLikedPostList(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1213,6 +1364,16 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * 
+         * @summary Create like of Post
+         * @param {CreatePostLikeReqBody} [createPostLikeReqBody] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createPostLike(createPostLikeReqBody?: CreatePostLikeReqBody, options?: any): AxiosPromise<void> {
+            return localVarFp.createPostLike(createPostLikeReqBody, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary get csrf token
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1239,6 +1400,16 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         deletePost(postId: number, options?: any): AxiosPromise<void> {
             return localVarFp.deletePost(postId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary delete like of Post
+         * @param {DeletePostLikeReqBody} [deletePostLikeReqBody] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deletePostLike(deletePostLikeReqBody?: DeletePostLikeReqBody, options?: any): AxiosPromise<void> {
+            return localVarFp.deletePostLike(deletePostLikeReqBody, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1288,6 +1459,15 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         getFollowingConnections(userId: number, options?: any): AxiosPromise<Array<Connection>> {
             return localVarFp.getFollowingConnections(userId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Get postID list of User liked
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getLikedPostList(options?: any): AxiosPromise<GetLikedPostList200Response> {
+            return localVarFp.getLikedPostList(options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1443,6 +1623,18 @@ export class DefaultApi extends BaseAPI {
 
     /**
      * 
+     * @summary Create like of Post
+     * @param {CreatePostLikeReqBody} [createPostLikeReqBody] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public createPostLike(createPostLikeReqBody?: CreatePostLikeReqBody, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).createPostLike(createPostLikeReqBody, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @summary get csrf token
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -1474,6 +1666,18 @@ export class DefaultApi extends BaseAPI {
      */
     public deletePost(postId: number, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).deletePost(postId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary delete like of Post
+     * @param {DeletePostLikeReqBody} [deletePostLikeReqBody] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public deletePostLike(deletePostLikeReqBody?: DeletePostLikeReqBody, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).deletePostLike(deletePostLikeReqBody, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1533,6 +1737,17 @@ export class DefaultApi extends BaseAPI {
      */
     public getFollowingConnections(userId: number, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).getFollowingConnections(userId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get postID list of User liked
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getLikedPostList(options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getLikedPostList(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

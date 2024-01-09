@@ -40,6 +40,12 @@ func (s *Server) GetPosts(ctx echo.Context) error {
 			Price:       post.Book.Price,
 			Title:       post.Book.Title,
 		}
+		resLike := []openapi.PostLike{}
+		for _, like := range post.Like {
+			resLike = append(resLike, openapi.PostLike{
+				PostLikeId: like.PostLikeID,
+			})
+		}
 		var encodedImage *string
 		if post.Image != nil {
 			encodedImage = post.Image.EncodedImage
@@ -53,6 +59,7 @@ func (s *Server) GetPosts(ctx echo.Context) error {
 			CreatedAt: formattedTime,
 			User:      resUser,
 			Book:      resBook,
+			Likes:     &resLike,
 		})
 	}
 
@@ -141,4 +148,26 @@ func (s *Server) DeletePost(ctx echo.Context, postID int) error {
 	}
 
 	return ctx.NoContent(http.StatusNoContent)
+}
+
+func (s *Server) GetLikedPostList(ctx echo.Context) error {
+	userID, err := utils.ExtractUserID(ctx)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	posts := []models.Post{}
+	err = s.pu.GetLikedPostList(ctx, userID, &posts)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	resPosts := []openapi.Post{}
+	for _, post := range posts {
+		resPosts = append(resPosts, openapi.Post{
+			PostId: post.PostID,
+		})
+	}
+
+	return ctx.JSON(http.StatusOK, resPosts)
 }
