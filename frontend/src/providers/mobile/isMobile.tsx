@@ -8,7 +8,7 @@ type MobileProviderProps = {
 const MobileContext = React.createContext<boolean>(false);
 
 export const MobileProvider: React.FC<MobileProviderProps> = ({ children }) => {
-    const isMobile = useMediaQuery('(max-width:500px)');
+    const isMobile = useMediaQuery('(max-width:650px)');
 
     return (
         <MobileContext.Provider value={isMobile}>

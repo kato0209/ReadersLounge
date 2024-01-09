@@ -92,7 +92,7 @@ export default function AppHeader() {
                 <HomeIcon sx={{marginRight:'0.5rem'}}/>
                 Home
               </MenuItem>
-              <MenuItem component={Link} to="/user-search" sx={{display: 'flex'}}>
+              <MenuItem component={Link} to="/user-search" sx={{display: 'flex', '&:hover': { color: 'black'}}}>
                 <PersonSearchIcon sx={{marginRight:'0.5rem'}}/>
                 ユーザー検索
               </MenuItem>
@@ -124,10 +124,9 @@ export default function AppHeader() {
               ReadersLounge
             </Typography>
           </Box>
-          <div style={{ flexGrow: 1 }}></div>
+          <Box style={{ flexGrow: 1 }}></Box>
           <>
             <Button
-              size="large"
               aria-label="account of current user"
               aria-controls="menu-appbar"
               aria-haspopup="true"
@@ -139,6 +138,10 @@ export default function AppHeader() {
                 sx={{
                   border: "1px solid rgba(0, 0, 0, 0.2)",
                   boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
+                  '@media (max-width: 500px)': {
+                    width: '30px',
+                    height: '30px',
+                }
                 }} 
                 src={isValidUrl(user.profile_image) ? user.profile_image : `data:image/png;base64,${user.profile_image}` } 
               />

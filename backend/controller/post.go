@@ -14,11 +14,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func (s *Server) GetPosts(ctx echo.Context) error {
-	posts := []models.Post{}
-	if err := s.pu.GetAllPosts(ctx, &posts); err != nil {
-		return ctx.JSON(http.StatusInternalServerError, err.Error())
-	}
+func createResPosts(posts []models.Post) []openapi.Post {
 	resPosts := []openapi.Post{}
 	for _, post := range posts {
 
@@ -63,6 +59,25 @@ func (s *Server) GetPosts(ctx echo.Context) error {
 			Likes:     &resLike,
 		})
 	}
+	return resPosts
+}
+
+func (s *Server) GetPosts(ctx echo.Context) error {
+	posts := []models.Post{}
+	if err := s.pu.GetAllPosts(ctx, &posts); err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+	resPosts := createResPosts(posts)
+
+	return ctx.JSON(http.StatusOK, resPosts)
+}
+
+func (s *Server) GetPostsOfUser(ctx echo.Context, userId int) error {
+	posts := []models.Post{}
+	if err := s.pu.GetPostsOfUser(ctx, &posts, userId); err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+	resPosts := createResPosts(posts)
 
 	return ctx.JSON(http.StatusOK, resPosts)
 }

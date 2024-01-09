@@ -16,6 +16,7 @@ type IPostRepository interface {
 	SavePostImage(ctx echo.Context, image *models.PostImage) error
 	DeletePost(ctx echo.Context, postID int) error
 	GetLikedPostList(ctx echo.Context, userID int, posts *[]models.Post) error
+	GetPostsByUserID(ctx echo.Context, posts *[]models.Post, userID int) error
 }
 
 type postRepository struct {
@@ -26,44 +27,8 @@ func NewPostRepository(db *sqlx.DB) IPostRepository {
 	return &postRepository{db}
 }
 
-func (pr *postRepository) GetAllPosts(ctx echo.Context, posts *[]models.Post) error {
-	c := ctx.Request().Context()
-	query := `
-		SELECT
-			p.post_id AS post_id,
-			pd.content AS content,
-			pd.rating AS rating,
-			pd.image AS post_image,
-			p.created_at AS created_at,
-			u.user_id AS user_id,
-			ud.name AS name,
-			ud.profile_image AS profile_image,
-			b.book_id AS book_id,
-			b.ISBNcode AS ISBNcode,
-			b.title AS title,
-			b.author AS author,
-			b.price AS price,
-			b.publisher AS publisher,
-			b.published_at AS published_at,
-			b.image AS book_image,
-			b.item_url AS item_url,
-			pl.post_like_id,
-			pl.user_id AS like_user_id
-		FROM 
-			posts AS p
-		INNER JOIN
-			post_details AS pd ON p.post_id = pd.post_id
-		INNER JOIN
-			users AS u ON u.user_id = p.user_id
-		INNER JOIN 
-			user_details AS ud ON u.user_id = ud.user_id
-		INNER JOIN
-			books AS b ON p.book_id = b.book_id
-		LEFT JOIN
-            post_likes AS pl ON p.post_id = pl.post_id
-		ORDER BY p.created_at DESC;
-	`
-	rows, err := pr.db.QueryContext(c, query)
+func (pr *postRepository) execGetPostsQuery(ctx echo.Context, posts *[]models.Post, query string, args ...interface{}) error {
+	rows, err := pr.db.QueryContext(ctx.Request().Context(), query, args...)
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -135,6 +100,95 @@ func (pr *postRepository) GetAllPosts(ctx echo.Context, posts *[]models.Post) er
 
 	for _, id := range orderedPostIDs {
 		*posts = append(*posts, *postMap[id])
+	}
+
+	return nil
+}
+
+func (pr *postRepository) GetAllPosts(ctx echo.Context, posts *[]models.Post) error {
+	query := `
+		SELECT
+			p.post_id AS post_id,
+			pd.content AS content,
+			pd.rating AS rating,
+			pd.image AS post_image,
+			p.created_at AS created_at,
+			u.user_id AS user_id,
+			ud.name AS name,
+			ud.profile_image AS profile_image,
+			b.book_id AS book_id,
+			b.ISBNcode AS ISBNcode,
+			b.title AS title,
+			b.author AS author,
+			b.price AS price,
+			b.publisher AS publisher,
+			b.published_at AS published_at,
+			b.image AS book_image,
+			b.item_url AS item_url,
+			pl.post_like_id,
+			pl.user_id AS like_user_id
+		FROM 
+			posts AS p
+		INNER JOIN
+			post_details AS pd ON p.post_id = pd.post_id
+		INNER JOIN
+			users AS u ON u.user_id = p.user_id
+		INNER JOIN 
+			user_details AS ud ON u.user_id = ud.user_id
+		INNER JOIN
+			books AS b ON p.book_id = b.book_id
+		LEFT JOIN
+            post_likes AS pl ON p.post_id = pl.post_id
+		ORDER BY p.created_at DESC;
+	`
+
+	if err := pr.execGetPostsQuery(ctx, posts, query); err != nil {
+		return errors.WithStack(err)
+	}
+
+	return nil
+}
+
+func (pr *postRepository) GetPostsByUserID(ctx echo.Context, posts *[]models.Post, userID int) error {
+	query := `
+		SELECT
+			p.post_id AS post_id,
+			pd.content AS content,
+			pd.rating AS rating,
+			pd.image AS post_image,
+			p.created_at AS created_at,
+			u.user_id AS user_id,
+			ud.name AS name,
+			ud.profile_image AS profile_image,
+			b.book_id AS book_id,
+			b.ISBNcode AS ISBNcode,
+			b.title AS title,
+			b.author AS author,
+			b.price AS price,
+			b.publisher AS publisher,
+			b.published_at AS published_at,
+			b.image AS book_image,
+			b.item_url AS item_url,
+			pl.post_like_id,
+			pl.user_id AS like_user_id
+		FROM 
+			posts AS p
+		INNER JOIN
+			post_details AS pd ON p.post_id = pd.post_id
+		INNER JOIN
+			users AS u ON u.user_id = p.user_id
+		INNER JOIN 
+			user_details AS ud ON u.user_id = ud.user_id
+		INNER JOIN
+			books AS b ON p.book_id = b.book_id
+		LEFT JOIN
+            post_likes AS pl ON p.post_id = pl.post_id
+		WHERE u.user_id = $1
+		ORDER BY p.created_at DESC;
+	`
+
+	if err := pr.execGetPostsQuery(ctx, posts, query, userID); err != nil {
+		return errors.WithStack(err)
 	}
 
 	return nil

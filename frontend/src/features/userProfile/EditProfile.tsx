@@ -16,6 +16,7 @@ import { User } from '../../openapi';
 import { useErrorHandler } from 'react-error-boundary';
 import { apiInstance } from '../../lib/api/apiInstance';
 import DialogTitle from '@mui/material/DialogTitle';
+import { useIsMobileContext } from '../../providers/mobile/isMobile';
 
 type EditProfileProps  = {
     user: User;
@@ -55,6 +56,7 @@ export const EditProfile: React.FC<EditProfileProps> = ({ user, fetchUser }) => 
     const errorHandler = useErrorHandler();
     const [imagePreview, setImagePreview] = React.useState<string | null>(null);
     const inputRef = React.useRef<HTMLInputElement>(null);
+    const isMobile = useIsMobileContext();
 
     const handleOpen  = () => {
         setOpenUpdateProfileDialog(true);
@@ -106,15 +108,26 @@ export const EditProfile: React.FC<EditProfileProps> = ({ user, fetchUser }) => 
 
     return (
         <>
+            
             <Button 
                 variant="outlined" 
+                size="small"
                 sx={{color: "black", 
                     borderColor: "black",
                     "&:hover": {
                         borderColor: "black", 
                         color: 'black', 
                         backgroundColor: "rgba(0, 0, 0, 0.1)" 
-                    }  
+                    },
+                    '@media (max-width: 1050px)': {
+                        maxWidth: 60,
+                    },
+                    '@media (max-width: 770px)': {
+                        maxWidth: 30,
+                    },
+                    '@media (max-width: 600px)': {
+                        maxWidth: 30,
+                    }
                 }}
                 onClick={handleOpen}
             >

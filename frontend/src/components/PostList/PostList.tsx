@@ -32,17 +32,24 @@ const PostListContainer = {
     flexDirection: 'column', 
     alignItems: 'start',
     flex: 1,
+    borderTop: '1px solid #BDBDBD',
+    borderRight: '1px solid #BDBDBD',
+    borderLeft: '1px solid #BDBDBD',
     '@media (max-width: 500px)': {
         alignItems: 'center',
     }
 };
 
-export default function PostList() {
+type PostListProps = {
+    propPosts: Post[];
+};
+export const PostList: React.FC<PostListProps> = ({ propPosts }) => {
     const errorHandler = useErrorHandler();
     const [postAnchorEl, setPostAnchorEl] = React.useState<null | HTMLElement>(null);
     const [selectedPostID, setSelectedPostID] = React.useState<number>(0);
     const { user } = useAuthUserContext();
     const [likedPostIDs, setLikedPostIDs] = React.useState<number[]>([]);
+    const [posts, setPosts] = React.useState<Post[]>([]);
 
     const handleSettingClick = (event: React.MouseEvent<HTMLElement>, postID: number) => {
         setPostAnchorEl(event.currentTarget);
@@ -64,34 +71,9 @@ export default function PostList() {
                 errorHandler(error);
             }
         }
+        setPostAnchorEl(null);
+        setSelectedPostID(0);
     }
-
-    const [posts, setPosts] = React.useState<Post[]>([]);
-    
-    const fetchPosts = async () => {
-        
-        try {
-            const api = await apiInstance;
-            const res = await api.getPosts();
-            
-            if (res.data && Array.isArray(res.data)) {
-                const fetchedPosts: Post[] = res.data.map(item => ({
-                  post_id: item.post_id,
-                  user: item.user,
-                  content: item.content,
-                  rating: item.rating,
-                  image: item.image,
-                  created_at: item.created_at,
-                  book: item.book,
-                  likes: item.likes,
-                }));
-                setPosts(fetchedPosts);
-            }
-        } catch (error: unknown) {
-            errorHandler(error);
-        }
-            
-    };
 
     const fetchLikedPostIDs = async () => {
         try {
@@ -107,9 +89,9 @@ export default function PostList() {
     }
     
     React.useEffect(() => {
-        fetchPosts();
+        setPosts(propPosts);
         fetchLikedPostIDs();
-    }, []);
+    }, [propPosts]);
 
     const handleLikeClick = async (postID: number) => {
         try {
@@ -166,18 +148,18 @@ export default function PostList() {
                 {posts.map(post => (
                     <Card 
                         sx={{ 
-                            width: '60%', 
+                            width: '100%', 
                             minWidth: '600',
                             backgroundColor: '#EFEBE5', 
                             boxShadow: 'none',  
-                            border: '1px solid #BDBDBD',
                             cursor: 'pointer',
+                            borderBottom: '1px solid #BDBDBD',
                             '&:hover': {
                                 color: 'inherit',
                                 backgroundColor: '#EAE6E0',
                             },
                             '@media (max-width: 500px)': {
-                                width: '80%',
+                                width: '100%',
                             }
                         }} 
                         key={post.post_id}>

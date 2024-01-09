@@ -14,6 +14,7 @@ type IPostUsecase interface {
 	CreatePost(ctx echo.Context, post *models.Post) error
 	DeletePost(ctx echo.Context, postID int) error
 	GetLikedPostList(ctx echo.Context, userID int, posts *[]models.Post) error
+	GetPostsOfUser(ctx echo.Context, posts *[]models.Post, userID int) error
 }
 
 type postUsecase struct {
@@ -24,11 +25,7 @@ func NewPostUsecase(pr repository.IPostRepository) IPostUsecase {
 	return &postUsecase{pr}
 }
 
-func (pu *postUsecase) GetAllPosts(ctx echo.Context, posts *[]models.Post) error {
-
-	if err := pu.pr.GetAllPosts(ctx, posts); err != nil {
-		return errors.WithStack(err)
-	}
+func processPostsImage(ctx echo.Context, posts *[]models.Post) error {
 	for i := range *posts {
 		if !utils.IsRemotePath((*posts)[i].User.ProfileImage.FileName) {
 			profileImage, err := utils.LoadImage(ctx, (*posts)[i].User.ProfileImage.FileName)
@@ -44,6 +41,29 @@ func (pu *postUsecase) GetAllPosts(ctx echo.Context, posts *[]models.Post) error
 			}
 			(*posts)[i].Image.EncodedImage = &postImage
 		}
+	}
+	return nil
+}
+
+func (pu *postUsecase) GetAllPosts(ctx echo.Context, posts *[]models.Post) error {
+
+	if err := pu.pr.GetAllPosts(ctx, posts); err != nil {
+		return errors.WithStack(err)
+	}
+	err := processPostsImage(ctx, posts)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	return nil
+}
+
+func (pu *postUsecase) GetPostsOfUser(ctx echo.Context, posts *[]models.Post, userID int) error {
+	if err := pu.pr.GetPostsByUserID(ctx, posts, userID); err != nil {
+		return errors.WithStack(err)
+	}
+	err := processPostsImage(ctx, posts)
+	if err != nil {
+		return errors.WithStack(err)
 	}
 	return nil
 }

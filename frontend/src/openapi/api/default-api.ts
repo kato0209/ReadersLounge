@@ -778,6 +778,45 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
+         * @summary get posts corresponding to userId
+         * @param {number} userId identifier of the posts to get
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPostsOfUser: async (userId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'userId' is not null or undefined
+            assertParamExists('getPostsOfUser', 'userId', userId)
+            const localVarPath = `/posts/{userId}`
+                .replace(`{${"userId"}}`, encodeURIComponent(String(userId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication X-CSRF-TOKEN required
+            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
+
+            // authentication jwtAuth required
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary get user by user_id
          * @param {number} userId Unique identifier of the user
          * @param {*} [options] Override http request option.
@@ -1284,6 +1323,17 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary get posts corresponding to userId
+         * @param {number} userId identifier of the posts to get
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getPostsOfUser(userId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Post>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getPostsOfUser(userId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary get user by user_id
          * @param {number} userId Unique identifier of the user
          * @param {*} [options] Override http request option.
@@ -1549,6 +1599,16 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         getPosts(options?: any): AxiosPromise<Array<Post>> {
             return localVarFp.getPosts(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary get posts corresponding to userId
+         * @param {number} userId identifier of the posts to get
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPostsOfUser(userId: number, options?: any): AxiosPromise<Array<Post>> {
+            return localVarFp.getPostsOfUser(userId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1845,6 +1905,18 @@ export class DefaultApi extends BaseAPI {
      */
     public getPosts(options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).getPosts(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary get posts corresponding to userId
+     * @param {number} userId identifier of the posts to get
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getPostsOfUser(userId: number, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getPostsOfUser(userId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

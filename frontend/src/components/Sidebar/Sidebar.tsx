@@ -62,7 +62,7 @@ export default function Sidebar() {
           <ListItemIcon>
             <PersonSearchIcon />
           </ListItemIcon>
-          <ListItemText primary="ユーザー検索" />
+          <ListItemText primary="User Search" />
         </ListItem>
         <ListItem 
           button 
@@ -94,7 +94,7 @@ export default function Sidebar() {
           <ListItemIcon>
             <SearchIcon/>
           </ListItemIcon>
-          <ListItemText primary="本を探す" />
+          <ListItemText primary="Book Search" />
         </ListItem>
         <CreatePost displayString='Post'/>
       </List>

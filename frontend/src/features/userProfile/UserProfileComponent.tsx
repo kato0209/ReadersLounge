@@ -13,6 +13,8 @@ import { CreateChatRoomRequest } from '../../openapi';
 import { useNavigate } from 'react-router-dom';
 import { EditProfile } from './EditProfile';
 import { ConnectionList } from './ConnectionList';
+import  { PostList }  from '../../components/PostList/PostList';
+import { Post } from '../../openapi';
 
 export default function UserProfileMain() {
 
@@ -20,6 +22,7 @@ export default function UserProfileMain() {
   const idNumber = id ? parseInt(id, 10) : 0;
   const { user: loginUser } = useAuthUserContext();
   const [user, setUser] = React.useState<User | null>(null);
+  const [posts, setPosts] = React.useState<Post[]>([]);
   const [followerConnections, setfollowerConnections] = React.useState<Connection[]>([]);
   const [followingConnections, setfollowingConnections] = React.useState<Connection[]>([]);
   const [followingConnection, setFollowingConnection] = React.useState<Connection | null>(null);
@@ -27,6 +30,7 @@ export default function UserProfileMain() {
   const errorHandler = useErrorHandler();
   const navigate = useNavigate();
   const [activeConnectionList, setActiveConnectionList] = React.useState<string | null>(null);
+
 
   const fetchUser = async () => {
     try {
@@ -97,8 +101,34 @@ export default function UserProfileMain() {
     }
   }
 
+  const fetchPostsOfUser = async () => {
+        
+    try {
+        const api = await apiInstance;
+        const res = await api.getPostsOfUser(idNumber);
+        
+        if (res.data && Array.isArray(res.data)) {
+            const fetchedPosts: Post[] = res.data.map(item => ({
+              post_id: item.post_id,
+              user: item.user,
+              content: item.content,
+              rating: item.rating,
+              image: item.image,
+              created_at: item.created_at,
+              book: item.book,
+              likes: item.likes,
+            }));
+            setPosts(fetchedPosts);
+        }
+    } catch (error: unknown) {
+        errorHandler(error);
+    }
+        
+};
+
   React.useEffect(() => {
     fetchUser();
+    fetchPostsOfUser();
     fetchfollowerConnections();
     fetchfollowingConnections();
   }, [idNumber]);
@@ -163,8 +193,8 @@ export default function UserProfileMain() {
   };
 
   return (
-    <div style={{display: "flex"}}>
-      <Box sx={{ display: 'flex', flexDirection: 'column', p: 2, flex: '0 0 50%' }}>
+    <Box sx={{display: "flex"}}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', p: 2, flex: '0 0 50%', '@media (max-width: 500px)':{flex: "0 0 60%"} }}>
         <Card sx={{ maxWidth: 500, width: '100%', mb: 2 }}>
           <CardMedia
             component="img"
@@ -174,11 +204,28 @@ export default function UserProfileMain() {
           />
           <Box sx={{ display: 'flex', justifyContent: 'center', mt: -8, position: "relative" }}>
             <Avatar
-              sx={{ width: 128, height: 128, border: '4px solid', borderColor: 'background.paper'}}
+              sx={{ 
+                  width: 128, 
+                  height: 128, 
+                  border: '4px solid', 
+                  borderColor: 'background.paper',
+                  '@media (max-width: 1000px)': {
+                    width: 64,
+                    height: 64,
+                  },
+                  '@media (max-width: 770px)': {
+                    width: 50,
+                    height: 50,
+                  },
+                  '@media (max-width: 600px)': {
+                    width: 40,
+                    height: 40,
+                  }
+              }}
               src={isValidUrl(user?.profile_image) ? user?.profile_image : `data:image/png;base64,${user?.profile_image}` }
             />
             {loginUser?.user_id === idNumber && (
-              <Box sx={{display: "flex", flexDirection: "column", position: "absolute", top: "50%", right: "0.3rem"}}>
+              <Box sx={{display: "flex", position: "absolute", top: "50%", right: "0.3rem"}}>
                 {user && (
                   <EditProfile user={user} fetchUser={fetchUser}/>
                 )}
@@ -235,11 +282,14 @@ export default function UserProfileMain() {
             </Stack>
           </CardContent>
         </Card>
+        <Box sx={{ flex: 1 }}>
+          <PostList  propPosts={posts}/>
+        </Box>
       </Box>
       <Box sx={{flex: 1}}>
         {activeConnectionList === 'followings' && <ConnectionList connections={followingConnections} />}
         {activeConnectionList === 'followers' && <ConnectionList connections={followerConnections} />}
       </Box>
-    </div>
+    </Box>
   );
 }
