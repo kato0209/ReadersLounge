@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
 
 	"backend/controller/openapi"
@@ -20,11 +19,9 @@ func (s *Server) CreateConnection(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, err.Error())
 	}
 
-	fmt.Println(11)
 	if err := s.cnu.CreateConnection(ctx, userID, CreateConnectionBody.TargetUserId); err != nil {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
-	fmt.Println(22)
 
 	return ctx.NoContent(http.StatusCreated)
 }

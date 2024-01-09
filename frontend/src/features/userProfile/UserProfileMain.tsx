@@ -12,6 +12,7 @@ import { useAuthUserContext } from '../../lib/auth/auth';
 import { CreateChatRoomRequest } from '../../openapi';
 import { useNavigate } from 'react-router-dom';
 import { EditProfile } from './EditProfile';
+import { ConnectionList } from './ConnectionList';
 
 export default function UserProfileMain() {
 
@@ -25,6 +26,7 @@ export default function UserProfileMain() {
   const [isFollowActionLoading, setIsFollowActionLoading] = React.useState<boolean>(false);
   const errorHandler = useErrorHandler();
   const navigate = useNavigate();
+  const [activeConnectionList, setActiveConnectionList] = React.useState<string | null>(null);
 
   const fetchUser = async () => {
     try {
@@ -86,7 +88,7 @@ export default function UserProfileMain() {
           });
           setfollowingConnections(followingConnections);
         } else {
-          setfollowerConnections([]);
+          setfollowingConnections([]);
         }
     } catch (error: unknown) {
         errorHandler(error);
@@ -152,68 +154,92 @@ export default function UserProfileMain() {
     }
   }
 
-  return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', p: 2 }}>
-      <Card sx={{ maxWidth: 500, width: '100%', mb: 2 }}>
-        <CardMedia
-          component="img"
-          height="200"
-          image={UserHeaderImage}
-          alt="Cover image"
-        />
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: -8, position: "relative" }}>
-          <Avatar
-            sx={{ width: 128, height: 128, border: '4px solid', borderColor: 'background.paper'}}
-            src={isValidUrl(user?.profile_image) ? user?.profile_image : `data:image/png;base64,${user?.profile_image}` }
-          />
-          {loginUser?.user_id === idNumber && (
-            <Box sx={{display: "flex", flexDirection: "column", position: "absolute", top: "50%", right: "0.3rem"}}>
-              {user && (
-                <EditProfile user={user} fetchUser={fetchUser}/>
-              )}
-            </Box>
-          )}
-        </Box>
-        <CardContent>
-          <Typography variant="h5" component="div" textAlign="center" sx={{marginBottom: "1rem"}}>
-            {user?.name}
-          </Typography>
-          <Typography variant="body2" color="text.secondary" textAlign="center">
-            {user?.profile_text}
-          </Typography>
-          <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2} mt={2}>
-            {loginUser?.user_id !== idNumber ? (
-              <Box sx={{display: "flex"}}>
-                {followingConnection 
-                  ? (<Button disabled={isFollowActionLoading} variant="outlined" onClick={() => handleUnFollowClick(followingConnection.connection_id)} sx={{marginRight: "1rem", color: "black", borderColor: "black","&:hover": {borderColor: "black", color: 'black', backgroundColor: "rgba(0, 0, 0, 0.1)" }  }}>UnFollow</Button>)
-                  : (<Button disabled={isFollowActionLoading} variant="outlined" onClick={handleFollowClick} sx={{marginRight: "1rem", color: "black", borderColor: "black","&:hover": {borderColor: "black", color: 'black', backgroundColor: "rgba(0, 0, 0, 0.1)" }  }}>Follow</Button>)
-                }
-                
-                <Button variant="outlined" onClick={handleMessageClick} sx={{color: "black", borderColor: "black","&:hover": {borderColor: "black", color: 'black', backgroundColor: "rgba(0, 0, 0, 0.1)" }  }}>Message</Button>
-              </Box>
-            ): <div></div>}
-            <Box sx={{display: "flex"}}>
-              <Box sx={{marginRight: "1rem"}}>
-                <Typography variant="h6" component="div">
-                  {followerConnections.length}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Followers
-                </Typography>
-              </Box>
-              <Box>
-                <Typography variant="h6" component="div">
-                  {followingConnections.length}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Following
-                </Typography>
-              </Box>
-            </Box>
-          </Stack>
-        </CardContent>
-      </Card>
+  const handleFollowerClick = () => {
+    setActiveConnectionList(activeConnectionList === 'followers' ? null : 'followers');
+  };
+  
+  const handleFollowingClick = () => {
+    setActiveConnectionList(activeConnectionList === 'followings' ? null : 'followings');
+  };
 
-    </Box>
+  return (
+    <div style={{display: "flex"}}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', p: 2, flex: '0 0 50%' }}>
+        <Card sx={{ maxWidth: 500, width: '100%', mb: 2 }}>
+          <CardMedia
+            component="img"
+            height="200"
+            image={UserHeaderImage}
+            alt="Cover image"
+          />
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: -8, position: "relative" }}>
+            <Avatar
+              sx={{ width: 128, height: 128, border: '4px solid', borderColor: 'background.paper'}}
+              src={isValidUrl(user?.profile_image) ? user?.profile_image : `data:image/png;base64,${user?.profile_image}` }
+            />
+            {loginUser?.user_id === idNumber && (
+              <Box sx={{display: "flex", flexDirection: "column", position: "absolute", top: "50%", right: "0.3rem"}}>
+                {user && (
+                  <EditProfile user={user} fetchUser={fetchUser}/>
+                )}
+              </Box>
+            )}
+          </Box>
+          <CardContent>
+            <Typography variant="h5" component="div" textAlign="center" sx={{marginBottom: "1rem"}}>
+              {user?.name}
+            </Typography>
+            <Typography variant="body2" color="text.secondary" textAlign="center">
+              {user?.profile_text}
+            </Typography>
+            <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2} mt={4}>
+              {loginUser?.user_id !== idNumber ? (
+                <Box sx={{display: "flex"}}>
+                  {followingConnection 
+                    ? (<Button disabled={isFollowActionLoading} variant="outlined" onClick={() => handleUnFollowClick(followingConnection.connection_id)} sx={{marginRight: "1rem", color: "black", borderColor: "black","&:hover": {borderColor: "black", color: 'black', backgroundColor: "rgba(0, 0, 0, 0.1)" }  }}>UnFollow</Button>)
+                    : (<Button disabled={isFollowActionLoading} variant="outlined" onClick={handleFollowClick} sx={{marginRight: "1rem", color: "black", borderColor: "black","&:hover": {borderColor: "black", color: 'black', backgroundColor: "rgba(0, 0, 0, 0.1)" }  }}>Follow</Button>)
+                  }
+                  
+                  <Button variant="outlined" onClick={handleMessageClick} sx={{color: "black", borderColor: "black","&:hover": {borderColor: "black", color: 'black', backgroundColor: "rgba(0, 0, 0, 0.1)" }  }}>Message</Button>
+                </Box>
+              ): <div></div>}
+              <Box sx={{display: "flex"}}>
+                <Box 
+                  sx={{
+                    marginRight: "1rem", 
+                    cursor: "pointer",
+                    "&:hover": {
+                      textDecoration: "underline",
+                    }
+                  }} 
+                  onClick={handleFollowerClick}
+                >
+                  <Typography variant="body2" color="text.secondary">
+                    {followerConnections.length} Followers
+                  </Typography>
+                </Box>
+                <Box 
+                  sx={{ 
+                    cursor: "pointer",
+                    "&:hover": {
+                      textDecoration: "underline",
+                    }
+                  }} 
+                  onClick={handleFollowingClick}
+                >
+                  <Typography variant="body2" color="text.secondary">
+                    {followingConnections.length} Following
+                  </Typography>
+                </Box>
+              </Box>
+            </Stack>
+          </CardContent>
+        </Card>
+      </Box>
+      <Box sx={{flex: 1}}>
+        {activeConnectionList === 'followings' && <ConnectionList connections={followingConnections} />}
+        {activeConnectionList === 'followers' && <ConnectionList connections={followerConnections} />}
+      </Box>
+    </div>
   );
 }
