@@ -463,17 +463,20 @@ paths:
                 required:
                   - post_like_id
 
+  /post-likes/{PostId}:  
     delete:
       security:
         - X-CSRF-TOKEN: []
         - jwtAuth: []
       summary: delete like of Post
       operationId: delete-post-like
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/DeletePostLikeReqBody"
+      parameters:
+        - name: PostId
+          in: path
+          required: true
+          description: identifier of the postId of post-likes to be deleted
+          schema:
+            type: integer
       responses:
         "204":
           description: OK, connection deleted successfully
@@ -495,6 +498,30 @@ paths:
                 properties:
                   post_id:
                     type: integer
+  
+  /search-user:
+    get:
+      security:
+        - X-CSRF-TOKEN: []
+        - jwtAuth: []
+      summary: search user by keyword
+      operationId: search-user
+      parameters:
+        - name: keyword
+          in: query
+          required: true
+          description: keyword to search user
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
           
 components:
   securitySchemes:
@@ -730,12 +757,6 @@ components:
         - post_like_id
         - user_id
     CreatePostLikeReqBody:
-      properties:
-        post_id:
-          type: integer
-      required:
-        - post_id
-    DeletePostLikeReqBody:
       properties:
         post_id:
           type: integer

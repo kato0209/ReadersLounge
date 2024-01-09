@@ -2,6 +2,7 @@ import Home from '../features/home/Home';
 import { SearchBook } from '../features/searchBook/SearchBook';
 import UserProfile  from '../features/userProfile/UserProfile';
 import RoomList from '../features/chat/RoomList';
+import UserSearch from '../features/userSearch/UserSearch';
 
 export const protectedRoutes = [
     { 
@@ -12,6 +13,10 @@ export const protectedRoutes = [
         path: '/search-book',
         element: <SearchBook />,
     },  
+    {
+        path: '/user-search',
+        element: <UserSearch />,
+    },
     {
         path: '/user-profile/:id',
         element: <UserProfile />,

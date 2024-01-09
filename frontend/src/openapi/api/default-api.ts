@@ -40,8 +40,6 @@ import { CreatePostLike201Response } from '../models';
 // @ts-ignore
 import { CreatePostLikeReqBody } from '../models';
 // @ts-ignore
-import { DeletePostLikeReqBody } from '../models';
-// @ts-ignore
 import { GetLikedPostList200Response } from '../models';
 // @ts-ignore
 import { Message } from '../models';
@@ -396,12 +394,15 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 
          * @summary delete like of Post
-         * @param {DeletePostLikeReqBody} [deletePostLikeReqBody] 
+         * @param {number} postId identifier of the postId of post-likes to be deleted
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deletePostLike: async (deletePostLikeReqBody?: DeletePostLikeReqBody, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/post-likes`;
+        deletePostLike: async (postId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'postId' is not null or undefined
+            assertParamExists('deletePostLike', 'postId', postId)
+            const localVarPath = `/post-likes/{PostId}`
+                .replace(`{${"PostId"}}`, encodeURIComponent(String(postId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -420,12 +421,9 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(deletePostLikeReqBody, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -945,6 +943,48 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
+         * @summary search user by keyword
+         * @param {string} keyword keyword to search user
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        searchUser: async (keyword: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'keyword' is not null or undefined
+            assertParamExists('searchUser', 'keyword', keyword)
+            const localVarPath = `/search-user`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication X-CSRF-TOKEN required
+            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
+
+            // authentication jwtAuth required
+
+            if (keyword !== undefined) {
+                localVarQueryParameter['keyword'] = keyword;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary create new user
          * @param {ReqSignupBody} reqSignupBody 
          * @param {*} [options] Override http request option.
@@ -1139,12 +1179,12 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary delete like of Post
-         * @param {DeletePostLikeReqBody} [deletePostLikeReqBody] 
+         * @param {number} postId identifier of the postId of post-likes to be deleted
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async deletePostLike(deletePostLikeReqBody?: DeletePostLikeReqBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.deletePostLike(deletePostLikeReqBody, options);
+        async deletePostLike(postId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deletePostLike(postId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1289,6 +1329,17 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary search user by keyword
+         * @param {string} keyword keyword to search user
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async searchUser(keyword: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<User>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.searchUser(keyword, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary create new user
          * @param {ReqSignupBody} reqSignupBody 
          * @param {*} [options] Override http request option.
@@ -1406,12 +1457,12 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         /**
          * 
          * @summary delete like of Post
-         * @param {DeletePostLikeReqBody} [deletePostLikeReqBody] 
+         * @param {number} postId identifier of the postId of post-likes to be deleted
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deletePostLike(deletePostLikeReqBody?: DeletePostLikeReqBody, options?: any): AxiosPromise<void> {
-            return localVarFp.deletePostLike(deletePostLikeReqBody, options).then((request) => request(axios, basePath));
+        deletePostLike(postId: number, options?: any): AxiosPromise<void> {
+            return localVarFp.deletePostLike(postId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1539,6 +1590,16 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         logout(body?: object, options?: any): AxiosPromise<void> {
             return localVarFp.logout(body, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary search user by keyword
+         * @param {string} keyword keyword to search user
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        searchUser(keyword: string, options?: any): AxiosPromise<Array<User>> {
+            return localVarFp.searchUser(keyword, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1673,13 +1734,13 @@ export class DefaultApi extends BaseAPI {
     /**
      * 
      * @summary delete like of Post
-     * @param {DeletePostLikeReqBody} [deletePostLikeReqBody] 
+     * @param {number} postId identifier of the postId of post-likes to be deleted
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof DefaultApi
      */
-    public deletePostLike(deletePostLikeReqBody?: DeletePostLikeReqBody, options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).deletePostLike(deletePostLikeReqBody, options).then((request) => request(this.axios, this.basePath));
+    public deletePostLike(postId: number, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).deletePostLike(postId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1833,6 +1894,18 @@ export class DefaultApi extends BaseAPI {
      */
     public logout(body?: object, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).logout(body, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary search user by keyword
+     * @param {string} keyword keyword to search user
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public searchUser(keyword: string, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).searchUser(keyword, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

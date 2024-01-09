@@ -60,11 +60,6 @@ type CreatePostLikeReqBody struct {
 	PostId int `json:"post_id"`
 }
 
-// DeletePostLikeReqBody defines model for DeletePostLikeReqBody.
-type DeletePostLikeReqBody struct {
-	PostId int `json:"post_id"`
-}
-
 // Message defines model for Message.
 type Message struct {
 	Content   string `json:"content"`
@@ -193,6 +188,12 @@ type GoogleOauthCallbackParams struct {
 	Code string `form:"code" json:"code"`
 }
 
+// SearchUserParams defines parameters for SearchUser.
+type SearchUserParams struct {
+	// Keyword keyword to search user
+	Keyword string `form:"keyword" json:"keyword"`
+}
+
 // CreateChatRoomJSONRequestBody defines body for CreateChatRoom for application/json ContentType.
 type CreateChatRoomJSONRequestBody CreateChatRoomJSONBody
 
@@ -204,9 +205,6 @@ type LoginJSONRequestBody = ReqLoginBody
 
 // LogoutJSONRequestBody defines body for Logout for application/json ContentType.
 type LogoutJSONRequestBody = LogoutJSONBody
-
-// DeletePostLikeJSONRequestBody defines body for DeletePostLike for application/json ContentType.
-type DeletePostLikeJSONRequestBody = DeletePostLikeReqBody
 
 // CreatePostLikeJSONRequestBody defines body for CreatePostLike for application/json ContentType.
 type CreatePostLikeJSONRequestBody = CreatePostLikeReqBody

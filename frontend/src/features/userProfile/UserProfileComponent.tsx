@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom';
 import { apiInstance } from '../../lib/api/apiInstance';
 import { useErrorHandler } from 'react-error-boundary';
 import { User } from '../../openapi';
-import { CreateConnectionRequest, Connection } from '../../openapi/';
+import { CreateConnectionRequest, Connection } from '../../openapi';
 import { Box, Card, CardContent, Typography, Button, Avatar, Stack, CardMedia } from '@mui/material';
 import UserHeaderImage from '../../assets/images/UserProfileHeader.jpg';
 import { useAuthUserContext } from '../../lib/auth/auth';

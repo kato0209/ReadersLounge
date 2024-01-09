@@ -24,7 +24,7 @@ import { Menu, MenuItem } from '@mui/material';
 import UserAvatar from '../../components/Avatar/UserAvatar';
 import { useAuthUserContext } from '../../lib/auth/auth';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import { CreatePostLikeReqBody, DeletePostLikeReqBody, PostLike } from '../../openapi';
+import { CreatePostLikeReqBody, PostLike } from '../../openapi';
 
 const PostListContainer = {
     display: 'flex', 
@@ -142,11 +142,8 @@ export default function PostList() {
 
     const handleUnLikeClick = async (postID: number) => {
         try {
-            const req: DeletePostLikeReqBody = {
-                post_id: postID,
-            }
             const api = await apiInstance;
-            const res = await api.deletePostLike(req);
+            const res = await api.deletePostLike(postID);
             if (res.status === 204) {
                 setLikedPostIDs(currentLikedPostIDs => 
                     currentLikedPostIDs.filter(id => id !== postID)

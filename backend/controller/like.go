@@ -30,17 +30,13 @@ func (s *Server) CreatePostLike(ctx echo.Context) error {
 	return ctx.JSON(http.StatusCreated, resPostLike)
 }
 
-func (s *Server) DeletePostLike(ctx echo.Context) error {
+func (s *Server) DeletePostLike(ctx echo.Context, postId int) error {
 	userID, err := utils.ExtractUserID(ctx)
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
-	deletePostLikeBody := openapi.DeletePostLikeReqBody{}
-	if err := ctx.Bind(&deletePostLikeBody); err != nil {
-		return ctx.JSON(http.StatusBadRequest, err.Error())
-	}
 
-	if err := s.lu.DeletePostLike(ctx, deletePostLikeBody.PostId, userID); err != nil {
+	if err := s.lu.DeletePostLike(ctx, postId, userID); err != nil {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
 	return ctx.NoContent(http.StatusNoContent)

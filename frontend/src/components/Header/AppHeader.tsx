@@ -20,6 +20,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { useAuthUserContext } from '../../lib/auth/auth';
 import { Avatar, Button } from '@mui/material';
 import { isValidUrl } from '../../utils/isValidUrl';
+import PersonSearchIcon from '@mui/icons-material/PersonSearch';
 
 export default function AppHeader() {
   const [profileAnchorEl, setProfileAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -91,9 +92,9 @@ export default function AppHeader() {
                 <HomeIcon sx={{marginRight:'0.5rem'}}/>
                 Home
               </MenuItem>
-              <MenuItem onClick={handleMenuClose} sx={{display: 'flex'}}>
-                <NotificationsIcon sx={{marginRight:'0.5rem'}}/>
-                Notifications
+              <MenuItem component={Link} to="/user-search" sx={{display: 'flex'}}>
+                <PersonSearchIcon sx={{marginRight:'0.5rem'}}/>
+                ユーザー検索
               </MenuItem>
               <MenuItem component={Link} to="/chat-room-list" sx={{display: 'flex', '&:hover': { color: 'black'}}}>
                 <MailIcon sx={{marginRight:'0.5rem'}}/>

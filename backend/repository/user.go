@@ -19,6 +19,7 @@ type IUserRepository interface {
 	CheckExistsUserByIdentifier(ctx echo.Context, identifier string) (bool, error)
 	UpdateUserByUserID(ctx echo.Context, user *models.User) error
 	SaveProfileImage(ctx echo.Context, image *models.ProfileImage) error
+	SearchUserByKeyword(ctx echo.Context, users *[]models.User, keyword string) error
 }
 
 type userRepository struct {
@@ -193,5 +194,46 @@ func (ur *userRepository) UpdateUserByUserID(ctx echo.Context, user *models.User
 			return errors.WithStack(err)
 		}
 	}
+	return nil
+}
+
+func (ur *userRepository) SearchUserByKeyword(ctx echo.Context, users *[]models.User, keyword string) error {
+	c := ctx.Request().Context()
+
+	query := `
+		SELECT
+			users.user_id,
+			ud.name,
+			ud.profile_image
+		FROM
+			users
+		INNER JOIN
+			user_details ud ON users.user_id = ud.user_id
+		WHERE
+			ud.name LIKE $1
+	`
+
+	rows, err := ur.db.QueryContext(c, query, "%"+keyword+"%")
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		user := models.User{}
+		err := rows.Scan(
+			&user.UserID,
+			&user.Name,
+			&user.ProfileImage.FileName,
+		)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+		*users = append(*users, user)
+	}
+	if err := rows.Err(); err != nil {
+		return errors.WithStack(err)
+	}
+
 	return nil
 }

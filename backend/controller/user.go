@@ -217,3 +217,24 @@ func (s *Server) UpdateUser(ctx echo.Context) error {
 
 	return ctx.NoContent(http.StatusNoContent)
 }
+
+func (s *Server) SearchUser(ctx echo.Context, params openapi.SearchUserParams) error {
+	keyword := params.Keyword
+	users, err := s.uu.SearchUser(ctx, keyword)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	resUsers := []openapi.User{}
+	for _, user := range users {
+		profileImage := user.ProfileImage.ClassifyPathType()
+
+		resUsers = append(resUsers, openapi.User{
+			UserId:       user.UserID,
+			Name:         user.Name,
+			ProfileImage: profileImage,
+		})
+	}
+
+	return ctx.JSON(http.StatusOK, resUsers)
+}

@@ -162,7 +162,7 @@ export const SearchBook: React.FC<SearchBookProps> = ({ formData }) => {
                     }
                     }}
                 >
-                送信
+                検索
                 </Button>
             </Box>
         </Box>

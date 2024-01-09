@@ -10,6 +10,7 @@ import MailIcon from '@mui/icons-material/Mail';
 import { CreatePost }  from '../../features/home/CreatePost';
 import SearchIcon from '@mui/icons-material/Search';
 import { Link } from 'react-router-dom';
+import PersonSearchIcon from '@mui/icons-material/PersonSearch';
 
 export default function Sidebar() {
 
@@ -47,11 +48,21 @@ export default function Sidebar() {
           </ListItemIcon>
           <ListItemText primary="Home" />
         </ListItem>
-        <ListItem button sx={{ borderRadius: '50px' }}>
+        <ListItem 
+          button 
+          component={Link} 
+          sx={{ 
+            borderRadius: '50px',
+            '&:hover': {
+              color: 'black',
+            },
+          }} 
+          to="/user-search"
+        >
           <ListItemIcon>
-            <NotificationsIcon />
+            <PersonSearchIcon />
           </ListItemIcon>
-          <ListItemText primary="Notifications" />
+          <ListItemText primary="ユーザー検索" />
         </ListItem>
         <ListItem 
           button 

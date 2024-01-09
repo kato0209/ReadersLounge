@@ -24,6 +24,7 @@ type IUserUsecase interface {
 	GoogleOAuthCallback(ctx echo.Context, code string) (string, error)
 	GetUserByUserID(ctx echo.Context, userID int) (models.User, error)
 	UpdateUser(ctx echo.Context, user *models.User) error
+	SearchUser(ctx echo.Context, keyword string) ([]models.User, error)
 }
 
 type userUsecase struct {
@@ -197,4 +198,23 @@ func (uu *userUsecase) UpdateUser(ctx echo.Context, user *models.User) error {
 		return errors.WithStack(err)
 	}
 	return nil
+}
+
+func (uu *userUsecase) SearchUser(ctx echo.Context, keyword string) ([]models.User, error) {
+	users := []models.User{}
+	if err := uu.ur.SearchUserByKeyword(ctx, &users, keyword); err != nil {
+		return nil, errors.WithStack(err)
+	}
+
+	for i := range users {
+		if !utils.IsRemotePath(users[i].ProfileImage.FileName) {
+			profileImage, err := utils.LoadImage(ctx, users[i].ProfileImage.FileName)
+			if err != nil {
+				return []models.User{}, errors.WithStack(err)
+			}
+			users[i].ProfileImage.EncodedImage = &profileImage
+		}
+	}
+
+	return users, nil
 }

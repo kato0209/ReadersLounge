@@ -1,12 +1,11 @@
 import * as React from 'react';
 import Sidebar from '../../components/Sidebar/Sidebar';
-import UserProfileComponent from './UserProfileComponent';
 import { useIsMobileContext } from '../../providers/mobile/isMobile';
-import { Connection } from '../../openapi/';
+import UserSearchComponent from './UserSearchComponent';
 
-export default function UserProfile() {
+export default function UserSearch() {
     const isMobile = useIsMobileContext();
-    
+
   return (
     <div style={{ display: 'flex'}}>
         {!isMobile && (
@@ -14,8 +13,8 @@ export default function UserProfile() {
                 <Sidebar />
             </div>
         )}
-        <div style={{ flex: 1, overflowX: 'hidden' }}>
-            <UserProfileComponent />
+        <div style={{ flex: '0 0 40%', overflowX: 'hidden' }}>
+            <UserSearchComponent />
         </div>
     </div>
   );
