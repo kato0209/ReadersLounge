@@ -54,6 +54,7 @@ export const PostList: React.FC<PostListProps> = ({ propPosts }) => {
     const navigate = useNavigate();
 
     const handleSettingClick = (event: React.MouseEvent<HTMLElement>, postID: number) => {
+        event.stopPropagation();
         setPostAnchorEl(event.currentTarget);
         setSelectedPostID(postID);
     };
@@ -185,7 +186,10 @@ export const PostList: React.FC<PostListProps> = ({ propPosts }) => {
                                     <Menu
                                         anchorEl={postAnchorEl}
                                         open={Boolean(postAnchorEl)}
-                                        onClose={handleSettingClose}
+                                        onClose={(e: React.MouseEvent) => {
+                                            e.stopPropagation();
+                                            handleSettingClose();
+                                        }}
                                         sx={{
                                             '& .MuiPaper-root': {
                                                 boxShadow: 'none', 
@@ -193,7 +197,8 @@ export const PostList: React.FC<PostListProps> = ({ propPosts }) => {
                                             }
                                         }}
                                     >
-                                        <MenuItem onClick={() => {
+                                        <MenuItem onClick={(event) => {
+                                            event.stopPropagation();
                                             DeletePost();
                                         }}
                                         >
@@ -231,7 +236,7 @@ export const PostList: React.FC<PostListProps> = ({ propPosts }) => {
                             />
                         </Box>
                     )}
-                    <CardContent>
+                    <CardContent onClick={(event) => event.stopPropagation()} sx={{padding: "0px", margin: "1rem"}}>
                         <Typography variant="body2" color="black" style={{ wordWrap: 'break-word' }}>
                             {post.content}
                         </Typography>
@@ -245,7 +250,7 @@ export const PostList: React.FC<PostListProps> = ({ propPosts }) => {
                             alignItems: 'center',
                         }}
                     >
-                        <CardContent sx={{ flex: '1' }}>
+                        <CardContent sx={{ flex: '1' }} onClick={(event) => event.stopPropagation()}>
                             <Link href={post.book.item_url} underline="hover">
                                 <Typography component="div" sx={{ fontSize: '1.3rem', '@media (max-width: 500px)':{fontSize: '1.0rem'}}}>
                                     {post.book.title}
@@ -279,12 +284,13 @@ export const PostList: React.FC<PostListProps> = ({ propPosts }) => {
                         />
                         </Box>
                     </Box>
-                    <CardActions disableSpacing
+                    <CardActions 
+                        disableSpacing
                         sx={{
                             justifyContent: 'space-between',
                         }}
                     >
-                        <Box>
+                        <Box onClick={(event) => event.stopPropagation()}>
                             {likedPostIDs.includes(post.post_id) 
                             ? (
                                 <IconButton onClick={() => handleUnLikeClick(post.post_id)}>

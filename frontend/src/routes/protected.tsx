@@ -3,7 +3,7 @@ import { SearchBook } from '../features/searchBook/SearchBook';
 import UserProfile  from '../features/userProfile/UserProfile';
 import RoomList from '../features/chat/RoomList';
 import UserSearch from '../features/userSearch/UserSearch';
-import Comment from '../features/comment/Comment';
+import Comments from '../features/comment/Comments';
 
 export const protectedRoutes = [
     { 
@@ -32,6 +32,6 @@ export const protectedRoutes = [
     },
     {
         path: '/post/:id',
-        element: <Comment />,
+        element: <Comments />,
     },
 ];

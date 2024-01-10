@@ -50,7 +50,7 @@ func main() {
 	likeUsecase := usecase.NewLikeUsecase(likeRepository)
 
 	commentRepository := repository.NewCommentRepository(db)
-	commentUsecase := usecase.NewCommentUsecase(commentRepository)
+	commentUsecase := usecase.NewCommentUsecase(commentRepository, userRepository)
 
 	hub := chat.NewHub()
 	server := controller.NewServer(userUsecase, postUsecase, bookUsecase, chatUsecase, connectionUsecase, likeUsecase, commentUsecase, *hub)

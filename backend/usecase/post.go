@@ -15,6 +15,7 @@ type IPostUsecase interface {
 	DeletePost(ctx echo.Context, postID int) error
 	GetLikedPostList(ctx echo.Context, userID int, posts *[]models.Post) error
 	GetPostsOfUser(ctx echo.Context, posts *[]models.Post, userID int) error
+	GetPostByPostID(ctx echo.Context, postID int) (models.Post, error)
 }
 
 type postUsecase struct {
@@ -45,6 +46,24 @@ func processPostsImage(ctx echo.Context, posts *[]models.Post) error {
 	return nil
 }
 
+func processPostImage(ctx echo.Context, post *models.Post) error {
+	if !utils.IsRemotePath(post.User.ProfileImage.FileName) {
+		profileImage, err := utils.LoadImage(ctx, post.User.ProfileImage.FileName)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+		post.User.ProfileImage.EncodedImage = &profileImage
+	}
+	if post.Image != nil && post.Image.FileName != nil {
+		postImage, err := utils.LoadImage(ctx, *post.Image.FileName)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+		post.Image.EncodedImage = &postImage
+	}
+	return nil
+}
+
 func (pu *postUsecase) GetAllPosts(ctx echo.Context, posts *[]models.Post) error {
 
 	if err := pu.pr.GetAllPosts(ctx, posts); err != nil {
@@ -66,6 +85,21 @@ func (pu *postUsecase) GetPostsOfUser(ctx echo.Context, posts *[]models.Post, us
 		return errors.WithStack(err)
 	}
 	return nil
+}
+
+func (pu *postUsecase) GetPostByPostID(ctx echo.Context, postID int) (models.Post, error) {
+	post := models.Post{}
+	err := pu.pr.GetPostByPostID(ctx, postID, &post)
+	if err != nil {
+		return models.Post{}, errors.WithStack(err)
+	}
+
+	err = processPostImage(ctx, &post)
+	if err != nil {
+		return models.Post{}, errors.WithStack(err)
+	}
+
+	return post, nil
 }
 
 func (pu *postUsecase) CreatePost(ctx echo.Context, post *models.Post) error {

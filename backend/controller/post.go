@@ -14,52 +14,60 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func createResPosts(posts []models.Post) []openapi.Post {
-	resPosts := []openapi.Post{}
-	for _, post := range posts {
+func refillPost(ctx echo.Context, post models.Post) (openapi.Post, error) {
 
-		profileImage := post.User.ProfileImage.ClassifyPathType()
-
-		resUser := openapi.User{
-			UserId:       post.User.UserID,
-			Name:         post.User.Name,
-			ProfileImage: profileImage,
-		}
-		resBook := openapi.Book{
-			BookId:      post.Book.BookID,
-			ISBNcode:    post.Book.ISBNcode,
-			Author:      post.Book.Author,
-			Image:       post.Book.Image,
-			ItemUrl:     post.Book.ItemURL,
-			PublishedAt: post.Book.PublishedAt,
-			Publisher:   post.Book.Publisher,
-			Price:       post.Book.Price,
-			Title:       post.Book.Title,
-		}
-		resLike := []openapi.PostLike{}
-		for _, like := range post.Like {
-			resLike = append(resLike, openapi.PostLike{
-				PostLikeId: like.PostLikeID,
-				UserId:     like.User.UserID,
-			})
-		}
-		var encodedImage *string
-		if post.Image != nil {
-			encodedImage = post.Image.EncodedImage
-		}
-		formattedTime := post.CreatedAt.Format("2006-01-02 15:04")
-		resPosts = append(resPosts, openapi.Post{
-			PostId:    post.PostID,
-			Content:   post.Content,
-			Rating:    post.Rating,
-			Image:     encodedImage,
-			CreatedAt: formattedTime,
-			User:      resUser,
-			Book:      resBook,
-			Likes:     &resLike,
+	resUser := openapi.User{
+		UserId:       post.User.UserID,
+		Name:         post.User.Name,
+		ProfileImage: post.User.ProfileImage.ClassifyPathType(),
+	}
+	resBook := openapi.Book{
+		BookId:      post.Book.BookID,
+		ISBNcode:    post.Book.ISBNcode,
+		Author:      post.Book.Author,
+		Image:       post.Book.Image,
+		ItemUrl:     post.Book.ItemURL,
+		PublishedAt: post.Book.PublishedAt,
+		Publisher:   post.Book.Publisher,
+		Price:       post.Book.Price,
+		Title:       post.Book.Title,
+	}
+	resLike := []openapi.PostLike{}
+	for _, like := range post.Like {
+		resLike = append(resLike, openapi.PostLike{
+			PostLikeId: like.PostLikeID,
+			UserId:     like.User.UserID,
 		})
 	}
-	return resPosts
+	var encodedImage *string
+	if post.Image != nil {
+		encodedImage = post.Image.EncodedImage
+	}
+	formattedTime := post.CreatedAt.Format("2006-01-02 15:04")
+	resPost := openapi.Post{
+		PostId:    post.PostID,
+		Content:   post.Content,
+		Rating:    post.Rating,
+		Image:     encodedImage,
+		CreatedAt: formattedTime,
+		User:      resUser,
+		Book:      resBook,
+		Likes:     &resLike,
+	}
+
+	return resPost, nil
+}
+
+func createResPosts(ctx echo.Context, posts []models.Post) ([]openapi.Post, error) {
+	resPosts := []openapi.Post{}
+	for _, post := range posts {
+		resPost, err := refillPost(ctx, post)
+		if err != nil {
+			return []openapi.Post{}, err
+		}
+		resPosts = append(resPosts, resPost)
+	}
+	return resPosts, nil
 }
 
 func (s *Server) GetPosts(ctx echo.Context) error {
@@ -67,7 +75,10 @@ func (s *Server) GetPosts(ctx echo.Context) error {
 	if err := s.pu.GetAllPosts(ctx, &posts); err != nil {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
-	resPosts := createResPosts(posts)
+	resPosts, err := createResPosts(ctx, posts)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
 
 	return ctx.JSON(http.StatusOK, resPosts)
 }
@@ -77,13 +88,26 @@ func (s *Server) GetPostsOfUser(ctx echo.Context, userId int) error {
 	if err := s.pu.GetPostsOfUser(ctx, &posts, userId); err != nil {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
-	resPosts := createResPosts(posts)
+	resPosts, err := createResPosts(ctx, posts)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
 
 	return ctx.JSON(http.StatusOK, resPosts)
 }
 
 func (s *Server) GetPostByPostID(ctx echo.Context, postId int) error {
-	return ctx.JSON(http.StatusOK, nil)
+	post, err := s.pu.GetPostByPostID(ctx, postId)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	resPost, err := refillPost(ctx, post)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, resPost)
 }
 
 func (s *Server) CreatePost(ctx echo.Context) error {

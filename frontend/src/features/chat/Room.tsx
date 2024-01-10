@@ -182,6 +182,10 @@ export default function Room(props: RoomProps) {
         </Box> 
         <Box 
             component="form" 
+            onSubmit={(e) => {
+                e.preventDefault();
+                handleSendMessage();
+            }}
             noValidate
             sx={{
                 display: 'flex',
@@ -210,7 +214,7 @@ export default function Room(props: RoomProps) {
                     color: '#fff',
                 }
                 }}
-                onClick={handleSendMessage}
+                type="submit"
             >
                 <SendIcon />
             </Button>

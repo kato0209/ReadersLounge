@@ -28,6 +28,8 @@ import { BookGenreNode } from '../models';
 // @ts-ignore
 import { ChatRoom } from '../models';
 // @ts-ignore
+import { Comment } from '../models';
+// @ts-ignore
 import { Connection } from '../models';
 // @ts-ignore
 import { CreateChatRoom201Response } from '../models';
@@ -45,6 +47,8 @@ import { GetLikedPostList200Response } from '../models';
 import { Message } from '../models';
 // @ts-ignore
 import { Post } from '../models';
+// @ts-ignore
+import { ReqCreateCommentBody } from '../models';
 // @ts-ignore
 import { ReqLoginBody } from '../models';
 // @ts-ignore
@@ -134,6 +138,45 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(createChatRoomRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary create comment
+         * @param {ReqCreateCommentBody} [reqCreateCommentBody] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createComment: async (reqCreateCommentBody?: ReqCreateCommentBody, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/comments`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication X-CSRF-TOKEN required
+            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
+
+            // authentication jwtAuth required
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(reqCreateCommentBody, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -547,6 +590,45 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
+         * @summary get comments by postID
+         * @param {number} postId identifier of the post to get comments
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getCommentsByPostID: async (postId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'postId' is not null or undefined
+            assertParamExists('getCommentsByPostID', 'postId', postId)
+            const localVarPath = `/comments/{postId}`
+                .replace(`{${"postId"}}`, encodeURIComponent(String(postId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication X-CSRF-TOKEN required
+            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
+
+            // authentication jwtAuth required
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary get followers connections
          * @param {number} userId ID to specify the user
          * @param {*} [options] Override http request option.
@@ -743,6 +825,45 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
+         * @summary get post by postID
+         * @param {number} postId identifier of the post to get
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPostByPostID: async (postId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'postId' is not null or undefined
+            assertParamExists('getPostByPostID', 'postId', postId)
+            const localVarPath = `/posts/{postId}`
+                .replace(`{${"postId"}}`, encodeURIComponent(String(postId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication X-CSRF-TOKEN required
+            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
+
+            // authentication jwtAuth required
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary get posts
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -786,7 +907,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         getPostsOfUser: async (userId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'userId' is not null or undefined
             assertParamExists('getPostsOfUser', 'userId', userId)
-            const localVarPath = `/posts/{userId}`
+            const localVarPath = `/posts/user/{userId}`
                 .replace(`{${"userId"}}`, encodeURIComponent(String(userId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1149,6 +1270,17 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary create comment
+         * @param {ReqCreateCommentBody} [reqCreateCommentBody] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createComment(reqCreateCommentBody?: ReqCreateCommentBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Comment>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createComment(reqCreateCommentBody, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary create connection of following
          * @param {CreateConnectionRequest} [createConnectionRequest] 
          * @param {*} [options] Override http request option.
@@ -1260,6 +1392,17 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary get comments by postID
+         * @param {number} postId identifier of the post to get comments
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getCommentsByPostID(postId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Comment>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getCommentsByPostID(postId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary get followers connections
          * @param {number} userId ID to specify the user
          * @param {*} [options] Override http request option.
@@ -1309,6 +1452,17 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          */
         async getMessages(roomId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Message>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getMessages(roomId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary get post by postID
+         * @param {number} postId identifier of the post to get
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getPostByPostID(postId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Post>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getPostByPostID(postId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1444,6 +1598,16 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * 
+         * @summary create comment
+         * @param {ReqCreateCommentBody} [reqCreateCommentBody] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createComment(reqCreateCommentBody?: ReqCreateCommentBody, options?: any): AxiosPromise<Comment> {
+            return localVarFp.createComment(reqCreateCommentBody, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary create connection of following
          * @param {CreateConnectionRequest} [createConnectionRequest] 
          * @param {*} [options] Override http request option.
@@ -1545,6 +1709,16 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * 
+         * @summary get comments by postID
+         * @param {number} postId identifier of the post to get comments
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getCommentsByPostID(postId: number, options?: any): AxiosPromise<Array<Comment>> {
+            return localVarFp.getCommentsByPostID(postId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary get followers connections
          * @param {number} userId ID to specify the user
          * @param {*} [options] Override http request option.
@@ -1590,6 +1764,16 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         getMessages(roomId: number, options?: any): AxiosPromise<Array<Message>> {
             return localVarFp.getMessages(roomId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary get post by postID
+         * @param {number} postId identifier of the post to get
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPostByPostID(postId: number, options?: any): AxiosPromise<Post> {
+            return localVarFp.getPostByPostID(postId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1719,6 +1903,18 @@ export class DefaultApi extends BaseAPI {
 
     /**
      * 
+     * @summary create comment
+     * @param {ReqCreateCommentBody} [reqCreateCommentBody] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public createComment(reqCreateCommentBody?: ReqCreateCommentBody, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).createComment(reqCreateCommentBody, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @summary create connection of following
      * @param {CreateConnectionRequest} [createConnectionRequest] 
      * @param {*} [options] Override http request option.
@@ -1840,6 +2036,18 @@ export class DefaultApi extends BaseAPI {
 
     /**
      * 
+     * @summary get comments by postID
+     * @param {number} postId identifier of the post to get comments
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getCommentsByPostID(postId: number, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getCommentsByPostID(postId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @summary get followers connections
      * @param {number} userId ID to specify the user
      * @param {*} [options] Override http request option.
@@ -1894,6 +2102,18 @@ export class DefaultApi extends BaseAPI {
      */
     public getMessages(roomId: number, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).getMessages(roomId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary get post by postID
+     * @param {number} postId identifier of the post to get
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getPostByPostID(postId: number, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getPostByPostID(postId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

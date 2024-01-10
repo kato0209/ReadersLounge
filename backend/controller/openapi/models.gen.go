@@ -53,7 +53,7 @@ type Comment struct {
 	Content   string `json:"content"`
 	CreatedAt string `json:"created_at"`
 	PostId    *int   `json:"post_id,omitempty"`
-	UserId    int    `json:"user_id"`
+	User      User   `json:"user"`
 }
 
 // Connection defines model for Connection.
@@ -93,6 +93,12 @@ type Post struct {
 type PostLike struct {
 	PostLikeId int `json:"post_like_id"`
 	UserId     int `json:"user_id"`
+}
+
+// ReqCreateCommentBody defines model for ReqCreateCommentBody.
+type ReqCreateCommentBody struct {
+	Content string `json:"content"`
+	PostId  int    `json:"post_id"`
 }
 
 // ReqCreatePostBody defines model for ReqCreatePostBody.
@@ -205,6 +211,9 @@ type SearchUserParams struct {
 
 // CreateChatRoomJSONRequestBody defines body for CreateChatRoom for application/json ContentType.
 type CreateChatRoomJSONRequestBody CreateChatRoomJSONBody
+
+// CreateCommentJSONRequestBody defines body for CreateComment for application/json ContentType.
+type CreateCommentJSONRequestBody = ReqCreateCommentBody
 
 // CreateConnectionJSONRequestBody defines body for CreateConnection for application/json ContentType.
 type CreateConnectionJSONRequestBody CreateConnectionJSONBody

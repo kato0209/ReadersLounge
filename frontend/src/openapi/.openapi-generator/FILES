@@ -9,6 +9,7 @@ index.ts
 models/book-genre-node.ts
 models/book.ts
 models/chat-room.ts
+models/comment.ts
 models/connection.ts
 models/create-chat-room-request.ts
 models/create-chat-room201-response.ts
@@ -20,6 +21,7 @@ models/index.ts
 models/message.ts
 models/post-like.ts
 models/post.ts
+models/req-create-comment-body.ts
 models/req-login-body.ts
 models/req-signup-body.ts
 models/res-csrf-token.ts

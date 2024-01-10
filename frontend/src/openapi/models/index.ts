@@ -1,6 +1,7 @@
 export * from './book';
 export * from './book-genre-node';
 export * from './chat-room';
+export * from './comment';
 export * from './connection';
 export * from './create-chat-room201-response';
 export * from './create-chat-room-request';
@@ -11,6 +12,7 @@ export * from './get-liked-post-list200-response';
 export * from './message';
 export * from './post';
 export * from './post-like';
+export * from './req-create-comment-body';
 export * from './req-login-body';
 export * from './req-signup-body';
 export * from './res-csrf-token';

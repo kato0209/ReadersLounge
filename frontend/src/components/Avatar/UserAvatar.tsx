@@ -7,7 +7,9 @@ function UserAvatar(props: { image: string, userID: number }) {
     return (
         <Link to={`/user-profile/${props.userID}`}>
             <Avatar 
-                src={isValidUrl(props.image) ? props.image : `data:image/png;base64,${props.image}` }>                  
+                src={isValidUrl(props.image) ? props.image : `data:image/png;base64,${props.image}` }
+                onClick={(event) => event.stopPropagation() }  
+            >                  
             </Avatar>
         </Link>
     );
