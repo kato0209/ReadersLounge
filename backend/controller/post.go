@@ -82,6 +82,10 @@ func (s *Server) GetPostsOfUser(ctx echo.Context, userId int) error {
 	return ctx.JSON(http.StatusOK, resPosts)
 }
 
+func (s *Server) GetPostByPostID(ctx echo.Context, postId int) error {
+	return ctx.JSON(http.StatusOK, nil)
+}
+
 func (s *Server) CreatePost(ctx echo.Context) error {
 	userID, err := utils.ExtractUserID(ctx)
 	if err != nil {

@@ -3,6 +3,7 @@ import { SearchBook } from '../features/searchBook/SearchBook';
 import UserProfile  from '../features/userProfile/UserProfile';
 import RoomList from '../features/chat/RoomList';
 import UserSearch from '../features/userSearch/UserSearch';
+import Comment from '../features/comment/Comment';
 
 export const protectedRoutes = [
     { 
@@ -28,5 +29,9 @@ export const protectedRoutes = [
     {
         path: '/chat-room-list/:id',
         element: <RoomList />,
+    },
+    {
+        path: '/post/:id',
+        element: <Comment />,
     },
 ];

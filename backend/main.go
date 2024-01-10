@@ -49,8 +49,11 @@ func main() {
 	likeRepository := repository.NewLikeRepository(db)
 	likeUsecase := usecase.NewLikeUsecase(likeRepository)
 
+	commentRepository := repository.NewCommentRepository(db)
+	commentUsecase := usecase.NewCommentUsecase(commentRepository)
+
 	hub := chat.NewHub()
-	server := controller.NewServer(userUsecase, postUsecase, bookUsecase, chatUsecase, connectionUsecase, likeUsecase, *hub)
+	server := controller.NewServer(userUsecase, postUsecase, bookUsecase, chatUsecase, connectionUsecase, likeUsecase, commentUsecase, *hub)
 
 	go server.RunLoop(hub)
 

@@ -17,11 +17,12 @@ type Server struct {
 	cu  usecase.IChatUsecase
 	cnu usecase.IConnectionUsecase
 	lu  usecase.ILikeUsecase
+	cmu usecase.ICommentUsecase
 	hub *chat.Hub
 }
 
-func NewServer(uu usecase.IUserUsecase, pu usecase.IPostUsecase, bu usecase.IBookUsecase, cu usecase.IChatUsecase, cnu usecase.IConnectionUsecase, lu usecase.ILikeUsecase, hub chat.Hub) *Server {
-	return &Server{uu, pu, bu, cu, cnu, lu, &hub}
+func NewServer(uu usecase.IUserUsecase, pu usecase.IPostUsecase, bu usecase.IBookUsecase, cu usecase.IChatUsecase, cnu usecase.IConnectionUsecase, lu usecase.ILikeUsecase, cmu usecase.ICommentUsecase, hub chat.Hub) *Server {
+	return &Server{uu, pu, bu, cu, cnu, lu, cmu, &hub}
 }
 
 func (s *Server) Csrftoken(ctx echo.Context) error {

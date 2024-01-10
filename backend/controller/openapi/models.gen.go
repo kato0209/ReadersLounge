@@ -47,6 +47,15 @@ type ChatRoom struct {
 	TargetUserProfileImage string  `json:"target_user_profile_image"`
 }
 
+// Comment defines model for Comment.
+type Comment struct {
+	CommentId int    `json:"comment_id"`
+	Content   string `json:"content"`
+	CreatedAt string `json:"created_at"`
+	PostId    *int   `json:"post_id,omitempty"`
+	UserId    int    `json:"user_id"`
+}
+
 // Connection defines model for Connection.
 type Connection struct {
 	ConnectionId           int    `json:"connection_id"`

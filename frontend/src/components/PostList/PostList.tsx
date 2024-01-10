@@ -25,6 +25,7 @@ import UserAvatar from '../../components/Avatar/UserAvatar';
 import { useAuthUserContext } from '../../lib/auth/auth';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { CreatePostLikeReqBody, PostLike } from '../../openapi';
+import { useNavigate } from 'react-router-dom';
 
 const PostListContainer = {
     display: 'flex', 
@@ -50,6 +51,7 @@ export const PostList: React.FC<PostListProps> = ({ propPosts }) => {
     const { user } = useAuthUserContext();
     const [likedPostIDs, setLikedPostIDs] = React.useState<number[]>([]);
     const [posts, setPosts] = React.useState<Post[]>([]);
+    const navigate = useNavigate();
 
     const handleSettingClick = (event: React.MouseEvent<HTMLElement>, postID: number) => {
         setPostAnchorEl(event.currentTarget);
@@ -141,6 +143,10 @@ export const PostList: React.FC<PostListProps> = ({ propPosts }) => {
         }
     }
 
+    const handlePostClick = async (postID: number) => {
+        navigate(`/post/${postID}`)
+    }
+
   return (
         <Box sx={PostListContainer}>
             {posts.length > 0 ? (
@@ -162,7 +168,9 @@ export const PostList: React.FC<PostListProps> = ({ propPosts }) => {
                                 width: '100%',
                             }
                         }} 
-                        key={post.post_id}>
+                        key={post.post_id}
+                        onClick={() => handlePostClick(post.post_id)}
+                    >
                     <CardHeader
                         avatar={
                             <UserAvatar image={post.user.profile_image} userID={post.user.user_id}/>

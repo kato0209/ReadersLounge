@@ -179,7 +179,45 @@ paths:
         "201":
           description: OK
   
-  /posts/{userId}:
+  /posts/{postId}:
+    get:
+      security:
+        - X-CSRF-TOKEN: []
+        - jwtAuth: []
+      summary: get post by postID
+      operationId: get-post-by-postID
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          description: identifier of the post to get
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                  $ref: "#/components/schemas/Post"
+    delete:
+      security:
+        - X-CSRF-TOKEN: []
+        - jwtAuth: []
+      summary: delete a post
+      operationId: delete-post
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          description: Unique identifier of the post to be deleted
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: OK, post deleted successfully
+  
+  /posts/user/{userId}:
     get:
       security:
         - X-CSRF-TOKEN: []
@@ -202,24 +240,6 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Post"
-
-  /posts/{postId}:
-    delete:
-      security:
-        - X-CSRF-TOKEN: []
-        - jwtAuth: []
-      summary: delete a post
-      operationId: delete-post
-      parameters:
-        - name: postId
-          in: path
-          required: true
-          description: Unique identifier of the post to be deleted
-          schema:
-            type: integer
-      responses:
-        "204":
-          description: OK, post deleted successfully
           
   /books:
     get:
@@ -546,6 +566,30 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/User"
+  
+  /comments/{postId}:
+    get:
+      security:
+        - X-CSRF-TOKEN: []
+        - jwtAuth: []
+      summary: get comments by postID
+      operationId: get-comments-by-postID
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          description: identifier of the post to get comments 
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/Comment"
           
 components:
   securitySchemes:
@@ -786,6 +830,23 @@ components:
           type: integer
       required:
         - post_id
+    Comment:
+      properties:
+        comment_id:
+          type: integer
+        post_id:
+          type: integer
+        user_id:
+          type: integer
+        content:
+          type: string
+        created_at:
+          type: string
+      required:
+        - comment_id
+        - user_id
+        - content
+        - created_at
   
     
                   
