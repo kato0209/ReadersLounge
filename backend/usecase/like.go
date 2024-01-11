@@ -12,6 +12,8 @@ import (
 type ILikeUsecase interface {
 	CreatePostLike(ctx echo.Context, userID, postID int) (models.PostLike, error)
 	DeletePostLike(ctx echo.Context, postID, userID int) error
+	CreateCommentLike(ctx echo.Context, userID, commentID int) (models.CommentLike, error)
+	DeleteCommentLike(ctx echo.Context, commentID, userID int) error
 }
 
 type likeUsecase struct {
@@ -34,6 +36,23 @@ func (lu *likeUsecase) CreatePostLike(ctx echo.Context, userID, postID int) (mod
 
 func (lu *likeUsecase) DeletePostLike(ctx echo.Context, postID, userID int) error {
 	if err := lu.lr.DeletePostLike(ctx, postID, userID); err != nil {
+		return errors.WithStack(err)
+	}
+
+	return nil
+}
+
+func (lu *likeUsecase) CreateCommentLike(ctx echo.Context, userID, commentID int) (models.CommentLike, error) {
+	commentLike := models.CommentLike{}
+	if err := lu.lr.CreateCommentLike(ctx, userID, commentID, &commentLike); err != nil {
+		return models.CommentLike{}, errors.WithStack(err)
+	}
+
+	return commentLike, nil
+}
+
+func (lu *likeUsecase) DeleteCommentLike(ctx echo.Context, commentID, userID int) error {
+	if err := lu.lr.DeleteCommentLike(ctx, commentID, userID); err != nil {
 		return errors.WithStack(err)
 	}
 

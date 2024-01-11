@@ -282,7 +282,7 @@ export default function UserProfileMain() {
             </Stack>
           </CardContent>
         </Card>
-        <Box sx={{ flex: 1 }}>
+        <Box sx={{ flex: 1, maxWidth: 500, width: '100%' }}>
           <PostList  propPosts={posts}/>
         </Box>
       </Box>

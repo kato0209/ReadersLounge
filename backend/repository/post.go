@@ -76,7 +76,7 @@ func (pr *postRepository) execGetPostsQuery(ctx echo.Context, posts *[]models.Po
 
 		if existingPost, exists := postMap[postID]; exists {
 			if likeID.Valid {
-				existingPost.Like = append(existingPost.Like, models.PostLike{
+				existingPost.Likes = append(existingPost.Likes, models.PostLike{
 					PostLikeID: int(likeID.Int64),
 					User:       models.User{UserID: int(likeUserID.Int64)},
 				})
@@ -87,7 +87,7 @@ func (pr *postRepository) execGetPostsQuery(ctx echo.Context, posts *[]models.Po
 			orderedPostIDs = append(orderedPostIDs, postID)
 
 			if likeID.Valid {
-				post.Like = append(post.Like, models.PostLike{
+				post.Likes = append(post.Likes, models.PostLike{
 					PostLikeID: int(likeID.Int64),
 					User:       models.User{UserID: int(likeUserID.Int64)},
 				})
@@ -152,7 +152,7 @@ func (pr *postRepository) execGetPostQuery(ctx echo.Context, post *models.Post, 
 		}
 
 		if likeID.Valid {
-			post.Like = append(post.Like, models.PostLike{
+			post.Likes = append(post.Likes, models.PostLike{
 				PostLikeID: int(likeID.Int64),
 				User:       models.User{UserID: int(likeUserID.Int64)},
 			})

@@ -12,7 +12,7 @@ type Post struct {
 	Image     *PostImage
 	CreatedAt time.Time `db:"created_at"`
 	Book      Book
-	Like      []PostLike
+	Likes     []PostLike
 }
 
 type PostImage struct {

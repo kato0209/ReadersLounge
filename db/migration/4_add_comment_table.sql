@@ -4,8 +4,8 @@ CREATE TABLE IF NOT EXISTS comments (
     post_id integer NOT NULL,
     user_id integer NOT NULL,
     created_at timestamp NOT NULL DEFAULT current_timestamp,
-    FOREIGN KEY (post_id) REFERENCES posts(post_id),
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
+    FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS comment_details (
@@ -14,5 +14,5 @@ CREATE TABLE IF NOT EXISTS comment_details (
     content varchar(255) NOT NULL,
     created_at timestamptz NOT NULL DEFAULT current_timestamp,
     updated_at timestamptz NOT NULL DEFAULT current_timestamp,
-    FOREIGN KEY (comment_id) REFERENCES comments(comment_id)
+    FOREIGN KEY (comment_id) REFERENCES comments(comment_id) ON DELETE CASCADE
 );

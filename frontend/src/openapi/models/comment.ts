@@ -15,6 +15,9 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
+import { CommentLike } from './comment-like';
+// May contain unused imports in some cases
+// @ts-ignore
 import { User } from './user';
 
 /**
@@ -53,5 +56,11 @@ export interface Comment {
      * @memberof Comment
      */
     'created_at': string;
+    /**
+     * 
+     * @type {Array<CommentLike>}
+     * @memberof Comment
+     */
+    'likes'?: Array<CommentLike>;
 }
 

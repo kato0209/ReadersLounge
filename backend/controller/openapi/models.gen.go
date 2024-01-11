@@ -49,11 +49,18 @@ type ChatRoom struct {
 
 // Comment defines model for Comment.
 type Comment struct {
-	CommentId int    `json:"comment_id"`
-	Content   string `json:"content"`
-	CreatedAt string `json:"created_at"`
-	PostId    *int   `json:"post_id,omitempty"`
-	User      User   `json:"user"`
+	CommentId int            `json:"comment_id"`
+	Content   string         `json:"content"`
+	CreatedAt string         `json:"created_at"`
+	Likes     *[]CommentLike `json:"likes,omitempty"`
+	PostId    *int           `json:"post_id,omitempty"`
+	User      User           `json:"user"`
+}
+
+// CommentLike defines model for CommentLike.
+type CommentLike struct {
+	CommentLikeId int `json:"comment_like_id"`
+	UserId        int `json:"user_id"`
 }
 
 // Connection defines model for Connection.
@@ -62,6 +69,11 @@ type Connection struct {
 	TargetUserId           int    `json:"target_user_id"`
 	TargetUserName         string `json:"target_user_name"`
 	TargetUserProfileImage string `json:"target_user_profile_image"`
+}
+
+// CreateCommentLikeReqBody defines model for CreateCommentLikeReqBody.
+type CreateCommentLikeReqBody struct {
+	CommentId int `json:"comment_id"`
 }
 
 // CreatePostLikeReqBody defines model for CreatePostLikeReqBody.
@@ -211,6 +223,9 @@ type SearchUserParams struct {
 
 // CreateChatRoomJSONRequestBody defines body for CreateChatRoom for application/json ContentType.
 type CreateChatRoomJSONRequestBody CreateChatRoomJSONBody
+
+// CreateCommentLikeJSONRequestBody defines body for CreateCommentLike for application/json ContentType.
+type CreateCommentLikeJSONRequestBody = CreateCommentLikeReqBody
 
 // CreateCommentJSONRequestBody defines body for CreateComment for application/json ContentType.
 type CreateCommentJSONRequestBody = ReqCreateCommentBody

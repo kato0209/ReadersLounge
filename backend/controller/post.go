@@ -32,9 +32,9 @@ func refillPost(ctx echo.Context, post models.Post) (openapi.Post, error) {
 		Price:       post.Book.Price,
 		Title:       post.Book.Title,
 	}
-	resLike := []openapi.PostLike{}
-	for _, like := range post.Like {
-		resLike = append(resLike, openapi.PostLike{
+	resLikes := []openapi.PostLike{}
+	for _, like := range post.Likes {
+		resLikes = append(resLikes, openapi.PostLike{
 			PostLikeId: like.PostLikeID,
 			UserId:     like.User.UserID,
 		})
@@ -52,7 +52,7 @@ func refillPost(ctx echo.Context, post models.Post) (openapi.Post, error) {
 		CreatedAt: formattedTime,
 		User:      resUser,
 		Book:      resBook,
-		Likes:     &resLike,
+		Likes:     &resLikes,
 	}
 
 	return resPost, nil

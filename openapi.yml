@@ -507,7 +507,7 @@ paths:
                 required:
                   - post_like_id
 
-  /post-likes/{PostId}:  
+  /post-likes/post/{PostId}:  
     delete:
       security:
         - X-CSRF-TOKEN: []
@@ -519,6 +519,49 @@ paths:
           in: path
           required: true
           description: identifier of the postId of post-likes to be deleted
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: OK, connection deleted successfully
+          
+  /comment-likes:
+    post:
+      security:
+        - X-CSRF-TOKEN: []
+        - jwtAuth: []
+      summary: Create like of Comment
+      operationId: create-comment-like
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCommentLikeReqBody"
+      responses:
+        "201":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  comment_like_id:
+                    type: integer
+                required:
+                  - comment_like_id
+
+  /comment-likes/comment/{CommentId}:  
+    delete:
+      security:
+        - X-CSRF-TOKEN: []
+        - jwtAuth: []
+      summary: delete like of Comment
+      operationId: delete-comment-like
+      parameters:
+        - name: CommentId
+          in: path
+          required: true
+          description: identifier of the CommentId of comment-likes to be deleted
           schema:
             type: integer
       responses:
@@ -541,6 +584,23 @@ paths:
                 type: object
                 properties:
                   post_id:
+                    type: integer
+  /liked-comments:
+    get:
+      security:
+        - X-CSRF-TOKEN: []
+        - jwtAuth: []
+      summary: Get commentID list of User liked
+      operationId: get-liked-comment-list
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  comment_id:
                     type: integer
   
   /search-user:
@@ -586,9 +646,27 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Comment"
+  
+  /comments/{commentId}:
+    delete:
+      security:
+        - X-CSRF-TOKEN: []
+        - jwtAuth: []
+      summary: delete comment
+      operationId: delete-comment
+      parameters:
+        - name: commentId
+          in: path
+          required: true
+          description: identifier of the comment to be deleted
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: OK, comment deleted successfully
         
   
-  /comments/{postId}:
+  /comments/post/{postId}:
     get:
       security:
         - X-CSRF-TOKEN: []
@@ -845,12 +923,27 @@ components:
       required:
         - post_like_id
         - user_id
+    CommentLike:
+      properties:
+        comment_like_id:
+          type: integer
+        user_id:
+          type: integer
+      required:
+        - comment_like_id
+        - user_id
     CreatePostLikeReqBody:
       properties:
         post_id:
           type: integer
       required:
         - post_id
+    CreateCommentLikeReqBody:
+      properties:
+        comment_id:
+          type: integer
+      required:
+        - comment_id
     Comment:
       properties:
         comment_id:
@@ -863,6 +956,10 @@ components:
           type: string
         created_at:
           type: string
+        likes:
+          type: array
+          items:
+            $ref: "#/components/schemas/CommentLike"
       required:
         - comment_id
         - user

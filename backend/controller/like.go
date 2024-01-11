@@ -41,3 +41,37 @@ func (s *Server) DeletePostLike(ctx echo.Context, postId int) error {
 	}
 	return ctx.NoContent(http.StatusNoContent)
 }
+
+func (s *Server) CreateCommentLike(ctx echo.Context) error {
+	userID, err := utils.ExtractUserID(ctx)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+	createCommentLikeBody := openapi.CreateCommentLikeReqBody{}
+	if err := ctx.Bind(&createCommentLikeBody); err != nil {
+		return ctx.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	commentLike, err := s.lu.CreateCommentLike(ctx, userID, createCommentLikeBody.CommentId)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	resCommentLike := openapi.CommentLike{
+		CommentLikeId: commentLike.CommentLikeID,
+	}
+
+	return ctx.JSON(http.StatusCreated, resCommentLike)
+}
+
+func (s *Server) DeleteCommentLike(ctx echo.Context, commentId int) error {
+	userID, err := utils.ExtractUserID(ctx)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	if err := s.lu.DeleteCommentLike(ctx, commentId, userID); err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err.Error())
+	}
+	return ctx.NoContent(http.StatusNoContent)
+}

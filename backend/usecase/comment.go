@@ -11,7 +11,9 @@ import (
 
 type ICommentUsecase interface {
 	GetCommentsByPostID(ctx echo.Context, postID int) ([]models.Comment, error)
+	GetLikedCommentList(ctx echo.Context, userID int) ([]models.Comment, error)
 	CreateComment(ctx echo.Context, comment *models.Comment) error
+	DeleteComment(ctx echo.Context, commentID int) error
 }
 
 type commentUsecase struct {
@@ -44,6 +46,16 @@ func (cu *commentUsecase) GetCommentsByPostID(ctx echo.Context, postID int) ([]m
 	return comments, nil
 }
 
+func (cu *commentUsecase) GetLikedCommentList(ctx echo.Context, userID int) ([]models.Comment, error) {
+	comments := []models.Comment{}
+	err := cu.cmr.GetLikedCommentList(ctx, userID, &comments)
+	if err != nil {
+		return nil, err
+	}
+
+	return comments, nil
+}
+
 func (cu *commentUsecase) CreateComment(ctx echo.Context, comment *models.Comment) error {
 	if err := cu.cmr.CreateComment(ctx, comment); err != nil {
 		return errors.WithStack(err)
@@ -64,6 +76,14 @@ func (cu *commentUsecase) CreateComment(ctx echo.Context, comment *models.Commen
 		user.ProfileImage.EncodedImage = &profileImage
 	}
 	comment.User.ProfileImage = user.ProfileImage
+
+	return nil
+}
+
+func (cu *commentUsecase) DeleteComment(ctx echo.Context, commentID int) error {
+	if err := cu.cmr.DeleteCommentByCommentID(ctx, commentID); err != nil {
+		return errors.WithStack(err)
+	}
 
 	return nil
 }

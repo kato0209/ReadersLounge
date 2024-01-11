@@ -50,6 +50,7 @@ export const PostList: React.FC<PostListProps> = ({ propPosts }) => {
     const [selectedPostID, setSelectedPostID] = React.useState<number>(0);
     const { user } = useAuthUserContext();
     const [likedPostIDs, setLikedPostIDs] = React.useState<number[]>([]);
+    
     const [posts, setPosts] = React.useState<Post[]>([]);
     const navigate = useNavigate();
 

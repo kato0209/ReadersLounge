@@ -20,13 +20,13 @@ import styles from './Home.css';
 import Rating from '@mui/material/Rating';
 import { apiInstance } from '../../lib/api/apiInstance';
 import { useErrorHandler } from 'react-error-boundary';
-import { Post, Comment, ReqCreateCommentBody } from '../../openapi';
+import { Post, Comment, ReqCreateCommentBody, CreateCommentLikeReqBody } from '../../openapi';
 import { isValidUrl } from '../../utils/isValidUrl';
 import Link from '@mui/material/Link';
 import { Menu, MenuItem } from '@mui/material';
 import { useAuthUserContext } from '../../lib/auth/auth';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import { CreatePostLikeReqBody, PostLike } from '../../openapi';
+import { CreatePostLikeReqBody, PostLike, CommentLike } from '../../openapi';
 import { useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -50,9 +50,12 @@ export function CommentComponent()  {
     });
     const errorHandler = useErrorHandler();
     const [postAnchorEl, setPostAnchorEl] = React.useState<null | HTMLElement>(null);
+    const [commentAnchorEl, setCommentAnchorEl] = React.useState<null | HTMLElement>(null);
     const [selectedPostID, setSelectedPostID] = React.useState<number>(0);
+    const [selectedCommentID, setSelectedCommentID] = React.useState<number>(0);
     const { user } = useAuthUserContext();
     const [likedPostIDs, setLikedPostIDs] = React.useState<number[]>([]);
+    const [likedCommentIDs, setLikedCommentIDs] = React.useState<number[]>([]);
     const navigation = useNavigate();
     const { id } = useParams<{ id: string }>();
     const idNumber = id ? parseInt(id, 10) : 0;
@@ -64,6 +67,7 @@ export function CommentComponent()  {
         fetchPost();
         fetchComments();
         fetchLikedPostIDs();
+        fetchLikedCommentIDs();
     }, []);
 
     const fetchPost = async () => {
@@ -100,6 +104,7 @@ export function CommentComponent()  {
                     comment_id: item.comment_id,
                     user: item.user,
                     content: item.content,
+                    likes: item.likes,
                     created_at: item.created_at,
                 }));
                 setComments(comments);
@@ -124,16 +129,39 @@ export function CommentComponent()  {
         }
     }
 
+    const fetchLikedCommentIDs = async () => {
+        try {
+            const api = await apiInstance;
+            const res = await api.getLikedCommentList();
+            if (res.data && Array.isArray(res.data)) {
+                const fetchedLikedCommentIDs: number[] = res.data.map(item => item.comment_id);
+                setLikedCommentIDs(fetchedLikedCommentIDs);
+            }
+        } catch (error: unknown) {
+            errorHandler(error);
+        }
+    }
 
-    const handleSettingClick = (event: React.MouseEvent<HTMLElement>, postID: number) => {
+
+    const handlePostSettingClick = (event: React.MouseEvent<HTMLElement>, postID: number) => {
         event.stopPropagation();
         setPostAnchorEl(event.currentTarget);
         setSelectedPostID(postID);
     };
 
-    const handleSettingClose = () => {
+    const handlePostSettingClose = () => {
         setPostAnchorEl(null);
         setSelectedPostID(0);
+    };
+
+    const handleCommentSettingClick = (event: React.MouseEvent<HTMLElement>, commentID: number) => {
+        setCommentAnchorEl(event.currentTarget);
+        setSelectedCommentID(commentID);
+    };
+
+    const handleCommentSettingClose = () => {
+        setCommentAnchorEl(null);
+        setSelectedCommentID(0);
     };
 
     const DeletePost = async () => {
@@ -150,7 +178,21 @@ export function CommentComponent()  {
         setSelectedPostID(0);
     }
 
-    const handleLikeClick = async (postID: number) => {
+    const DeleteComment = async () => {
+        try {
+            const api = await apiInstance;
+            const res = await api.deleteComment(selectedCommentID);
+            if (res.status === 204) {
+                setComments(currentComments => currentComments.filter(comment => comment.comment_id !== selectedCommentID));
+            }
+        } catch (error: unknown) {
+            errorHandler(error);
+        }
+        setCommentAnchorEl(null);
+        setSelectedCommentID(0);
+    }
+
+    const handlePostLikeClick = async (postID: number) => {
         try {
             const req: CreatePostLikeReqBody = {
                 post_id: postID,
@@ -177,7 +219,37 @@ export function CommentComponent()  {
         }
     };
 
-    const handleUnLikeClick = async (postID: number) => {
+    const handleCommentLikeClick = async (commentID: number) => {
+        try {
+            const req: CreateCommentLikeReqBody = {
+                comment_id: commentID
+            };
+            const api = await apiInstance;
+            const res = await api.createCommentLike(req);
+            if (res.status === 201 && res.data) {
+                const newLike: CommentLike = {
+                    comment_like_id: res.data.comment_like_id,
+                    user_id: user.user_id,
+                };
+                setLikedCommentIDs(currentLikedCommentIDs => [...currentLikedCommentIDs, commentID]);
+                setComments(currentComments =>
+                    currentComments.map(comment =>
+                    comment.comment_id === commentID
+                        ? {
+                            ...comment,
+                            likes: Array.isArray(comment.likes) ? [...comment.likes, newLike] : [newLike]
+                            }
+                        : comment
+                    )
+                );
+                
+            }
+        } catch (error: unknown) {
+            errorHandler(error);
+        }
+    };
+
+    const handlePostUnLikeClick = async (postID: number) => {
         try {
             const api = await apiInstance;
             const res = await api.deletePostLike(postID);
@@ -190,6 +262,25 @@ export function CommentComponent()  {
                         post.likes = post.likes.filter(like => like.user_id !== user.user_id);
                     }
                 }
+            }
+        } catch (error: unknown) {
+            errorHandler(error);
+        }
+    }
+
+    const handleCommentUnLikeClick = async (commentID: number) => {
+        try {
+            const api = await apiInstance;
+            const res = await api.deleteCommentLike(commentID);
+            if (res.status === 204) {
+                setLikedCommentIDs(currentLikedCommentIDs => 
+                    currentLikedCommentIDs.filter(id => id !== commentID)
+                );
+                setComments(currentComments => 
+                    currentComments.map(comment => 
+                        comment.comment_id === commentID ? { ...comment, likes: comment.likes?.filter(like => like.user_id !== user.user_id) } : comment
+                    )
+                );
             }
         } catch (error: unknown) {
             errorHandler(error);
@@ -211,6 +302,7 @@ export function CommentComponent()  {
                     user: res.data.user,
                     content: data.content,
                     created_at: res.data.created_at,
+                    likes: [],
                 };
                 setComments(currentComments => [...currentComments, newComment]);
                 setValue('content', '');
@@ -250,7 +342,7 @@ export function CommentComponent()  {
                 <>
                     {post.user.user_id === user.user_id && 
                         <>
-                            <IconButton onClick={(e) => handleSettingClick(e, post.post_id)}>
+                            <IconButton onClick={(e) => handlePostSettingClick(e, post.post_id)}>
                                 <MoreVertIcon />
                             </IconButton>
                             <Menu
@@ -258,7 +350,7 @@ export function CommentComponent()  {
                                 open={Boolean(postAnchorEl)}
                                 onClose={(e: React.MouseEvent) => {
                                     e.stopPropagation();
-                                    handleSettingClose();
+                                    handlePostSettingClose();
                                 }}
                                 sx={{
                                     '& .MuiPaper-root': {
@@ -363,10 +455,10 @@ export function CommentComponent()  {
                 <Box onClick={(event) => event.stopPropagation()}>
                     {likedPostIDs.includes(post.post_id) 
                     ? (
-                        <IconButton onClick={() => handleUnLikeClick(post.post_id)}>
+                        <IconButton onClick={() => handlePostUnLikeClick(post.post_id)}>
                             <FavoriteIcon sx={{color: "#FF69B4"}} />
                         </IconButton>) : (
-                        <IconButton onClick={() => handleLikeClick(post.post_id)}>
+                        <IconButton onClick={() => handlePostLikeClick(post.post_id)}>
                             <FavoriteBorderIcon />
                         </IconButton>
                         )
@@ -426,7 +518,7 @@ export function CommentComponent()  {
                             key={comment.comment_id}
                             sx={{
                                 display: 'flex',
-                                alignItems: 'center',
+                                flexDirection: 'column',
                                 padding: '0.5rem',
                                 borderBottom: '1px solid #BDBDBD',
                                 cursor: 'pointer',
@@ -436,19 +528,69 @@ export function CommentComponent()  {
                                 },
                             }}
                         >
-                            <UserAvatar image={comment.user.profile_image} userID={comment.user.user_id}/>
-                            <Box sx={{margin: "0.5rem"}}>
-                                <Box sx={{display: "flex", alignItems: "center"}}>
-                                    <Typography variant="h6" color="black">
-                                        {comment.user.name}
-                                    </Typography>
-                                    <Typography color="gray" sx={{marginLeft: "0.5rem", fontSize: "0.9rem"}}>
-                                        {comment.created_at}
+                            <Box sx={{ display: 'flex', alignItems: 'center'}}>
+                                <UserAvatar image={comment.user.profile_image} userID={comment.user.user_id}/>
+                                <Box sx={{margin: "0.5rem"}}>
+                                    <Box sx={{display: "flex", alignItems: "center"}}>
+                                        <Typography variant="h6" color="black">
+                                            {comment.user.name}
+                                        </Typography>
+                                        <Typography color="gray" sx={{marginLeft: "0.5rem", fontSize: "0.9rem"}}>
+                                            {comment.created_at}
+                                        </Typography>
+                                    </Box>
+                                    <Typography variant="body2" color="black" style={{ wordWrap: 'break-word' }}>
+                                        {comment.content}
                                     </Typography>
                                 </Box>
-                                <Typography variant="body2" color="black" style={{ wordWrap: 'break-word' }}>
-                                    {comment.content}
-                                </Typography>
+                                {comment.user.user_id === user.user_id && 
+                                    <Box 
+                                        sx={{
+                                            marginLeft: "auto",
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'start',
+                                        }}
+                                    >
+                                        <IconButton onClick={(e) => handleCommentSettingClick(e, comment.comment_id)}>
+                                            <MoreVertIcon />
+                                        </IconButton>
+                                        <Menu
+                                            anchorEl={commentAnchorEl}
+                                            open={Boolean(commentAnchorEl)}
+                                            onClose={() => {
+                                                handleCommentSettingClose();
+                                            }}
+                                            sx={{
+                                                '& .MuiPaper-root': {
+                                                    boxShadow: 'none', 
+                                                    border: 'none'
+                                                }
+                                            }}
+                                        >
+                                            <MenuItem onClick={() => {
+                                                DeleteComment();
+                                            }}
+                                            >
+                                                コメントを削除
+                                            </MenuItem>
+                                        </Menu>
+                                    </Box>
+                                }
+                            </Box>
+                            <Box>
+                                {likedCommentIDs.includes(comment.comment_id) 
+                                    ? (
+                                        <IconButton onClick={() => handleCommentUnLikeClick(comment.comment_id)}>
+                                            <FavoriteIcon sx={{color: "#FF69B4"}} />
+                                        </IconButton>) : (
+                                        <IconButton onClick={() => handleCommentLikeClick(comment.comment_id)}>
+                                            <FavoriteBorderIcon />
+                                        </IconButton>
+                                        )
+                                    }
+                                
+                                {comment.likes?.length}
                             </Box>
                         </Box>
                     ))}

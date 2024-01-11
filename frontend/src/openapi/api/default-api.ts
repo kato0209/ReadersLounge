@@ -36,11 +36,17 @@ import { CreateChatRoom201Response } from '../models';
 // @ts-ignore
 import { CreateChatRoomRequest } from '../models';
 // @ts-ignore
+import { CreateCommentLike201Response } from '../models';
+// @ts-ignore
+import { CreateCommentLikeReqBody } from '../models';
+// @ts-ignore
 import { CreateConnectionRequest } from '../models';
 // @ts-ignore
 import { CreatePostLike201Response } from '../models';
 // @ts-ignore
 import { CreatePostLikeReqBody } from '../models';
+// @ts-ignore
+import { GetLikedCommentList200Response } from '../models';
 // @ts-ignore
 import { GetLikedPostList200Response } from '../models';
 // @ts-ignore
@@ -177,6 +183,45 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(reqCreateCommentBody, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Create like of Comment
+         * @param {CreateCommentLikeReqBody} [createCommentLikeReqBody] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createCommentLike: async (createCommentLikeReqBody?: CreateCommentLikeReqBody, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/comment-likes`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication X-CSRF-TOKEN required
+            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
+
+            // authentication jwtAuth required
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(createCommentLikeReqBody, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -358,6 +403,84 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
+         * @summary delete comment
+         * @param {number} commentId identifier of the comment to be deleted
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteComment: async (commentId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'commentId' is not null or undefined
+            assertParamExists('deleteComment', 'commentId', commentId)
+            const localVarPath = `/comments/{commentId}`
+                .replace(`{${"commentId"}}`, encodeURIComponent(String(commentId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication X-CSRF-TOKEN required
+            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
+
+            // authentication jwtAuth required
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary delete like of Comment
+         * @param {number} commentId identifier of the CommentId of comment-likes to be deleted
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteCommentLike: async (commentId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'commentId' is not null or undefined
+            assertParamExists('deleteCommentLike', 'commentId', commentId)
+            const localVarPath = `/comment-likes/comment/{CommentId}`
+                .replace(`{${"CommentId"}}`, encodeURIComponent(String(commentId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication X-CSRF-TOKEN required
+            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
+
+            // authentication jwtAuth required
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary delete connection of following
          * @param {number} connectionId Unique identifier of the connection to be deleted
          * @param {*} [options] Override http request option.
@@ -444,7 +567,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         deletePostLike: async (postId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'postId' is not null or undefined
             assertParamExists('deletePostLike', 'postId', postId)
-            const localVarPath = `/post-likes/{PostId}`
+            const localVarPath = `/post-likes/post/{PostId}`
                 .replace(`{${"PostId"}}`, encodeURIComponent(String(postId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -598,7 +721,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
         getCommentsByPostID: async (postId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'postId' is not null or undefined
             assertParamExists('getCommentsByPostID', 'postId', postId)
-            const localVarPath = `/comments/{postId}`
+            const localVarPath = `/comments/post/{postId}`
                 .replace(`{${"postId"}}`, encodeURIComponent(String(postId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -699,6 +822,41 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             if (userId !== undefined) {
                 localVarQueryParameter['user_id'] = userId;
             }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Get commentID list of User liked
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getLikedCommentList: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/liked-comments`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication X-CSRF-TOKEN required
+            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
+
+            // authentication jwtAuth required
 
 
     
@@ -1281,6 +1439,17 @@ export const DefaultApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary Create like of Comment
+         * @param {CreateCommentLikeReqBody} [createCommentLikeReqBody] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createCommentLike(createCommentLikeReqBody?: CreateCommentLikeReqBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateCommentLike201Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createCommentLike(createCommentLikeReqBody, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary create connection of following
          * @param {CreateConnectionRequest} [createConnectionRequest] 
          * @param {*} [options] Override http request option.
@@ -1323,6 +1492,28 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          */
         async csrftoken(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResCsrfToken>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.csrftoken(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary delete comment
+         * @param {number} commentId identifier of the comment to be deleted
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteComment(commentId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteComment(commentId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary delete like of Comment
+         * @param {number} commentId identifier of the CommentId of comment-likes to be deleted
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteCommentLike(commentId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteCommentLike(commentId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1421,6 +1612,16 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          */
         async getFollowingConnections(userId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<Connection>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getFollowingConnections(userId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @summary Get commentID list of User liked
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getLikedCommentList(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetLikedCommentList200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getLikedCommentList(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1608,6 +1809,16 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * 
+         * @summary Create like of Comment
+         * @param {CreateCommentLikeReqBody} [createCommentLikeReqBody] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createCommentLike(createCommentLikeReqBody?: CreateCommentLikeReqBody, options?: any): AxiosPromise<CreateCommentLike201Response> {
+            return localVarFp.createCommentLike(createCommentLikeReqBody, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary create connection of following
          * @param {CreateConnectionRequest} [createConnectionRequest] 
          * @param {*} [options] Override http request option.
@@ -1647,6 +1858,26 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         csrftoken(options?: any): AxiosPromise<ResCsrfToken> {
             return localVarFp.csrftoken(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary delete comment
+         * @param {number} commentId identifier of the comment to be deleted
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteComment(commentId: number, options?: any): AxiosPromise<void> {
+            return localVarFp.deleteComment(commentId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary delete like of Comment
+         * @param {number} commentId identifier of the CommentId of comment-likes to be deleted
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteCommentLike(commentId: number, options?: any): AxiosPromise<void> {
+            return localVarFp.deleteCommentLike(commentId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1736,6 +1967,15 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         getFollowingConnections(userId: number, options?: any): AxiosPromise<Array<Connection>> {
             return localVarFp.getFollowingConnections(userId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Get commentID list of User liked
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getLikedCommentList(options?: any): AxiosPromise<GetLikedCommentList200Response> {
+            return localVarFp.getLikedCommentList(options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1915,6 +2155,18 @@ export class DefaultApi extends BaseAPI {
 
     /**
      * 
+     * @summary Create like of Comment
+     * @param {CreateCommentLikeReqBody} [createCommentLikeReqBody] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public createCommentLike(createCommentLikeReqBody?: CreateCommentLikeReqBody, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).createCommentLike(createCommentLikeReqBody, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @summary create connection of following
      * @param {CreateConnectionRequest} [createConnectionRequest] 
      * @param {*} [options] Override http request option.
@@ -1961,6 +2213,30 @@ export class DefaultApi extends BaseAPI {
      */
     public csrftoken(options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).csrftoken(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary delete comment
+     * @param {number} commentId identifier of the comment to be deleted
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public deleteComment(commentId: number, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).deleteComment(commentId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary delete like of Comment
+     * @param {number} commentId identifier of the CommentId of comment-likes to be deleted
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public deleteCommentLike(commentId: number, options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).deleteCommentLike(commentId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -2068,6 +2344,17 @@ export class DefaultApi extends BaseAPI {
      */
     public getFollowingConnections(userId: number, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).getFollowingConnections(userId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get commentID list of User liked
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public getLikedCommentList(options?: AxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).getLikedCommentList(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
