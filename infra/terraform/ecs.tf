@@ -1,8 +1,8 @@
 ###########
 #   ECS   #
 ###########
-resource "aws_ecs_cluster" "gadget-ecs-cluster" {
-  name = "gadget-ecs-cluster"
+resource "aws_ecs_cluster" "readerslounge" {
+  name = "readerslounge-ecs-cluster"
 }
 resource "aws_ecs_task_definition" "gadget-front-task" {
   family                   = "gadget-front-task"
