@@ -6,11 +6,16 @@ terraform {
     }
   }
 }
+
+locals {
+  app_name = "ReadersLounge"
+}
+
 provider "aws" {
   region = "ap-northeast-1"
   default_tags {
     tags = {
-      application = "ReadersLounge"
+      application = local.app_name
     }
   }
 }
