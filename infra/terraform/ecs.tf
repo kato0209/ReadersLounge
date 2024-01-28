@@ -10,7 +10,7 @@ resource "aws_ecs_task_definition" "front" {
   memory                   = "1024"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  container_definitions    = file("./tasks/gadget_front_definition.json")
+  container_definitions    = file("./tasks/front_definition.json")
   execution_role_arn       = aws_iam_role.ecs_task_execution.arn
 }
 resource "aws_ecs_service" "front" {
@@ -45,7 +45,7 @@ resource "aws_ecs_task_definition" "api" {
   memory                   = "512"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  container_definitions    = file("./tasks/gadget_api_definition.json")
+  container_definitions    = file("./tasks/api_definition.json")
   execution_role_arn       = aws_iam_role.ecs_task_execution.arn
 }
 resource "aws_ecs_service" "api" {
@@ -71,34 +71,6 @@ resource "aws_ecs_service" "api" {
     container_name   = "api-container"
     container_port   = "8080"
   }
-}
-
-resource "aws_ecs_task_definition" "db-create" {
-  family                   = "gadget-db-create"
-  container_definitions    = file("./tasks/gadget_db_create_definition.json")
-  requires_compatibilities = ["FARGATE"]
-  network_mode             = "awsvpc"
-  cpu                      = "256"
-  memory                   = "512"
-  execution_role_arn       = module.ecs_task_execution_role.iam_role_arn
-}
-resource "aws_ecs_task_definition" "db-migrate" {
-  family                   = "gadget-db-migrate"
-  container_definitions    = file("./tasks/gadget_db_migrate_definition.json")
-  requires_compatibilities = ["FARGATE"]
-  network_mode             = "awsvpc"
-  cpu                      = "256"
-  memory                   = "512"
-  execution_role_arn       = module.ecs_task_execution_role.iam_role_arn
-}
-resource "aws_ecs_task_definition" "db-migrate-reset" {
-  family                   = "gadget-db-migrate-reset"
-  container_definitions    = file("./tasks/gadget_db_migrate_reset_definition.json")
-  requires_compatibilities = ["FARGATE"]
-  network_mode             = "awsvpc"
-  cpu                      = "256"
-  memory                   = "512"
-  execution_role_arn       = module.ecs_task_execution_role.iam_role_arn
 }
 
 ##########

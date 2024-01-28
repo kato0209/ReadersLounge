@@ -1,0 +1,27 @@
+[
+    {
+      "name": "front-container",
+      "image": "620958051842.dkr.ecr.ap-northeast-1.amazonaws.com/front:latest",
+      "essential": true,
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-region": "ap-northeast-1",
+          "awslogs-stream-prefix": "front",
+          "awslogs-group": "/ecs/front"
+        }
+      },
+      "portMappings": [
+        {
+          "protocol": "tcp",
+          "containerPort": 5173
+        }
+      ],
+      "command": [
+        "npm", "run", "build"
+      ],
+      "environment": [
+        
+      ]
+    }
+  ]
