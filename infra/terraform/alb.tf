@@ -22,47 +22,6 @@ resource "aws_lb" "readerslounge" {
   }
 }
 
-############
-# Listener #
-############
-resource "aws_lb_listener" "http" {
-  load_balancer_arn = aws_lb.readerslounge.arn
-  port              = "80"
-  protocol          = "HTTP"
-
-  default_action {
-    type = "redirect"
-
-    redirect {
-      port        = "443"
-      protocol    = "HTTPS"
-      status_code = "HTTP_301"
-    }
-  }
-}
-resource "aws_lb_listener" "https" {
-  load_balancer_arn = aws_lb.readerslounge.arn
-  port              = "443"
-  protocol          = "HTTPS"
-  certificate_arn   = aws_acm_certificate.readerslounge.arn
-
-  default_action {
-    target_group_arn = aws_lb_target_group.front.arn
-    type             = "forward"
-  }
-}
-resource "aws_lb_listener" "api" {
-  load_balancer_arn = aws_lb.readerslounge.arn
-  port              = "8080"
-  protocol          = "HTTPS"
-  certificate_arn   = aws_acm_certificate.readerslounge.arn
-
-  default_action {
-    target_group_arn = aws_lb_target_group.api.arn
-    type             = "forward"
-  }
-}
-
 ###############
 # TargetGroup #
 ###############
@@ -103,4 +62,56 @@ resource "aws_lb_target_group" "api" {
     healthy_threshold   = 5
     unhealthy_threshold = 2
   }
+}
+
+############
+# Listener #
+############
+resource "aws_lb_listener" "http" {
+  load_balancer_arn = aws_lb.readerslounge.arn
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type = "redirect"
+
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
+  }
+  depends_on = [
+    aws_lb.readerslounge
+  ]
+}
+resource "aws_lb_listener" "https" {
+  load_balancer_arn = aws_lb.readerslounge.arn
+  port              = "443"
+  protocol          = "HTTPS"
+  certificate_arn   = aws_acm_certificate.readerslounge.arn
+
+  default_action {
+    target_group_arn = aws_lb_target_group.front.arn
+    type             = "forward"
+  }
+  depends_on = [
+    aws_lb.readerslounge,
+    aws_lb_target_group.front
+  ]
+}
+resource "aws_lb_listener" "api" {
+  load_balancer_arn = aws_lb.readerslounge.arn
+  port              = "8080"
+  protocol          = "HTTPS"
+  certificate_arn   = aws_acm_certificate.readerslounge.arn
+
+  default_action {
+    target_group_arn = aws_lb_target_group.api.arn
+    type             = "forward"
+  }
+  depends_on = [
+    aws_lb.readerslounge,
+    aws_lb_target_group.api
+  ]
 }
