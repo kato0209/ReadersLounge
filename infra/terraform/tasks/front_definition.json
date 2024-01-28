@@ -21,7 +21,36 @@
         "npm", "run", "build"
       ],
       "environment": [
-        
+        {
+            "name": "VITE_API_URL",
+            "value": "https://ReadersLounge.com:8080"
+        },
+        {
+            "name": "VITE_GOOGLE_OAUTH_REDIRECT_PATH",
+            "value": "/oauth/google/callback"
+        },
+        {
+            "name": "VITE_GOOGLE_OAUTH_USER_INFO_EMAIL_URL",
+            "value": "https://www.googleapis.com/auth/userinfo.email"
+        },
+        {
+            "name": "VITE_GOOGLE_OAUTH_USER_INFO_PROFILE_URL",
+            "value": "https://www.googleapis.com/auth/userinfo.profile"
+        },
+        {
+            "name": "VITE_WEBSOCKET_URL",
+            "value": "wss://ReadersLounge.com:8080"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "VITE_GOOGLE_OAUTH_CLIENT_ID",
+          "valueFrom": "vite-google-oauth-client-id"
+        },
+        {
+          "name": "VITE_GOOGLE_CLIENT_SECRET",
+          "valueFrom": "vite-google-client-secret"
+        }
       ]
     }
   ]

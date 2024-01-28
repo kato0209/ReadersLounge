@@ -2,7 +2,7 @@
 #  eip  #
 #########
 resource "aws_eip" "readerslounge_ngw" {
-  vpc        = true
+  domain     = "vpc"
   depends_on = [aws_internet_gateway.readerslounge]
 
   tags = {

@@ -14,11 +14,11 @@ resource "aws_ecs_task_definition" "front" {
   execution_role_arn       = aws_iam_role.ecs_task_execution.arn
 }
 resource "aws_ecs_service" "front" {
-  name             = "readerslounge-front-ecs-service"
-  cluster          = aws_ecs_cluster.readerslounge.arn
-  task_definition  = aws_ecs_task_definition.front.arn
-  desired_count    = 1
-  launch_type      = "FARGATE"
+  name                              = "readerslounge-front-ecs-service"
+  cluster                           = aws_ecs_cluster.readerslounge.arn
+  task_definition                   = aws_ecs_task_definition.front.arn
+  desired_count                     = 1
+  launch_type                       = "FARGATE"
   health_check_grace_period_seconds = 600
 
   network_configuration {
@@ -49,11 +49,11 @@ resource "aws_ecs_task_definition" "api" {
   execution_role_arn       = aws_iam_role.ecs_task_execution.arn
 }
 resource "aws_ecs_service" "api" {
-  name             = "readerslounge-api-ecs-service"
-  cluster          = aws_ecs_cluster.readerslounge.arn
-  task_definition  = aws_ecs_task_definition.api.arn
-  desired_count    = 1
-  launch_type      = "FARGATE"
+  name            = "readerslounge-api-ecs-service"
+  cluster         = aws_ecs_cluster.readerslounge.arn
+  task_definition = aws_ecs_task_definition.api.arn
+  desired_count   = 1
+  launch_type     = "FARGATE"
 
   network_configuration {
     assign_public_ip = true

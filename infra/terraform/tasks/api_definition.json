@@ -34,6 +34,56 @@
         {
           "name": "API_PORT",
           "value": "8080"
+        },
+        {
+            "name": "FE_URL",
+            "value": "https://ReadersLounge.com"
+        },
+        {
+            "name": "GOOGLE_OAUTH_PATH",
+            "value": "oauth/google/callback"
+        },
+        {
+            "name": "GOOGLE_OAUTH_USER_INFO_EMAIL_URL",
+            "value": "https://www.googleapis.com/auth/userinfo.email"
+        },
+        {
+            "name": "GOOGLE_OAUTH_USER_INFO_PROFILE_URL",
+            "value": "https://www.googleapis.com/auth/userinfo.profile"
+        },
+        {
+            "name": "RAKUTEN_BOOKS_API_URL",
+            "value": "https://app.rakuten.co.jp/services/api/BooksBook/Search/20170404"
+        },
+        {
+            "name": "RAKUTEN_BOOKS_GENRE_API_URL",
+            "value": "https://app.rakuten.co.jp/services/api/BooksGenre/Search/20121128"
+        }
+      ],
+      "secrets": [
+        {
+          "name": "DB_USERNAME ",
+          "valueFrom": "db-username"
+        },
+        {
+          "name": "DB_PASSWORD",
+          "valueFrom": "db-password"
+        },
+        {
+          "name": "JWT_SECRET",
+          "valueFrom": "jwt-secret"
+        },
+        {
+          "name": "GOOGLE_CLIENT_ID",
+          "valueFrom": "google-client-id"
+        },
+        {
+          "name": "GOOGLE_CLIENT_SECRET",
+          "valueFrom": "google-client-secret"
+        },
+        {
+          "name": "RAKUTEN_APPLICATION_ID",
+          "valueFrom": "rakuten-application-id"
         }
       ]
     }
