@@ -43,6 +43,10 @@ resource "aws_lb_target_group" "front" {
     port                = 80
     protocol            = "HTTP"
   }
+
+  depends_on = [
+    aws_lb.readerslounge
+  ]
 }
 resource "aws_lb_target_group" "api" {
   name        = "readerslounge-alb-api-tg"
@@ -62,6 +66,10 @@ resource "aws_lb_target_group" "api" {
     healthy_threshold   = 5
     unhealthy_threshold = 2
   }
+
+  depends_on = [
+    aws_lb.readerslounge
+  ]
 }
 
 ############
@@ -89,7 +97,7 @@ resource "aws_lb_listener" "https" {
   load_balancer_arn = aws_lb.readerslounge.arn
   port              = "443"
   protocol          = "HTTPS"
-  certificate_arn   = aws_acm_certificate.readerslounge.arn
+  certificate_arn   = aws_acm_certificate_validation.readerslounge.certificate_arn
 
   default_action {
     target_group_arn = aws_lb_target_group.front.arn
@@ -104,7 +112,7 @@ resource "aws_lb_listener" "api" {
   load_balancer_arn = aws_lb.readerslounge.arn
   port              = "8080"
   protocol          = "HTTPS"
-  certificate_arn   = aws_acm_certificate.readerslounge.arn
+  certificate_arn   = aws_acm_certificate_validation.readerslounge.certificate_arn
 
   default_action {
     target_group_arn = aws_lb_target_group.api.arn
