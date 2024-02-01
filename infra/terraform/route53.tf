@@ -3,7 +3,6 @@
 ###########
 resource "aws_route53_zone" "readerslounge" {
   name    = "ReadersLounge.com"
-  comment = "ReadersLounge.com host zone"
 }
 
 resource "aws_route53_record" "readerslounge" {

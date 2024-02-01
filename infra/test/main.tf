@@ -1,10 +1,34 @@
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 4.1.0"
+    }
+  }
+}
+
+locals {
+  app_name = "ReadersLounge"
+}
+
+provider "aws" {
+  profile = "terraform"
+  region  = "ap-northeast-1"
+  default_tags {
+    tags = {
+      application = local.app_name
+    }
+  }
+}
+
+
 ##########
 #  ACM   #
 ##########
 
 ##SSL証明書の定義
 resource "aws_acm_certificate" "readerslounge" {
-  domain_name       = aws_route53_record.readerslounge.name
+  domain_name       = "readerslounge.com"
   validation_method = "DNS"
   lifecycle {
     create_before_destroy = true
@@ -32,3 +56,12 @@ resource "aws_acm_certificate_validation" "readerslounge" {
   certificate_arn         = aws_acm_certificate.readerslounge.arn
   validation_record_fqdns = [for record in aws_route53_record.readerslounge_certificate : record.fqdn]
 }
+
+###########
+# Route53 #
+###########
+resource "aws_route53_zone" "readerslounge" {
+  name = "readerslounge.com"
+}
+
+
