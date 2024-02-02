@@ -1,13 +1,13 @@
 ###########
 # Route53 #
 ###########
-resource "aws_route53_zone" "readerslounge" {
-  name    = "ReadersLounge.com"
+data "aws_route53_zone" "readerslounge" {
+  name    = "readerslounge-server.com"
 }
 
 resource "aws_route53_record" "readerslounge" {
-  zone_id = aws_route53_zone.readerslounge.zone_id
-  name    = aws_route53_zone.readerslounge.name
+  zone_id = data.aws_route53_zone.readerslounge.zone_id
+  name    = data.aws_route53_zone.readerslounge.name
   type    = "A"
 
   alias {

@@ -25,7 +25,7 @@ resource "aws_route53_record" "readerslounge_certificate" {
   records         = [each.value.record]
   ttl             = 60
   type            = each.value.type
-  zone_id         = aws_route53_zone.readerslounge.zone_id
+  zone_id         = data.aws_route53_zone.readerslounge.zone_id
 }
 ##検証待機
 resource "aws_acm_certificate_validation" "readerslounge" {
