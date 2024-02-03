@@ -84,6 +84,22 @@
         {
           "name": "RAKUTEN_APPLICATION_ID",
           "valueFrom": "rakuten-application-id"
+        },
+        {
+          "name": "AWS_DEFAULT_REGION",
+          "valueFrom": "aws_default_region"
+        },
+        {
+          "name": "AWS_ACCESS_KEY_ID",
+          "valueFrom": "aws_access_key_id"
+        },
+        {
+          "name": "AWS_SECRET_ACCESS_KEY",
+          "valueFrom": "aws_secret_access_key"
+        },
+        {
+          "name": "S3_BUCKET_NAME",
+          "valueFrom": "s3_bucket_name"
         }
       ]
     }
