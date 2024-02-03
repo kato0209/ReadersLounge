@@ -10,6 +10,7 @@ import (
 	"backend/router"
 	"backend/usecase"
 	"backend/validator"
+	"os"
 
 	_ "github.com/lib/pq"
 	"golang.org/x/exp/slog"
@@ -17,9 +18,11 @@ import (
 
 func main() {
 
-	_, err := openapi.GetSwagger()
-	if err != nil {
-		slog.Error("swagger error", "error", err)
+	if os.Getenv("ENV") == "dev" {
+		_, err := openapi.GetSwagger()
+		if err != nil {
+			slog.Error("swagger error", "error", err)
+		}
 	}
 
 	db, err := db.Open()
