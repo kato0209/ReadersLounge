@@ -3,7 +3,6 @@
 ##########
 resource "aws_s3_bucket" "images" {
   bucket = "readerslounge-s3-bucket-for-images"
-  acl    = "public-read"
 
   tags = {
     Name = "readerslounge-s3-bucket-for-images"

@@ -90,13 +90,14 @@ resource "aws_lb_listener" "http" {
     }
   }
   depends_on = [
-    aws_lb.readerslounge
+    aws_acm_certificate_validation.readerslounge,
   ]
 }
 resource "aws_lb_listener" "https" {
   load_balancer_arn = aws_lb.readerslounge.arn
   port              = "443"
   protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
   certificate_arn   = aws_acm_certificate.readerslounge.arn
 
   default_action {
@@ -104,8 +105,7 @@ resource "aws_lb_listener" "https" {
     type             = "forward"
   }
   depends_on = [
-    aws_lb.readerslounge,
-    aws_lb_target_group.front
+    aws_acm_certificate_validation.readerslounge,
   ]
 }
 resource "aws_lb_listener" "api" {
@@ -119,7 +119,6 @@ resource "aws_lb_listener" "api" {
     type             = "forward"
   }
   depends_on = [
-    aws_lb.readerslounge,
-    aws_lb_target_group.api
+    aws_acm_certificate_validation.readerslounge,
   ]
 }

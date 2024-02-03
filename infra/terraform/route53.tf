@@ -2,7 +2,7 @@
 # Route53 #
 ###########
 data "aws_route53_zone" "readerslounge" {
-  name    = "readerslounge-server.com"
+  name = "readerslounge-server.com"
 }
 
 resource "aws_route53_record" "readerslounge" {
