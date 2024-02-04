@@ -10,8 +10,63 @@ resource "aws_ecs_task_definition" "front" {
   memory                   = "1024"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  container_definitions    = file("./tasks/front_definition.json")
-  execution_role_arn       = aws_iam_role.ecs_task_execution.arn
+  container_definitions = jsonencode([
+    {
+      name      = "front-container"
+      image     = "620958051842.dkr.ecr.ap-northeast-1.amazonaws.com/front:latest"
+      essential = true
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-region"        = "ap-northeast-1"
+          "awslogs-stream-prefix" = "front"
+          "awslogs-group"         = "/ecs/front"
+        }
+      }
+      portMappings = [
+        {
+          protocol      = "tcp"
+          containerPort = 80
+        }
+      ]
+      command = [
+        "npm", "run", "build"
+      ]
+      environment = [
+        {
+          name  = "VITE_API_URL"
+          value = "https://readerslounge-server.com:8080"
+        },
+        {
+          name  = "VITE_GOOGLE_OAUTH_REDIRECT_PATH"
+          value = "/oauth/google/callback"
+        },
+        {
+          name  = "VITE_GOOGLE_OAUTH_USER_INFO_EMAIL_URL"
+          value = "https://www.googleapis.com/auth/userinfo.email"
+        },
+        {
+          name  = "VITE_GOOGLE_OAUTH_USER_INFO_PROFILE_URL"
+          value = "https://www.googleapis.com/auth/userinfo.profile"
+        },
+        {
+          name  = "VITE_WEBSOCKET_URL"
+          value = "wss://readerslounge-server.com:8080"
+        }
+      ]
+      secrets = [
+        {
+          name      = "VITE_GOOGLE_OAUTH_CLIENT_ID"
+          valueFrom = "vite-google-oauth-client-id"
+        },
+        {
+          name      = "VITE_GOOGLE_CLIENT_SECRET"
+          valueFrom = "vite-google-client-secret"
+        }
+      ]
+    }
+  ])
+  execution_role_arn = aws_iam_role.ecs_task_execution.arn
 }
 resource "aws_ecs_service" "front" {
   name                              = "readerslounge-front-ecs-service"
@@ -49,8 +104,129 @@ resource "aws_ecs_task_definition" "api" {
   memory                   = "512"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  container_definitions    = file("./tasks/api_definition.json")
-  execution_role_arn       = aws_iam_role.ecs_task_execution.arn
+  container_definitions = jsonencode([
+    {
+      name      = "api-container"
+      image     = "620958051842.dkr.ecr.ap-northeast-1.amazonaws.com/api:latest"
+      essential = true
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-region"        = "ap-northeast-1"
+          "awslogs-stream-prefix" = "api"
+          "awslogs-group"         = "/ecs/api"
+        }
+      }
+      portMappings = [
+        {
+          protocol      = "tcp"
+          containerPort = 8080
+          hostPort      = 8080
+        }
+      ]
+      environment = [
+        {
+          name  = "GO_ENV",
+          value = "prod"
+        },
+        {
+          name  = "PGHOST",
+          value = aws_db_instance.readerslounge.endpoint
+        },
+        {
+          name  = "PGSSLMODE",
+          value = "disable"
+        },
+        {
+          name  = "PGPORT",
+          value = "5432"
+        },
+        {
+          name  = "API_PROTOCOL",
+          value = "https"
+        },
+        {
+          name  = "API_DOMAIN",
+          value = "readerslounge-server.com"
+        },
+        {
+          name  = "API_PORT",
+          value = "8080"
+        },
+        {
+          name  = "FE_URL",
+          value = "https://readerslounge-server.com"
+        },
+        {
+          name  = "GOOGLE_OAUTH_PATH",
+          value = "oauth/google/callback"
+        },
+        {
+          name  = "GOOGLE_OAUTH_USER_INFO_EMAIL_URL",
+          value = "https://www.googleapis.com/auth/userinfo.email"
+        },
+        {
+          name  = "GOOGLE_OAUTH_USER_INFO_PROFILE_URL",
+          value = "https://www.googleapis.com/auth/userinfo.profile"
+        },
+        {
+          name  = "RAKUTEN_BOOKS_API_URL",
+          value = "https://app.rakuten.co.jp/services/api/BooksBook/Search/20170404"
+        },
+        {
+          name  = "RAKUTEN_BOOKS_GENRE_API_URL",
+          value = "https://app.rakuten.co.jp/services/api/BooksGenre/Search/20121128"
+        }
+      ]
+      secrets = [
+        {
+          name      = "PGDATABASE",
+          valueFrom = "pgdatabase"
+        },
+        {
+          name      = "PGUSER",
+          valueFrom = "pguser"
+        },
+        {
+          name      = "PGPASSWORD",
+          valueFrom = "pgpassword"
+        },
+        {
+          name      = "JWT_SECRET",
+          valueFrom = "jwt-secret"
+        },
+        {
+          name      = "GOOGLE_CLIENT_ID",
+          valueFrom = "google-client-id"
+        },
+        {
+          name      = "GOOGLE_CLIENT_SECRET",
+          valueFrom = "google-client-secret"
+        },
+        {
+          name      = "RAKUTEN_APPLICATION_ID",
+          valueFrom = "rakuten-application-id"
+        },
+        {
+          name      = "AWS_DEFAULT_REGION",
+          valueFrom = "aws_default_region"
+        },
+        {
+          name      = "AWS_ACCESS_KEY_ID",
+          valueFrom = "aws_access_key_id"
+        },
+        {
+          name      = "AWS_SECRET_ACCESS_KEY",
+          valueFrom = "aws_secret_access_key"
+        },
+        {
+          name      = "S3_BUCKET_NAME",
+          valueFrom = "s3_bucket_name"
+        }
+      ]
+    }
+  ])
+  execution_role_arn = aws_iam_role.ecs_task_execution.arn
 }
 resource "aws_ecs_service" "api" {
   name            = "readerslounge-api-ecs-service"

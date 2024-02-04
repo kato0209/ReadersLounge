@@ -12,6 +12,7 @@
 #============================================================
 variable "DB_USERNAME" {}
 variable "DB_PASSWORD" {}
+variable "DB_NAME" {}
 
 resource "aws_ssm_parameter" "db_username" {
   name        = "db-username"
@@ -25,10 +26,20 @@ resource "aws_ssm_parameter" "db_password" {
   type        = "SecureString"
   description = "DB_PASSWORD"
 }
+resource "aws_ssm_parameter" "db_name" {
+  name        = "db-name"
+  value       = var.DB_NAME
+  type        = "SecureString"
+  description = "DB_NAME"
+}
 
 #============================================================
 # API
 #============================================================
+
+variable "PGDATABASE" {}
+variable "PGUSER" {}
+variable "PGPASSWORD" {}
 variable "JWT_SECRET" {}
 variable "GOOGLE_CLIENT_ID" {}
 variable "GOOGLE_CLIENT_SECRET" {}
@@ -38,6 +49,24 @@ variable "AWS_ACCESS_KEY_ID" {}
 variable "AWS_SECRET_ACCESS_KEY" {}
 variable "S3_BUCKET_NAME" {}
 
+resource "aws_ssm_parameter" "pgdatabase" {
+  name        = "pgdatabase"
+  value       = var.PGDATABASE
+  type        = "SecureString"
+  description = "PGDATABASE"
+}
+resource "aws_ssm_parameter" "pguser" {
+  name        = "pguser"
+  value       = var.PGUSER
+  type        = "SecureString"
+  description = "PGUSER"
+}
+resource "aws_ssm_parameter" "pgpassword" {
+  name        = "pgpassword"
+  value       = var.PGPASSWORD
+  type        = "SecureString"
+  description = "PGPASSWORD"
+}
 resource "aws_ssm_parameter" "jwt_secret" {
   name        = "jwt-secret"
   value       = var.JWT_SECRET
