@@ -33,7 +33,7 @@ variable "JWT_SECRET" {}
 variable "GOOGLE_CLIENT_ID" {}
 variable "GOOGLE_CLIENT_SECRET" {}
 variable "RAKUTEN_APPLICATION_ID" {}
-variable "AWS_DEFAULT_REGION" {}
+variable "AWS_REGION" {}
 variable "AWS_ACCESS_KEY_ID" {}
 variable "AWS_SECRET_ACCESS_KEY" {}
 variable "S3_BUCKET_NAME" {}
@@ -62,20 +62,20 @@ resource "aws_ssm_parameter" "rakuten_application_id" {
   type        = "SecureString"
   description = "RAKUTEN_APPLICATION_ID"
 }
-resource "aws_ssm_parameter" "aws_default_region" {
-  name        = "aws-default-region"
-  value       = var.AWS_DEFAULT_REGION
+resource "aws_ssm_parameter" "aws_region" {
+  name        = "my-aws-region"
+  value       = var.AWS_REGION
   type        = "SecureString"
-  description = "AWS_DEFAULT_REGION"
+  description = "AWS_REGION"
 }
 resource "aws_ssm_parameter" "aws_access_key_id" {
-  name        = "aws-access-key-id"
+  name        = "my-aws-access-key-id"
   value       = var.AWS_ACCESS_KEY_ID
   type        = "SecureString"
   description = "AWS_ACCESS_KEY_ID"
 }
 resource "aws_ssm_parameter" "aws_secret_key_id" {
-  name        = "aws-secret-key-id"
+  name        = "my-aws-secret-key-id"
   value       = var.AWS_SECRET_ACCESS_KEY
   type        = "SecureString"
   description = "AWS_SECRET_ACCESS_KEY"

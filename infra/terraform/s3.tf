@@ -60,3 +60,10 @@ resource "aws_s3_bucket_policy" "images" {
     ]
   })
 }
+
+resource "aws_s3_object" "default_image" {
+  bucket = aws_s3_bucket.images.id
+  key    = "default_img.png"
+  source = "../../backend/assets/images/default_img.png"
+  etag   = filemd5("../../backend/assets/images/default_img.png")
+}
