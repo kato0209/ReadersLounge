@@ -17,8 +17,8 @@ resource "aws_db_instance" "readerslounge" {
   vpc_security_group_ids  = [aws_security_group.rds.id]
   db_subnet_group_name    = aws_db_subnet_group.rds.name
 
-  option_group_name = aws_db_parameter_group.readerslounge.name
-  apply_immediately = true
+  parameter_group_name = aws_db_parameter_group.readerslounge.name
+  apply_immediately    = true
 
   lifecycle {
     prevent_destroy = false
