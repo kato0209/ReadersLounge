@@ -5,6 +5,13 @@ terraform {
       version = ">= 4.1.0"
     }
   }
+  backend "s3" {
+    bucket  = "readerslounge-terraform-state"
+    key     = "terraform.tfstate"
+    region  = "ap-northeast-1"
+    profile = "terraform"
+    encrypt = true
+  }
 }
 
 locals {
