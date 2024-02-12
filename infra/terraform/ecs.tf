@@ -52,16 +52,14 @@ resource "aws_ecs_task_definition" "front" {
         {
           name  = "VITE_WEBSOCKET_URL"
           value = "wss://readerslounge-server.com:8080"
-        }
-      ]
-      secrets = [
-        {
-          name      = "VITE_GOOGLE_OAUTH_CLIENT_ID"
-          valueFrom = "vite-google-oauth-client-id"
         },
         {
-          name      = "VITE_GOOGLE_CLIENT_SECRET"
-          valueFrom = "vite-google-client-secret"
+          name  = "VITE_GOOGLE_OAUTH_CLIENT_ID"
+          value = var.VITE_GOOGLE_OAUTH_CLIENT_ID
+        },
+        {
+          name  = "VITE_GOOGLE_CLIENT_SECRET"
+          value = var.VITE_GOOGLE_CLIENT_SECRET
         }
       ]
     }
@@ -176,52 +174,50 @@ resource "aws_ecs_task_definition" "api" {
         {
           name  = "RAKUTEN_BOOKS_GENRE_API_URL",
           value = "https://app.rakuten.co.jp/services/api/BooksGenre/Search/20121128"
-        }
-      ]
-      secrets = [
-        {
-          name      = "PGDATABASE",
-          valueFrom = "pgdatabase"
         },
         {
-          name      = "PGUSER",
-          valueFrom = "pguser"
+          name  = "PGDATABASE"
+          value = var.PGDATABASE
         },
         {
-          name      = "PGPASSWORD",
-          valueFrom = "pgpassword"
+          name  = "PGUSER"
+          value = var.PGUSER
         },
         {
-          name      = "JWT_SECRET",
-          valueFrom = "jwt-secret"
+          name  = "PGPASSWORD"
+          value = var.PGPASSWORD
         },
         {
-          name      = "GOOGLE_CLIENT_ID",
-          valueFrom = "google-client-id"
+          name  = "JWT_SECRET"
+          value = var.JWT_SECRET
         },
         {
-          name      = "GOOGLE_CLIENT_SECRET",
-          valueFrom = "google-client-secret"
+          name  = "GOOGLE_CLIENT_ID"
+          value = var.GOOGLE_CLIENT_ID
         },
         {
-          name      = "RAKUTEN_APPLICATION_ID",
-          valueFrom = "rakuten-application-id"
+          name  = "GOOGLE_CLIENT_SECRET"
+          value = var.GOOGLE_CLIENT_SECRET
         },
         {
-          name      = "AWS_DEFAULT_REGION",
-          valueFrom = "aws_default_region"
+          name  = "RAKUTEN_APPLICATION_ID"
+          value = var.RAKUTEN_APPLICATION_ID
         },
         {
-          name      = "AWS_ACCESS_KEY_ID",
-          valueFrom = "aws_access_key_id"
+          name  = "AWS_REGION"
+          value = var.AWS_REGION
         },
         {
-          name      = "AWS_SECRET_ACCESS_KEY",
-          valueFrom = "aws_secret_access_key"
+          name  = "AWS_ACCESS_KEY_ID"
+          value = var.AWS_ACCESS_KEY_ID
         },
         {
-          name      = "S3_BUCKET_NAME",
-          valueFrom = "s3_bucket_name"
+          name  = "AWS_SECRET_ACCESS_KEY"
+          value = var.AWS_SECRET_ACCESS_KEY
+        },
+        {
+          name  = "S3_BUCKET_NAME"
+          value = var.S3_BUCKET_NAME
         }
       ]
     }
