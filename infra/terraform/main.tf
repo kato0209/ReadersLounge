@@ -18,7 +18,6 @@ locals {
 }
 
 provider "aws" {
-  profile = "terraform"
   region  = "ap-northeast-1"
   default_tags {
     tags = {
