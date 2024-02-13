@@ -57,4 +57,53 @@ jobs:
           terraform plan \
             -input=false \
             -detailed-exitcode \
+            -var 'DB_USERNAME=${{ secrets.DB_USERNAME }}' \
+            -var 'DB_PASSWORD=${{ secrets.DB_PASSWORD }}' \
+            -var 'DB_NAME=${{ secrets.DB_NAME }}' \
+            -var 'PGDATABASE=${{ secrets.PGDATABASE }}' \
+            -var 'PGUSER=${{ secrets.PGUSER }}' \
+            -var 'PGPASSWORD=${{ secrets.PGPASSWORD }}' \
+            -var 'JWT_SECRET=${{ secrets.JWT_SECRET }}' \
+            -var 'GOOGLE_CLIENT_ID=${{ env.GOOGLE_CLIENT_ID }}' \
+            -var 'GOOGLE_CLIENT_SECRET=${{ env.GOOGLE_CLIENT_SECRET }}' \
+            -var 'RAKUTEN_APPLICATION_ID=${{ env.RAKUTEN_APPLICATION_ID }}'
+            -var 'AWS_REGION=${{ env.AWS_REGION }}' \
+            -var 'AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}' \
+            -var 'AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}' \
+            -var 'S3_BUCKET_NAME=${{ secrets.S3_BUCKET_NAME }}' \
+            -var 'VITE_GOOGLE_OAUTH_CLIENT_ID=${{ secrets.VITE_GOOGLE_OAUTH_CLIENT_ID }}' \
+            -var 'VITE_GOOGLE_CLIENT_SECRET=${{ secrets.VITE_GOOGLE_CLIENT_SECRET }}' \
+      
+      - name: Slack Notify
+        if: steps.plan.outputs.exitcode == 2
+        uses: slackapi/slack-github-action@v1.25.0
+        with:
+          channel-id: "C06JLQLHP4L"
+          payload: |
+            {
+              "attachments": [
+                {
+                  "blocks": [
+                    {
+                      "type": "header",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "Terraform plan result",
+                        "emoji": true
+                      }
+                    },
+                    {
+                      "type": "section",
+                      "text": {
+                        "type": "mrkdwn",
+                        "text": "Terraform plan has diffrential \n ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+            
              
