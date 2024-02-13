@@ -9,7 +9,6 @@ terraform {
     bucket  = "readerslounge-terraform-state"
     key     = "terraform.tfstate"
     region  = "ap-northeast-1"
-    profile = "terraform"
     encrypt = true
   }
 }
