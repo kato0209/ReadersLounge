@@ -66,7 +66,7 @@ jobs:
             -var 'JWT_SECRET=${{ secrets.JWT_SECRET }}' \
             -var 'GOOGLE_CLIENT_ID=${{ env.GOOGLE_CLIENT_ID }}' \
             -var 'GOOGLE_CLIENT_SECRET=${{ env.GOOGLE_CLIENT_SECRET }}' \
-            -var 'RAKUTEN_APPLICATION_ID=${{ env.RAKUTEN_APPLICATION_ID }}'
+            -var 'RAKUTEN_APPLICATION_ID=${{ env.RAKUTEN_APPLICATION_ID }}' \
             -var 'AWS_REGION=${{ env.AWS_REGION }}' \
             -var 'AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}' \
             -var 'AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}' \
