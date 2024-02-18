@@ -222,5 +222,5 @@ jobs:
         with:
           cluster: ${{ env.ECS_CLUSTER }}
           task-definition: ${{ env.MIGRATION_TASK_DEFINITION_NAME }}
-          subnets: subnet-031313c7d41803bb3, subnet-033335fdd2e786bd9
+          subnets: subnet-031313c7d41803bb3
           security-groups: sg-071c0928d1420fd8b
