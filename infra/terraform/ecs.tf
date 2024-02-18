@@ -265,10 +265,6 @@ resource "aws_ecs_task_definition" "goose_migration" {
   execution_role_arn       = aws_iam_role.ecs_task_execution.arn
   cpu                      = "256"
   memory                   = "512"
-  volume {
-    name      = "migration-volume"
-    host_path = "./db/migration"
-  }
 
   container_definitions = jsonencode([
     {
@@ -286,14 +282,8 @@ resource "aws_ecs_task_definition" "goose_migration" {
           name  = "GOOSE_DBSTRING",
           value = "GOOSE_DBSTRING:-host=${aws_db_instance.readerslounge.endpoint} user=${var.PGUSER} dbname=${var.PGDATABASE} password=${var.PGPASSWORD}"
         }
-      ],
-      mountPoints = [
-        {
-          sourceVolume  = "migration-volume"
-          containerPath = "/db/migrations"
-          readOnly      = false
-        }
-      ],
+      ]
+
       logConfiguration = {
         logDriver = "awslogs"
         options = {
