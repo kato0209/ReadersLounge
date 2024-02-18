@@ -160,6 +160,8 @@ jobs:
           -var 'S3_BUCKET_NAME=${{ secrets.S3_BUCKET_NAME }}' \
           -var 'VITE_GOOGLE_OAUTH_CLIENT_ID=${{ secrets.VITE_GOOGLE_OAUTH_CLIENT_ID }}' \
           -var 'VITE_GOOGLE_CLIENT_SECRET=${{ secrets.VITE_GOOGLE_CLIENT_SECRET }}'
+
+          terraform output -json > outputs.json
       
       - name: Slack Notify
         if: always()
@@ -198,7 +200,7 @@ jobs:
     name: "Run migration"
     defaults:
       run:
-        working-directory: ./
+        working-directory: ./db/migration
     needs: deploy
     runs-on: ubuntu-latest
     steps:
@@ -216,5 +218,5 @@ jobs:
         with:
           cluster: ${{ env.ECS_CLUSTER }}
           task-definition: ${{ env.MIGRATION_TASK_DEFINITION_NAME }}
-          subnets: ${{ env.MIGRATION_SUBNETS }}
-          security-groups: ${{ env.MIGRATION_SECURITY_GROUPS }}
+          subnets: "${{ steps.apply.outputs.subnet_1a_id }}, ${{ steps.apply.outputs.subnet_1c_id }}"
+          security-groups: ${{ steps.apply.outputs.security_group_id }}
