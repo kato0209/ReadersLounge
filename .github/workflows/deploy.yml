@@ -222,5 +222,5 @@ jobs:
         with:
           cluster: ${{ env.ECS_CLUSTER }}
           task-definition: ${{ env.MIGRATION_TASK_DEFINITION_NAME }}
-          subnets: "${{ needs.deploy.outputs.subnet_1a_id }}, ${{ needs.deploy.outputs.subnet_1c_id }}"
+          subnets: ${{ needs.deploy.outputs.subnet_1a_id }}, ${{ needs.deploy.outputs.subnet_1c_id }}
           security-groups: ${{ needs.deploy.outputs.security_group_id }}
