@@ -163,9 +163,9 @@ jobs:
           -var 'VITE_GOOGLE_OAUTH_CLIENT_ID=${{ secrets.VITE_GOOGLE_OAUTH_CLIENT_ID }}' \
           -var 'VITE_GOOGLE_CLIENT_SECRET=${{ secrets.VITE_GOOGLE_CLIENT_SECRET }}'
 
-          echo "readerslounge-public-1a=$(terraform output subnet_1a_id)" >> $GITHUB_OUTPUT
-          echo "readerslounge-public-1c=$(terraform output subnet_1c_id)" >> $GITHUB_OUTPUT
-          echo "readerslounge-ecs-api-sg=$(terraform output security_group_id)" >> $GITHUB_OUTPUT
+          echo readerslounge-public-1a=$(terraform output subnet_1a_id) >> $GITHUB_OUTPUT
+          echo readerslounge-public-1c=$(terraform output subnet_1c_id) >> $GITHUB_OUTPUT
+          echo readerslounge-ecs-api-sg=$(terraform output security_group_id) >> $GITHUB_OUTPUT
       
       - name: Slack Notify
         if: always()
