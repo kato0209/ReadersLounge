@@ -9,7 +9,7 @@ on:
       - 'backend/**'
       - 'frontend/**'
       - 'infra/terraform/**'
-      - 'db/migrations/**'
+      - 'db/migration/**'
 
 permissions:
   id-token: write
@@ -260,6 +260,6 @@ jobs:
         uses: noelzubin/aws-ecs-run-task@v1.0
         with:
           cluster: ${{ env.ECS_CLUSTER }}
-          task-defintion: ${{ env.MIGRATION_TASK_DEFINITION_NAME }}
+          task-definition: ${{ env.MIGRATION_TASK_DEFINITION_NAME }}
           subnets: ${{ env.MIGRATION_SUBNETS }}
           security-groups: ${{ env.MIGRATION_SECURITY_GROUPS }}
