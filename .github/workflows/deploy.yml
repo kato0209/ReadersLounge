@@ -231,5 +231,5 @@ jobs:
       
       - name: ECS UPDATE
         run: |
-          aws ecs update-service --cluster readerslounge-cluster --service readerslounge-front-ecs-service --force-new-deployment
-          aws ecs update-service --cluster readerslounge-cluster --service readerslounge-api-ecs-service --force-new-deployment
+          aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ env.ECS_SERVICE_FRONT }} --force-new-deployment
+          aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ env.ECS_SERVICE_API }} --force-new-deployment
