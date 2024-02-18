@@ -9,6 +9,7 @@ on:
       - 'backend/**'
       - 'frontend/**'
       - 'infra/terraform/**'
+      - 'db/migrations/**'
 
 permissions:
   id-token: write
@@ -239,10 +240,26 @@ jobs:
           aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ env.ECS_SERVICE_API }} --force-new-deployment
 
   run-migration:
-    name: Run migration
-    uses: noelzubin/aws-ecs-run-task@v1.0
-    with:
-      cluster: ${{ env.ECS_CLUSTER }}
-      task-defintion: ${{ env.MIGRATION_TASK_DEFINITION_NAME }}
-      subnets: ${{ env.MIGRATION_SUBNETS }}
-      security-groups: ${{ env.MIGRATION_SECURITY_GROUPS }}
+    name: "Run migration"
+    defaults:
+      run:
+        working-directory: ./
+    needs: ecr-push-image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credential
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_IAM_ROLE_ARN }}
+
+      - name: Run migration
+        uses: noelzubin/aws-ecs-run-task@v1.0
+        with:
+          cluster: ${{ env.ECS_CLUSTER }}
+          task-defintion: ${{ env.MIGRATION_TASK_DEFINITION_NAME }}
+          subnets: ${{ env.MIGRATION_SUBNETS }}
+          security-groups: ${{ env.MIGRATION_SECURITY_GROUPS }}
