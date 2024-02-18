@@ -190,7 +190,9 @@ jobs:
              
   ecr-push-image:
     name: "ECR Push Image"
-    working-directory: ./
+    defaults:
+      run:
+        working-directory: ./
     needs: deploy
     runs-on: ubuntu-latest
     steps:
