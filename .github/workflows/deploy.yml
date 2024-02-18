@@ -19,6 +19,10 @@ env:
   ECS_CLUSTER: readerslounge-ecs-cluster
   ECS_SERVICE_FRONT: readerslounge-front-ecs-service
   ECS_SERVICE_API: readerslounge-api-ecs-service
+  MIGRATION_TASK_DEFINITION_NAME : goose-migration-container
+  MIGRATION_SUBNETS: readerslounge-public-1a, readerslounge-public-1c
+  MIGRATION_SECURITY_GROUPS: readerslounge-ecs-api-sg
+
   
 
 defaults:
@@ -233,3 +237,12 @@ jobs:
         run: |
           aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ env.ECS_SERVICE_FRONT }} --force-new-deployment
           aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ env.ECS_SERVICE_API }} --force-new-deployment
+
+  run-migration:
+    name: Run migration
+    uses: noelzubin/aws-ecs-run-task@v1.0
+    with:
+      cluster: ${{ env.ECS_CLUSTER }}
+      task-defintion: ${{ env.MIGRATION_TASK_DEFINITION_NAME }}
+      subnets: ${{ env.MIGRATION_SUBNETS }}
+      security-groups: ${{ env.MIGRATION_SECURITY_GROUPS }}

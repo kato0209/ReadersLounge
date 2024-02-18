@@ -4,7 +4,8 @@
 
 #__________  api  __________#
 resource "aws_ecr_repository" "api" {
-  name = "readerslounge-api"
+  name         = "readerslounge-api"
+  force_delete = true
 }
 resource "aws_ecr_lifecycle_policy" "api" {
   repository = aws_ecr_repository.api.name
@@ -32,7 +33,8 @@ EOF
 
 #__________ front __________#
 resource "aws_ecr_repository" "front" {
-  name = "readerslounge-front"
+  name         = "readerslounge-front"
+  force_delete = true
 }
 resource "aws_ecr_lifecycle_policy" "front" {
   repository = aws_ecr_repository.front.name

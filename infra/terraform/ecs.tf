@@ -253,6 +253,50 @@ resource "aws_ecs_service" "api" {
   ]
 }
 
+######################################
+#  マイグレーション task definition   #
+######################################
+
+resource "aws_ecs_task_definition" "goose_migration" {
+  family                   = "readerslounge-goose-migration-task"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  execution_role_arn       = aws_iam_role.ecs_task_execution.arn
+  cpu                      = "256"
+  memory                   = "512"
+
+  container_definitions = jsonencode([
+    {
+      name   = "goose-migration-container"
+      image  = "gendosu/goose:latest"
+      cpu    = 256
+      memory = 256
+
+      environment = [
+        {
+          name  = "GOOSE_DRIVER",
+          value = "GOOSE_DRIVER:-postgres"
+        },
+        {
+          name  = "GOOSE_DBSTRING",
+          value = "GOOSE_DBSTRING:-host=${aws_db_instance.readerslounge.endpoint} user=${var.PGUSER} dbname=${var.PGDATABASE} password=${var.PGPASSWORD}"
+        }
+      ]
+
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          "awslogs-region"        = "ap-northeast-1"
+          "awslogs-stream-prefix" = "migration"
+          "awslogs-group"         = "/ecs/migration"
+        }
+      }
+
+      command = ["/bin/goose", "up"]
+    }
+  ])
+}
+
 ##########
 #  権限   #
 ##########
