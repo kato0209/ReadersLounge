@@ -21,7 +21,7 @@ env:
   ECS_SERVICE_FRONT: readerslounge-front-ecs-service
   ECS_SERVICE_API: readerslounge-api-ecs-service
   MIGRATION_TASK_DEFINITION_NAME : readerslounge-goose-migration-task
-  MIGRATION_SUBNETS: readerslounge-public-1a, readerslounge-public-1c
+  MIGRATION_SUBNETS: readerslounge-public-1a
   MIGRATION_SECURITY_GROUPS: readerslounge-ecs-api-sg
 
   
