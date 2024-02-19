@@ -264,6 +264,10 @@ jobs:
         with:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: ${{ secrets.AWS_IAM_ROLE_ARN }}
+      
+      - name: test
+        run: |
+          echo ${{ needs.deploy.outputs.task_definition_arn }}
 
       - name: Run migration
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
