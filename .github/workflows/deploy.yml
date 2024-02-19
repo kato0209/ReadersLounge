@@ -274,5 +274,5 @@ jobs:
         with:
           cluster: ${{ env.ECS_CLUSTER }}
           task-definition: ${{ env.MIGRATION_TASK_DEFINITION_NAME }}
-          subnets: ${{ needs.deploy.outputs.subnet_1a_id }}
-          security-groups: ${{ needs.deploy.outputs.security_group_id }}
+          subnets: subnet-0c6cc6bd1fdad012f
+          security-groups: sg-023e1eab2a87cf425
