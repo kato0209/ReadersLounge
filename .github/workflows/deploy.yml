@@ -277,3 +277,4 @@ jobs:
           subnets: subnet-0c6cc6bd1fdad012f
           security-groups: sg-023e1eab2a87cf425
           assign-public-ip: ENABLED
+          override-container: api-container
