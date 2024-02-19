@@ -1,12 +1,22 @@
 #########################
 # SecurityGroupRule RDS #
 #########################
-resource "aws_security_group_rule" "rds" {
-  description       = "readerslounge rds sg rule"
+resource "aws_security_group_rule" "rds1" {
+  description       = "readerslounge rds sg rule1"
   type              = "ingress"
   from_port         = 5432
   to_port           = 5432
   protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.rds.id
+}
+
+resource "aws_security_group_rule" "rds2" {
+  description       = "readerslounge rds sg rule2"
+  type              = "egress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
   cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = aws_security_group.rds.id
 }
@@ -68,8 +78,17 @@ resource "aws_security_group_rule" "ecs_front1" {
 resource "aws_security_group_rule" "ecs_front2" {
   description              = "readerslounge-ecs-front-sg-rule2"
   type                     = "ingress"
-  from_port                = 3000
-  to_port                  = 3000
+  from_port                = 80
+  to_port                  = 80
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.alb.id
+  security_group_id        = aws_security_group.ecs_front.id
+}
+resource "aws_security_group_rule" "ecs_front3" {
+  description              = "readerslounge-ecs-front-sg-rule3"
+  type                     = "ingress"
+  from_port                = 443
+  to_port                  = 443
   protocol                 = "tcp"
   source_security_group_id = aws_security_group.alb.id
   security_group_id        = aws_security_group.ecs_front.id
@@ -84,4 +103,13 @@ resource "aws_security_group_rule" "ecs_api1" {
   protocol                 = "tcp"
   source_security_group_id = aws_security_group.alb.id
   security_group_id        = aws_security_group.ecs_api.id
+}
+resource "aws_security_group_rule" "ecs_api2" {
+  description       = "readerslounge-ecs-api-sg-rule2"
+  type              = "egress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.ecs_api.id
 }
