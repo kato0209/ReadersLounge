@@ -308,9 +308,15 @@ resource "aws_iam_role" "ecs_task_execution" {
   assume_role_policy = jsonencode({
     Statement = [
       {
-        Action = "sts:AssumeRole"
         Effect = "Allow"
-        Sid    = ""
+        "Action" : [
+          "sts:AssumeRole",
+          "ssmmessages:CreateControlChannel",
+          "ssmmessages:CreateDataChannel",
+          "ssmmessages:OpenControlChannel",
+          "ssmmessages:OpenDataChannel"
+        ],
+        Sid = ""
         Principal = {
           Service = "ecs-tasks.amazonaws.com"
         }
