@@ -199,12 +199,64 @@ jobs:
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
            
+  ecr-push-image:
+    name: "ECR Push Image"
+    defaults:
+      run:
+        working-directory: ./
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credential
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_IAM_ROLE_ARN }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+        
+      - name: build and push docker front-image to ECR
+        id: build-front-image
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: "readerslounge-front"
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build ./frontend --tag ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ env.IMAGE_TAG }}
+          docker push ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ env.IMAGE_TAG }}
+      
+      - name: build and push docker api-image to ECR
+        id: build-api-image
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: "readerslounge-api"
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build ./backend --file ./backend/Dockerfile.prod --tag ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ env.IMAGE_TAG }}
+          docker push ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ env.IMAGE_TAG }}
+      
+      - name: build and push docker migration-image to ECR
+        id: build-migration-image
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: "readerslounge-migration"
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build ./db/migration --file ./db/migration/Dockerfile --tag ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ env.IMAGE_TAG }}
+          docker push ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ env.IMAGE_TAG }}
+      
+      - name: ECS UPDATE
+        run: |
+          aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ env.ECS_SERVICE_FRONT }} --force-new-deployment
+          aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ env.ECS_SERVICE_API }} --force-new-deployment
 
   run-migration:
     name: "Run migration"
-    defaults:
-      run:
-        working-directory: ./db/migration
     needs: deploy
     runs-on: ubuntu-latest
     steps:
@@ -222,5 +274,5 @@ jobs:
         with:
           cluster: ${{ env.ECS_CLUSTER }}
           task-definition: ${{ env.MIGRATION_TASK_DEFINITION_NAME }}
-          subnets: subnet-031313c7d41803bb3
-          security-groups: sg-071c0928d1420fd8b
+          subnets: ${{ needs.deploy.outputs.subnet_1a_id }}
+          security-groups: ${{ needs.deploy.outputs.security_group_id }}

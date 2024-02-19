@@ -59,3 +59,32 @@ resource "aws_ecr_lifecycle_policy" "front" {
   }
 EOF
 }
+
+#__________ migration __________#
+resource "aws_ecr_repository" "migration" {
+  name         = "readerslounge-migration"
+  force_delete = true
+}
+resource "aws_ecr_lifecycle_policy" "migration" {
+  repository = aws_ecr_repository.migration.name
+
+  policy = <<EOF
+  {
+    "rules": [
+      {
+        "rulePriority": 1,
+        "description": "Keep last 30 release tagged images",
+        "selection": {
+          "tagStatus": "tagged",
+          "tagPrefixList": ["latest"],
+          "countType": "imageCountMoreThan",
+          "countNumber": 30
+        },
+        "action": {
+          "type": "expire"
+        }
+      }
+    ]
+  }
+EOF
+}
