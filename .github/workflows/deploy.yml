@@ -271,12 +271,12 @@ jobs:
       
       - name: test
         run: |
-          echo ${{ needs.deploy.outputs.task_definition_arn }}
+          echo ${{ env.task_definition_arn }}
 
       - name: Run migration
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
-          cluster: ${{ env.ECS_CLUSTER }}
-          service: ${{ env.ECS_SERVICE_API }}
           task-definition: ${{ env.task_definition_arn }}
+          service: ${{ env.ECS_SERVICE_API }}
+          cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
