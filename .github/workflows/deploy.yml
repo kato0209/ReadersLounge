@@ -161,11 +161,11 @@ jobs:
           -var 'VITE_GOOGLE_OAUTH_CLIENT_ID=${{ secrets.VITE_GOOGLE_OAUTH_CLIENT_ID }}' \
           -var 'VITE_GOOGLE_CLIENT_SECRET=${{ secrets.VITE_GOOGLE_CLIENT_SECRET }}'
 
-          echo "task_definition_arn=$(terraform output -raw task_definition_arn)" >> $GITHUB_OUTPUT
+          echo "task_definition_arn=$(terraform output -raw task_definition_arn)" >> $GITHUB_ENV
       
       - name: test1
         run: |
-          echo ${{ steps.apply.outputs.task_definition_arn }}
+          echo ${{ env.task_definition_arn }}
       
       - name: Slack Notify
         if: always()
@@ -278,5 +278,5 @@ jobs:
         with:
           cluster: ${{ env.ECS_CLUSTER }}
           service: ${{ env.ECS_SERVICE_API }}
-          task-definition: ${{ needs.deploy.outputs.task_definition_arn }}
+          task-definition: ${{ env.task_definition_arn }}
           wait-for-service-stability: true
