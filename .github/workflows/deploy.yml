@@ -162,6 +162,9 @@ jobs:
           -var 'VITE_GOOGLE_CLIENT_SECRET=${{ secrets.VITE_GOOGLE_CLIENT_SECRET }}'
 
           echo "task_definition_arn=$(terraform output task_definition_arn)" >> $GITHUB_OUTPUT
+      
+      - name: test1
+        run: |
           echo ${{ steps.apply.outputs.task_definition_arn }}
       
       - name: Slack Notify
