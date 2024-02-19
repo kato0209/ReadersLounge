@@ -9,7 +9,7 @@ on:
       - 'backend/**'
       - 'frontend/**'
       - 'infra/terraform/**'
-      - 'db/migration/**'
+      - 'db/**'
 
 permissions:
   id-token: write
