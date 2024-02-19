@@ -119,9 +119,7 @@ jobs:
     if: needs.preview.outputs.TF_PLAN_EXITCODE == 2
     runs-on: ubuntu-latest
     outputs:
-      subnet_1a_id: ${{ steps.apply.outputs.readerslounge-public-1a }}
-      subnet_1c_id: ${{ steps.apply.outputs.readerslounge-public-1c }}
-      security_group_id: ${{ steps.apply.outputs.readerslounge-ecs-api-sg }}
+      task_definition_arn: ${{ steps.apply.outputs.task_definition_arn }}
     steps: 
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -163,9 +161,7 @@ jobs:
           -var 'VITE_GOOGLE_OAUTH_CLIENT_ID=${{ secrets.VITE_GOOGLE_OAUTH_CLIENT_ID }}' \
           -var 'VITE_GOOGLE_CLIENT_SECRET=${{ secrets.VITE_GOOGLE_CLIENT_SECRET }}'
 
-          echo readerslounge-public-1a=$(terraform output subnet_1a_id) >> $GITHUB_OUTPUT
-          echo readerslounge-public-1c=$(terraform output subnet_1c_id) >> $GITHUB_OUTPUT
-          echo readerslounge-ecs-api-sg=$(terraform output security_group_id) >> $GITHUB_OUTPUT
+          echo task_definition_arn=$(terraform output task_definition_arn) >> $GITHUB_OUTPUT
       
       - name: Slack Notify
         if: always()
@@ -274,5 +270,5 @@ jobs:
         with:
           cluster: ${{ env.ECS_CLUSTER }}
           service: ${{ env.ECS_SERVICE_API }}
-          task-definition: ${{ env.MIGRATION_TASK_DEFINITION_NAME }}
+          task-definition: ${{ needs.deploy.outputs.task_definition_arn }}
           wait-for-service-stability: true
