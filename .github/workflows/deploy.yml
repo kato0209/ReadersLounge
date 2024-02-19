@@ -169,10 +169,6 @@ jobs:
           echo "security_group_id=$(terraform output -raw security_group_id)" >> $GITHUB_OUTPUT
           echo "task_definition_arn=$(terraform output -raw task_definition_arn)" >> $GITHUB_OUTPUT
       
-      - name: test1
-        run: |
-          echo ${{ env.task_definition_arn }}
-      
       - name: Slack Notify
         if: always()
         uses: slackapi/slack-github-action@v1.25.0
