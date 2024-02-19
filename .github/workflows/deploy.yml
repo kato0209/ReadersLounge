@@ -270,11 +270,9 @@ jobs:
           role-to-assume: ${{ secrets.AWS_IAM_ROLE_ARN }}
 
       - name: Run migration
-        uses: noelzubin/aws-ecs-run-task@v1.0
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           cluster: ${{ env.ECS_CLUSTER }}
+          service: ${{ env.ECS_SERVICE_API }}
           task-definition: ${{ env.MIGRATION_TASK_DEFINITION_NAME }}
-          subnets: subnet-0c6cc6bd1fdad012f
-          security-groups: sg-023e1eab2a87cf425
-          assign-public-ip: ENABLED
-          override-container: api-container
+          wait-for-service-stability: true
