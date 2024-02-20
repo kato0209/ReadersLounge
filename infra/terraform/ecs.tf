@@ -297,6 +297,7 @@ resource "aws_ecs_task_definition" "goose_migration" {
     }
   ])
   execution_role_arn = aws_iam_role.ecs_task_execution.arn
+  task_role_arn      = aws_iam_role.ecs_task_role.arn
 }
 
 ##########
@@ -316,6 +317,27 @@ resource "aws_iam_role" "ecs_task_execution" {
         Principal = {
           Service = "ecs-tasks.amazonaws.com"
         }
+      },
+    ]
+  })
+}
+
+resource "aws_iam_role" "ecs_task_role" {
+  name = "ecs_task_role"
+
+  assume_role_policy = jsonencode({
+    Statement = [
+      {
+        Effect = "Allow"
+        "Action" : [
+          "ecr:GetAuthorizationToken",
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:BatchGetImage",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ],
+        resource = "*"
       },
     ]
   })
