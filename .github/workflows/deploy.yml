@@ -259,7 +259,7 @@ jobs:
 
   run-migration:
     name: "Run migration"
-    needs: deploy
+    needs: [deploy, ecr-push-image]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
