@@ -229,7 +229,7 @@ jobs:
           REPOSITORY: "readerslounge-front"
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build ./frontend --tag ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ env.IMAGE_TAG }}
+          docker build --target release --tag ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ env.IMAGE_TAG }} ./frontend 
           docker push ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ env.IMAGE_TAG }}
       
       - name: build and push docker api-image to ECR
