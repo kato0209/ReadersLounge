@@ -321,20 +321,38 @@ resource "aws_iam_role" "ecs_task_execution" {
     ]
   })
 }
-
 resource "aws_iam_role" "ecs_task_role" {
-  name = "ecs_task_role"
-
+  name                = "ecs_task_role"
+  managed_policy_arns = [aws_iam_policy.ecs_task_role.arn]
   assume_role_policy = jsonencode({
     Statement = [
       {
         Effect = "Allow"
         "Action" : [
-          "ssmmessages:CreateControlChannel",
-          "ssmmessages:CreateDataChannel",
-          "ssmmessages:OpenControlChannel",
-          "ssmmessages:OpenDataChannel"
+          "sts:AssumeRole",
         ],
+        Sid = ""
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        }
+      },
+    ]
+  })
+}
+
+resource "aws_iam_policy" "ecs_task_role" {
+  name = "ecs_iam_role_policy"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "ssmmessages:CreateDataChannel",
+          "ssmmessages:OpenDataChannel",
+          "ssmmessages:OpenControlChannel",
+          "ssmmessages:CreateControlChannel"
+        ]
+        Effect   = "Allow"
         Resource = "*"
       },
     ]
