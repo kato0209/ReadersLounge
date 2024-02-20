@@ -298,3 +298,4 @@ jobs:
           --network-configuration "awsvpcConfiguration={subnets=[${{ needs.deploy.outputs.subnet_1a_id }}, ${{ needs.deploy.outputs.subnet_1c_id }}],securityGroups=[${{ needs.deploy.outputs.security_group_id }}],assignPublicIp=ENABLED}" \
           --enable-execute-command \
           --launch-type FARGATE
+          --overrides='{"containerOverrides":[{"name":"goose-migration-container", "command":["/bin/goose", "up"]}]}'

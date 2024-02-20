@@ -267,10 +267,11 @@ resource "aws_ecs_task_definition" "goose_migration" {
 
   container_definitions = jsonencode([
     {
-      name   = "goose-migration-container"
-      image  = "620958051842.dkr.ecr.ap-northeast-1.amazonaws.com/migration:latest"
-      cpu    = 256
-      memory = 256
+      name      = "goose-migration-container"
+      image     = "620958051842.dkr.ecr.ap-northeast-1.amazonaws.com/migration:latest"
+      essential = true
+      cpu       = 256
+      memory    = 256
 
       environment = [
         {
