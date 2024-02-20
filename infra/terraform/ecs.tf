@@ -27,11 +27,10 @@ resource "aws_ecs_task_definition" "front" {
         {
           protocol      = "tcp"
           containerPort = 80
-          hostPort      = 80
         }
       ]
       command = [
-        "npm", "run", "build"
+        "npm", "run", "start"
       ]
       environment = [
         {
