@@ -311,10 +311,6 @@ resource "aws_iam_role" "ecs_task_execution" {
         Effect = "Allow"
         "Action" : [
           "sts:AssumeRole",
-          "ssmmessages:CreateControlChannel",
-          "ssmmessages:CreateDataChannel",
-          "ssmmessages:OpenControlChannel",
-          "ssmmessages:OpenDataChannel"
         ],
         Sid = ""
         Principal = {
