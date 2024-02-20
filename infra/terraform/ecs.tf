@@ -293,7 +293,7 @@ resource "aws_ecs_task_definition" "goose_migration" {
         }
       }
 
-      command = ["/bin/goose", "up"]
+      command = ["up"]
     }
   ])
   execution_role_arn = aws_iam_role.ecs_task_execution.arn

@@ -9,6 +9,9 @@ RUN set -x \
 
 FROM scratch
 
+WORKDIR /migraion
+
+COPY . .
 COPY --from=base /bin/goose /bin/
 ENTRYPOINT [ "/bin/goose" ]
 CMD ["--help"]
