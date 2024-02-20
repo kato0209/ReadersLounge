@@ -337,7 +337,7 @@ resource "aws_iam_role" "ecs_task_role" {
           "logs:CreateLogStream",
           "logs:PutLogEvents"
         ],
-        resource = "*"
+        Resource = "*"
       },
     ]
   })
