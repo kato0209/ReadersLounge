@@ -285,7 +285,7 @@ jobs:
         run: |
           aws ecs run-task \
           --cluster ${{ env.ECS_CLUSTER }} \
-          --task-definition ${{ env.MIGRATION_TASK_DEFINITION_NAME }} \
+          --task-definition arn:aws:ecs:ap-northeast-1:620958051842:task-definition/readerslounge-goose-migration-task:6 \
           --network-configuration "awsvpcConfiguration={subnets=[${{ needs.deploy.outputs.subnet_1a_id }}, ${{ needs.deploy.outputs.subnet_1c_id }}],securityGroups=[${{ needs.deploy.outputs.security_group_id }}],assignPublicIp=ENABLED}" \
           --enable-execute-command \
           --launch-type FARGATE
