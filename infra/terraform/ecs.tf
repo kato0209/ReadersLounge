@@ -87,10 +87,6 @@ resource "aws_ecs_service" "front" {
     container_name   = "front-container"
     container_port   = "80"
   }
-  depends_on = [
-    aws_lb.readerslounge,
-    aws_lb_target_group.front,
-  ]
 }
 
 resource "aws_ecs_task_definition" "api" {
@@ -245,10 +241,6 @@ resource "aws_ecs_service" "api" {
     container_name   = "api-container"
     container_port   = "8080"
   }
-  depends_on = [
-    aws_lb.readerslounge,
-    aws_lb_target_group.api,
-  ]
 }
 
 ######################################
