@@ -29,9 +29,6 @@ resource "aws_ecs_task_definition" "front" {
           containerPort = 80
         }
       ]
-      command = [
-        "npm", "run", "start"
-      ]
       environment = [
         {
           name  = "VITE_API_URL"
