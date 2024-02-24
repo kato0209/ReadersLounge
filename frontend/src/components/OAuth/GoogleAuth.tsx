@@ -6,7 +6,7 @@ import { useCookies } from 'react-cookie';
 import { generateRandomState } from '../../utils/generateRandomState';
 
 export default function GoogleAuth() {
-  const [_, setCookie] = useCookies(['state']);
+  const [, setCookie] = useCookies(['state']);
   const [state, setState] = React.useState<string>('');
 
   React.useEffect(() => {

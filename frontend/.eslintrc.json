@@ -16,16 +16,8 @@
   "rules": {
     "react/prop-types": "off",
     "unused-imports/no-unused-imports": "warn",
+    "no-unused-vars": "warn",
     "react-hooks/exhaustive-deps": "off",
-    "react/react-in-jsx-scope": "off",
-    "@typescript-eslint/no-unused-vars": [
-      "warn",
-      {
-        "argsIgnorePattern": "^_",
-        "varsIgnorePattern": "^_",
-        "caughtErrorsIgnorePattern": "^_",
-        "destructuredArrayIgnorePattern": "^_"
-      }
-    ]
+    "react/react-in-jsx-scope": "off"
   }
 }
