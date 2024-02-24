@@ -35,3 +35,13 @@ resource "aws_db_parameter_group" "readerslounge" {
     value = "Asia/Tokyo"
   }
 }
+
+resource "aws_db_parameter_group" "readerslounge2" {
+  name   = "readerslounge-aws-db-parameter-group2"
+  family = "postgres15"
+
+  parameter {
+    name  = "rds.force_ssl"
+    value = "0"
+  }
+}
