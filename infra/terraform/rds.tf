@@ -3,7 +3,7 @@
 #########
 resource "aws_db_instance" "readerslounge" {
   db_name                 = var.DB_NAME
-  allocated_storage       = 10
+  allocated_storage       = 20
   instance_class          = "db.t3.micro"
   engine                  = "postgres"
   engine_version          = "15.3"
@@ -12,7 +12,7 @@ resource "aws_db_instance" "readerslounge" {
   password                = var.DB_PASSWORD
   backup_retention_period = 7
   copy_tags_to_snapshot   = true
-  max_allocated_storage   = 50
+  max_allocated_storage   = 200
   skip_final_snapshot     = true
   vpc_security_group_ids  = [aws_security_group.rds.id]
   db_subnet_group_name    = aws_db_subnet_group.rds.name
