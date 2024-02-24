@@ -123,7 +123,7 @@ resource "aws_ecs_task_definition" "api" {
         },
         {
           name  = "PGHOST",
-          value = aws_db_instance.readerslounge.endpoint
+          value = aws_db_instance.readerslounge.address
         },
         {
           name  = "PGSSLMODE",
