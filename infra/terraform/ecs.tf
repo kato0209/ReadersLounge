@@ -293,7 +293,7 @@ resource "aws_ecs_task_definition" "goose_migration" {
 #  権限   #
 ##########
 resource "aws_iam_role" "ecs_task_execution" {
-  name = "ecs_task_execution"
+  name                = "ecs_task_execution"
   managed_policy_arns = [aws_iam_policy.ecs_task_execution.arn]
 
   assume_role_policy = jsonencode({
