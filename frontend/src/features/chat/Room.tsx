@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import { apiInstance } from '../../lib/api/apiInstance';
@@ -18,13 +18,13 @@ type RoomProps = {
 
 export default function Room(props: RoomProps) {
   const errorHandler = useErrorHandler();
-  const [input, setInput] = React.useState<string>('');
-  const [messages, setMessages] = React.useState<Message[]>([]);
-  const socketRef = React.useRef<ReconnectingWebSocket | null>(null);
-  const isConnectedRef = React.useRef<boolean>(false);
+  const [input, setInput] = useState<string>('');
+  const [messages, setMessages] = useState<Message[]>([]);
+  const socketRef = useRef<ReconnectingWebSocket | null>(null);
+  const isConnectedRef = useRef<boolean>(false);
   const { user } = useAuthUserContext();
 
-  React.useEffect(() => {
+  useEffect(() => {
     const connect = (): Promise<ReconnectingWebSocket> => {
       isConnectedRef.current = false;
       return new Promise((resolve, reject) => {
@@ -70,7 +70,7 @@ export default function Room(props: RoomProps) {
     };
   }, [props.roomID]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchMessages = async () => {
       try {
         const api = await apiInstance;
@@ -93,12 +93,12 @@ export default function Room(props: RoomProps) {
     fetchMessages();
   }, [props.roomID]);
 
-  const messagesEndRef = React.useRef<HTMLDivElement>(null);
-  React.useEffect(() => {
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'instant' });
   }, [messages]);
 
-  const handleSendMessage = React.useCallback(() => {
+  const handleSendMessage = useCallback(() => {
     if (input.length === 0) return;
     const inputMessage: SendMessageReqBody = {
       room_id: props.roomID,

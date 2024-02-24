@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useState, useEffect } from 'react';
 import Link from '@mui/material/Link';
 import { getGoogleAuthUrl } from '../../utils/getGoogleAuthUrl';
 import { FcGoogle } from 'react-icons/fc';
@@ -7,9 +7,9 @@ import { generateRandomState } from '../../utils/generateRandomState';
 
 export default function GoogleAuth() {
   const [, setCookie] = useCookies(['state']);
-  const [state, setState] = React.useState<string>('');
+  const [state, setState] = useState<string>('');
 
-  React.useEffect(() => {
+  useEffect(() => {
     const state = generateRandomState(10);
     setState(state);
 

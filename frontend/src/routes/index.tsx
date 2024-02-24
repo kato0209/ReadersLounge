@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useState, useEffect } from 'react';
 import { publicRoutes } from './public';
 import { useRoutes } from 'react-router-dom';
 import { protectedRoutes } from './protected';
@@ -14,7 +14,7 @@ import { useErrorHandler } from 'react-error-boundary';
 
 export const AppRoutes = () => {
   const { isAuthenticated, login } = useAuthUserContext();
-  const [isAuthChecked, setIsAuthChecked] = React.useState(false);
+  const [isAuthChecked, setIsAuthChecked] = useState(false);
   const location = useLocation();
   const errorHandler = useErrorHandler();
 
@@ -47,7 +47,7 @@ export const AppRoutes = () => {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     const isProtectedRoute = protectedRoutes.some((route) => {
       const matchPattern = new RegExp(
         `^${route.path.replace(/:\w+/g, '\\w+')}$`,

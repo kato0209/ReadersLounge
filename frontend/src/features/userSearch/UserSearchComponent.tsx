@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
@@ -24,8 +24,8 @@ export default function UserSearchComponent() {
     resolver: zodResolver(searchUserSchema),
   });
   const errorHandler = useErrorHandler();
-  const [users, setUsers] = React.useState<User[]>([]);
-  const [userNotFound, setUserNotFound] = React.useState<boolean>(false);
+  const [users, setUsers] = useState<User[]>([]);
+  const [userNotFound, setUserNotFound] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const onSubmit = async (data: FormData) => {

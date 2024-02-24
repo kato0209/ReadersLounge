@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useState, useEffect } from 'react';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import { PostList } from '../../components/PostList/PostList';
 import { useIsMobileContext } from '../../providers/mobile/isMobile';
@@ -10,7 +10,7 @@ import { Post } from '../../openapi';
 export default function Home() {
   const isMobile = useIsMobileContext();
   const errorHandler = useErrorHandler();
-  const [posts, setPosts] = React.useState<Post[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
 
   const fetchPosts = async () => {
     try {
@@ -35,7 +35,7 @@ export default function Home() {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchPosts();
   }, []);
 

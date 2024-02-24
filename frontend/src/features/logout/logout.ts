@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useCallback } from 'react';
 import { apiInstance } from '../../lib/api/apiInstance';
 import { useErrorHandler } from 'react-error-boundary';
 import { useNavigate } from 'react-router-dom';
@@ -9,7 +9,7 @@ export default function useLogout() {
   const errorHandler = useErrorHandler();
   const { logout } = useAuthUserContext();
 
-  return React.useCallback(() => {
+  return useCallback(() => {
     async function handleLogout() {
       try {
         logout();

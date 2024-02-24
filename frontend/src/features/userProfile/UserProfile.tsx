@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import UserProfileComponent from './UserProfileComponent';
 import { useIsMobileContext } from '../../providers/mobile/isMobile';

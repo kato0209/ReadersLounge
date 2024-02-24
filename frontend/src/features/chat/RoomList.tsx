@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useState, useEffect } from 'react';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import { apiInstance } from '../../lib/api/apiInstance';
@@ -14,13 +14,13 @@ import { useNavigate } from 'react-router-dom';
 
 export default function RoomList() {
   const errorHandler = useErrorHandler();
-  const [chatRooms, setChatRooms] = React.useState<ChatRoom[]>([]);
+  const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
   const { id } = useParams<{ id: string }>();
   const roomID = id ? parseInt(id, 10) : 0;
   const isMobile = useIsMobileContext();
   const navigate = useNavigate();
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchPosts = async () => {
       try {
         const api = await apiInstance;

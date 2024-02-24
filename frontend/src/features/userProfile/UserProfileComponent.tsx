@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useState, useEffect } from 'react';
 import { isValidUrl } from '../../utils/isValidUrl';
 import { useParams } from 'react-router-dom';
 import { apiInstance } from '../../lib/api/apiInstance';
@@ -28,21 +28,21 @@ export default function UserProfileMain() {
   const { id } = useParams<{ id: string }>();
   const idNumber = id ? parseInt(id, 10) : 0;
   const { user: loginUser } = useAuthUserContext();
-  const [user, setUser] = React.useState<User | null>(null);
-  const [posts, setPosts] = React.useState<Post[]>([]);
-  const [followerConnections, setfollowerConnections] = React.useState<
-    Connection[]
-  >([]);
-  const [followingConnections, setfollowingConnections] = React.useState<
+  const [user, setUser] = useState<User | null>(null);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [followerConnections, setfollowerConnections] = useState<Connection[]>(
+    [],
+  );
+  const [followingConnections, setfollowingConnections] = useState<
     Connection[]
   >([]);
   const [followingConnection, setFollowingConnection] =
-    React.useState<Connection | null>(null);
+    useState<Connection | null>(null);
   const [isFollowActionLoading, setIsFollowActionLoading] =
-    React.useState<boolean>(false);
+    useState<boolean>(false);
   const errorHandler = useErrorHandler();
   const navigate = useNavigate();
-  const [activeConnectionList, setActiveConnectionList] = React.useState<
+  const [activeConnectionList, setActiveConnectionList] = useState<
     string | null
   >(null);
 
@@ -139,14 +139,14 @@ export default function UserProfileMain() {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchUser();
     fetchPostsOfUser();
     fetchfollowerConnections();
     fetchfollowingConnections();
   }, [idNumber]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const connection = followerConnections.find(
       (connection) => connection.target_user_id === loginUser.user_id,
     );

@@ -10,7 +10,8 @@
     "fix:eslint": "eslint . --ext ts,tsx --fix",
     "lint:prettier": "prettier --check .",
     "fix:prettier": "prettier --write .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "update-react-imports": "echo yes | npx react-codemod update-react-imports src --force --parser tsx"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
