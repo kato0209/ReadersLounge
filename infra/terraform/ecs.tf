@@ -310,6 +310,34 @@ resource "aws_iam_role" "ecs_task_execution" {
     ]
   })
 }
+
+resource "aws_iam_policy" "ecs_task_execution" {
+  name = "ecs_task_execution_policy"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "ecr:GetAuthorizationToken",
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:GetRepositoryPolicy",
+          "ecr:DescribeRepositories",
+          "ecr:ListImages",
+          "ecr:DescribeImages",
+          "ecr:BatchGetImage",
+          "ecr:GetLifecyclePolicy",
+          "ecr:GetLifecyclePolicyPreview",
+          "ecr:ListTagsForResource",
+          "ecr:DescribeImageScanFindings"
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      },
+    ]
+  })
+}
+
 resource "aws_iam_role" "ecs_task_role" {
   name                = "ecs_task_role"
   managed_policy_arns = [aws_iam_policy.ecs_task_role.arn]
@@ -330,7 +358,7 @@ resource "aws_iam_role" "ecs_task_role" {
 }
 
 resource "aws_iam_policy" "ecs_task_role" {
-  name = "ecs_iam_role_policy"
+  name = "ecs_task_role_policy"
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
