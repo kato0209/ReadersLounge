@@ -265,11 +265,11 @@ resource "aws_ecs_task_definition" "goose_migration" {
       environment = [
         {
           name  = "GOOSE_DRIVER",
-          value = "GOOSE_DRIVER:-postgres"
+          value = "postgres"
         },
         {
           name  = "GOOSE_DBSTRING",
-          value = "GOOSE_DBSTRING:-host=${aws_db_instance.readerslounge.address} user=${var.PGUSER} dbname=${var.PGDATABASE} password=${var.PGPASSWORD}"
+          value = "host=${aws_db_instance.readerslounge.address} user=${var.PGUSER} dbname=${var.PGDATABASE} password=${var.PGPASSWORD}"
         }
       ]
 
