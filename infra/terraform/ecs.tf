@@ -269,7 +269,7 @@ resource "aws_ecs_task_definition" "goose_migration" {
         },
         {
           name  = "GOOSE_DBSTRING",
-          value = "GOOSE_DBSTRING:-host=${aws_db_instance.readerslounge.endpoint} user=${var.PGUSER} dbname=${var.PGDATABASE} password=${var.PGPASSWORD}"
+          value = "GOOSE_DBSTRING:-host=${aws_db_instance.readerslounge.address} user=${var.PGUSER} dbname=${var.PGDATABASE} password=${var.PGPASSWORD}"
         }
       ]
 
