@@ -1,6 +1,6 @@
-
 export function generateRandomState(length: number): string {
-  const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  const letters =
+    'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let result = '';
 
   for (let i = 0; i < length; i++) {

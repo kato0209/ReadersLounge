@@ -23,11 +23,13 @@ const Transition = React.forwardRef(function Transition(
 
 type PostFormData = z.infer<typeof PostSchema>;
 
-type BookSearchDialogProps  = {
+type BookSearchDialogProps = {
   formData?: PostFormData;
 };
 
-export const BookSearchDialog: React.FC<BookSearchDialogProps> = ({ formData }) => {
+export const BookSearchDialog: React.FC<BookSearchDialogProps> = ({
+  formData,
+}) => {
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -40,14 +42,14 @@ export const BookSearchDialog: React.FC<BookSearchDialogProps> = ({ formData }) 
 
   return (
     <React.Fragment>
-      <Button 
-        sx={{ 
-            borderRadius: '100px', 
-            backgroundColor: '#4d4d4d',
-            color: '#fff',
-            '&:hover': {
-              backgroundColor: '#808080',
-            },
+      <Button
+        sx={{
+          borderRadius: '100px',
+          backgroundColor: '#4d4d4d',
+          color: '#fff',
+          '&:hover': {
+            backgroundColor: '#808080',
+          },
         }}
         onClick={handleClickOpen}
       >
@@ -59,9 +61,9 @@ export const BookSearchDialog: React.FC<BookSearchDialogProps> = ({ formData }) 
         onClose={handleClose}
         TransitionComponent={Transition}
         sx={{
-            '& .MuiDialog-paper': {
-                backgroundColor: '#EFEBE5',
-            }
+          '& .MuiDialog-paper': {
+            backgroundColor: '#EFEBE5',
+          },
         }}
       >
         <AppBar sx={{ position: 'relative', backgroundColor: '#FF7E73' }}>
@@ -75,12 +77,12 @@ export const BookSearchDialog: React.FC<BookSearchDialogProps> = ({ formData }) 
               <CloseIcon />
             </IconButton>
             <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-                本を選択してください
+              本を選択してください
             </Typography>
           </Toolbar>
         </AppBar>
-        <SearchBook formData={formData}/>
+        <SearchBook formData={formData} />
       </Dialog>
     </React.Fragment>
   );
-}
+};

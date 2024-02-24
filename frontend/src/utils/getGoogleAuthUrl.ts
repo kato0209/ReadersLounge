@@ -1,26 +1,24 @@
-
 export const getGoogleAuthUrl = (state: string) => {
-    const rootUrl = `https://accounts.google.com/o/oauth2/v2/auth`;
+  const rootUrl = `https://accounts.google.com/o/oauth2/v2/auth`;
 
-    const apiUrl = import.meta.env.VITE_API_URL as string;
-    const googleOauthRedirectPath = import.meta.env.VITE_GOOGLE_OAUTH_REDIRECT_PATH as string;
-    const redirectUri = `${apiUrl}${googleOauthRedirectPath}`;
-    const options = {
-      redirect_uri: redirectUri,
-      client_id: import.meta.env.VITE_GOOGLE_OAUTH_CLIENT_ID as string,
-      access_type: 'offline',
-      response_type: 'code',
-      prompt: 'consent',
-      scope: [
-        import.meta.env.VITE_GOOGLE_OAUTH_USER_INFO_EMAIL_URL as string,
-        import.meta.env.VITE_GOOGLE_OAUTH_USER_INFO_PROFILE_URL as string,
-      ].join(' '),
-      state: state,
-    };
-  
-    const qs = new URLSearchParams(options);
-  
-    return `${rootUrl}?${qs.toString()}`;
+  const apiUrl = import.meta.env.VITE_API_URL as string;
+  const googleOauthRedirectPath = import.meta.env
+    .VITE_GOOGLE_OAUTH_REDIRECT_PATH as string;
+  const redirectUri = `${apiUrl}${googleOauthRedirectPath}`;
+  const options = {
+    redirect_uri: redirectUri,
+    client_id: import.meta.env.VITE_GOOGLE_OAUTH_CLIENT_ID as string,
+    access_type: 'offline',
+    response_type: 'code',
+    prompt: 'consent',
+    scope: [
+      import.meta.env.VITE_GOOGLE_OAUTH_USER_INFO_EMAIL_URL as string,
+      import.meta.env.VITE_GOOGLE_OAUTH_USER_INFO_PROFILE_URL as string,
+    ].join(' '),
+    state: state,
+  };
+
+  const qs = new URLSearchParams(options);
+
+  return `${rootUrl}?${qs.toString()}`;
 };
-  
-  

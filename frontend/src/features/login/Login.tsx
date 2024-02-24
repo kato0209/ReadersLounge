@@ -21,107 +21,122 @@ import GoogleAuth from '../../components/OAuth/GoogleAuth';
 
 const LoginSchema = z.object({
   email: z.string().nonempty('メールアドレスは必須です'),
-  password: z.string().nonempty('パスワードは必須です')
+  password: z.string().nonempty('パスワードは必須です'),
 });
 
 type FormData = z.infer<typeof LoginSchema>;
 
 export default function Login() {
-const { register, handleSubmit, setError, formState: { errors } } = useForm<FormData>({
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors },
+  } = useForm<FormData>({
     resolver: zodResolver(LoginSchema),
-});
+  });
 
-const navigate = useNavigate();
-const errorHandler = useErrorHandler();
-const { login } = useAuthUserContext();
+  const navigate = useNavigate();
+  const errorHandler = useErrorHandler();
+  const { login } = useAuthUserContext();
 
-const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: FormData) => {
+    const reqLoginBody: ReqLoginBody = {
+      identifier: data.email,
+      credential: data.password,
+    };
 
-  const reqLoginBody: ReqLoginBody = {
-    identifier: data.email,
-    credential: data.password,
+    try {
+      const api = await apiInstance;
+      const res = await api.login(reqLoginBody);
+      const user: User = {
+        user_id: res.data.user_id,
+        name: res.data.name,
+        profile_image: res.data.profile_image,
+      };
+      login(user);
+      navigate('/');
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        if (error.response && error.response.status === 500) {
+          setError('password', {
+            type: 'manual',
+            message: 'メールアドレスまたはパスワードが間違っています',
+          });
+        } else {
+          errorHandler(error);
+        }
+      } else {
+        errorHandler(error);
+      }
+    }
   };
 
-  try {
-    const api = await apiInstance;
-    const res = await api.login(reqLoginBody);
-    const user: User = {
-      user_id: res.data.user_id,
-      name: res.data.name,
-      profile_image: res.data.profile_image,
-    }
-    login(user);
-    navigate('/');
-  } catch (error: unknown) {
-    if (error instanceof AxiosError) {
-      if (error.response && error.response.status === 500) {
-          setError('password', {
-              type: 'manual',
-              message: 'メールアドレスまたはパスワードが間違っています',
-          });
-      } else {
-          errorHandler(error);
-      }
-    } else {
-        errorHandler(error);
-    }
-  }
-  
-
-};
-
   return (
-      <Container component="main" maxWidth="xs">
+    <Container component="main" maxWidth="xs">
+      <Box
+        sx={{
+          marginTop: '8rem',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <PortalLogo />
+        <Typography component="h1" variant="h5" sx={{ mt: 1 }}>
+          Login
+        </Typography>
         <Box
-          sx={{
-            marginTop: '8rem',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
+          component="form"
+          onSubmit={handleSubmit(onSubmit)}
+          noValidate
+          sx={{ mt: 1 }}
         >
-          <PortalLogo />
-          <Typography component="h1" variant="h5" sx={{ mt: 1 }}>
-            Login
-          </Typography>
-          <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ mt: 1 }}>
-            <TextField
-              {...register("email")}
-              required
-              fullWidth
-              id="email"
-              label="メールアドレス"
-              name="email"
-              autoComplete="email"
-              autoFocus
-            />
-            {errors.email && <span style={{ color: 'red' }}>{errors.email.message}</span>}
-            <TextField
-              {...register("password")}
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="パスワード"
-              type="password"
-              id="password"
-              autoComplete="current-password"
-            />
-            {errors.password && <span style={{ color: 'red' }}>{errors.password.message}</span>}
-            <SubmitButton content="LOGIN" />
-            <Grid container justifyContent="flex-end">
-                <Grid item>
-                    <Link href="/signup" variant="body2">
-                        アカウント作成はこちら
-                    </Link>
-                </Grid>
+          <TextField
+            {...register('email')}
+            required
+            fullWidth
+            id="email"
+            label="メールアドレス"
+            name="email"
+            autoComplete="email"
+            autoFocus
+          />
+          {errors.email && (
+            <span style={{ color: 'red' }}>{errors.email.message}</span>
+          )}
+          <TextField
+            {...register('password')}
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="パスワード"
+            type="password"
+            id="password"
+            autoComplete="current-password"
+          />
+          {errors.password && (
+            <span style={{ color: 'red' }}>{errors.password.message}</span>
+          )}
+          <SubmitButton content="LOGIN" />
+          <Grid container justifyContent="flex-end">
+            <Grid item>
+              <Link href="/signup" variant="body2">
+                アカウント作成はこちら
+              </Link>
             </Grid>
-            <Typography component="h1" variant="h5" sx={{ mt: 2, mb: 1, textAlign: 'center' }}>
-                Login with another provider
-            </Typography>
-            <GoogleAuth />
-          </Box>
+          </Grid>
+          <Typography
+            component="h1"
+            variant="h5"
+            sx={{ mt: 2, mb: 1, textAlign: 'center' }}
+          >
+            Login with another provider
+          </Typography>
+          <GoogleAuth />
         </Box>
-      </Container>
+      </Box>
+    </Container>
   );
 }

@@ -5,21 +5,21 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthUserContext } from '../../lib/auth/auth';
 
 export default function useLogout() {
-    const navigate = useNavigate();
-    const errorHandler = useErrorHandler();
-    const { logout } = useAuthUserContext();
-  
-    return React.useCallback(() => {
-      async function handleLogout() {
-        try {
-          logout();
-          const api = await apiInstance;
-          await api.logout();
-          navigate('/login');
-        } catch (error: unknown) {
-          errorHandler(error);
-        }
+  const navigate = useNavigate();
+  const errorHandler = useErrorHandler();
+  const { logout } = useAuthUserContext();
+
+  return React.useCallback(() => {
+    async function handleLogout() {
+      try {
+        logout();
+        const api = await apiInstance;
+        await api.logout();
+        navigate('/login');
+      } catch (error: unknown) {
+        errorHandler(error);
       }
-        handleLogout();
-    }, []);
-};
+    }
+    handleLogout();
+  }, []);
+}

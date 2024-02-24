@@ -36,7 +36,9 @@ const Textarea = styled(BaseTextareaAutosize)(
   color: ${theme.palette.mode === 'dark' ? grey[300] : grey[900]};
   background: #EFEBE5;
   border: 1px solid ${grey[500]};
-  box-shadow: 0px 2px 2px ${theme.palette.mode === 'dark' ? grey[900] : grey[50]};
+  box-shadow: 0px 2px 2px ${
+    theme.palette.mode === 'dark' ? grey[900] : grey[50]
+  };
 
   &:hover {
     border-color: ${blue[400]};
@@ -45,7 +47,9 @@ const Textarea = styled(BaseTextareaAutosize)(
   &:focus {
     outline: 0;
     border-color: ${blue[400]};
-    box-shadow: 0 0 0 3px ${theme.palette.mode === 'dark' ? blue[600] : blue[200]};
+    box-shadow: 0 0 0 3px ${
+      theme.palette.mode === 'dark' ? blue[600] : blue[200]
+    };
   }
 
   // firefox
@@ -62,8 +66,17 @@ interface PostTextareaProps {
 
 const PostTextarea = React.forwardRef<HTMLTextAreaElement, PostTextareaProps>(
   ({ value, onChange }, ref) => {
-  return <Textarea ref={ref} onChange={onChange} value={value} maxLength={255} placeholder="Post your thoughts!" />;
-});
+    return (
+      <Textarea
+        ref={ref}
+        onChange={onChange}
+        value={value}
+        maxLength={255}
+        placeholder="Post your thoughts!"
+      />
+    );
+  },
+);
 
 PostTextarea.displayName = 'PostTextarea';
 

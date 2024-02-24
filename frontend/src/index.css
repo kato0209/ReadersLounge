@@ -2,7 +2,7 @@
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  background-color: #EFEBE5;
+  background-color: #efebe5;
 
   color-scheme: light dark;
   color: #213547;
@@ -54,7 +54,7 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #FF7E73;
+  background-color: #ff7e73;
   cursor: pointer;
   transition: border-color 0.25s;
 }
