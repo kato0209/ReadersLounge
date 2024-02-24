@@ -34,11 +34,6 @@ resource "aws_db_parameter_group" "readerslounge" {
     name  = "timezone"
     value = "Asia/Tokyo"
   }
-}
-
-resource "aws_db_parameter_group" "readerslounge2" {
-  name   = "readerslounge-aws-db-parameter-group2"
-  family = "postgres15"
 
   parameter {
     name  = "rds.force_ssl"
