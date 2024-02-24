@@ -13,7 +13,7 @@ resource "aws_ecs_task_definition" "front" {
   container_definitions = jsonencode([
     {
       name      = "front-container"
-      image     = "620958051842.dkr.ecr.ap-northeast-1.amazonaws.com/front:latest"
+      image     = "620958051842.dkr.ecr.ap-northeast-1.amazonaws.com/readerslounge-front:latest"
       essential = true
       logConfiguration = {
         logDriver = "awslogs"
@@ -99,7 +99,7 @@ resource "aws_ecs_task_definition" "api" {
   container_definitions = jsonencode([
     {
       name      = "api-container"
-      image     = "620958051842.dkr.ecr.ap-northeast-1.amazonaws.com/api:latest"
+      image     = "620958051842.dkr.ecr.ap-northeast-1.amazonaws.com/readerslounge-api:latest"
       essential = true
       logConfiguration = {
         logDriver = "awslogs"
