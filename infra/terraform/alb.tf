@@ -34,7 +34,7 @@ resource "aws_lb_target_group" "front" {
 
   health_check {
     enabled             = true
-    path                = "/signup"
+    path                = "/"
     healthy_threshold   = 2
     unhealthy_threshold = 2
     timeout             = 120
