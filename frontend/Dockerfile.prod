@@ -1,0 +1,15 @@
+#release
+FROM node:19.8.1-buster-slim AS release
+RUN apt-get update && apt-get install -y openjdk-11-jre-headless && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /readers-lounge/frontend
+COPY package*.json ./
+RUN npm install
+COPY . .
+EXPOSE 80
+RUN npm run build
+
+FROM nginx:1.15-alpine
+
+COPY --from=release /readers-lounge/frontend/dist /usr/share/nginx/html
+CMD ["nginx", "-g", "daemon off;"]
