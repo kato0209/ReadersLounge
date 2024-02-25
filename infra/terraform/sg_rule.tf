@@ -76,33 +76,33 @@ resource "aws_security_group_rule" "ecs_front1" {
   security_group_id = aws_security_group.ecs_front.id
 }
 resource "aws_security_group_rule" "ecs_front2" {
-  description       = "readerslounge-ecs-front-sg-rule2"
-  type              = "ingress"
-  from_port         = 80
-  to_port           = 80
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.ecs_front.id
+  description              = "readerslounge-ecs-front-sg-rule2"
+  type                     = "ingress"
+  from_port                = 80
+  to_port                  = 80
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.alb.id
+  security_group_id        = aws_security_group.ecs_front.id
 }
 resource "aws_security_group_rule" "ecs_front3" {
-  description       = "readerslounge-ecs-front-sg-rule3"
-  type              = "ingress"
-  from_port         = 443
-  to_port           = 443
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.ecs_front.id
+  description              = "readerslounge-ecs-front-sg-rule3"
+  type                     = "ingress"
+  from_port                = 443
+  to_port                  = 443
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.alb.id
+  security_group_id        = aws_security_group.ecs_front.id
 }
 
 #__________  api  __________#
 resource "aws_security_group_rule" "ecs_api1" {
-  description       = "readerslounge-ecs-api-sg-rule1"
-  type              = "ingress"
-  from_port         = 8080
-  to_port           = 8080
-  protocol          = "tcp"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.ecs_api.id
+  description              = "readerslounge-ecs-api-sg-rule1"
+  type                     = "ingress"
+  from_port                = 8080
+  to_port                  = 8080
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.alb.id
+  security_group_id        = aws_security_group.ecs_api.id
 }
 resource "aws_security_group_rule" "ecs_api2" {
   description       = "readerslounge-ecs-api-sg-rule2"

@@ -6,6 +6,13 @@ info:
 servers:
   - url: "http://localhost:8080"
 paths:
+  /health:
+    get:
+      summary: Health Check
+      operationId: healthCheck
+      responses:
+        "200":
+          description: OK
   /csrftoken:
     get:
       security: []
@@ -22,7 +29,7 @@ paths:
     post:
       security:
         - X-CSRF-TOKEN: []
-      summary:  create new user
+      summary: create new user
       operationId: signup
       requestBody:
         content:
@@ -60,8 +67,8 @@ paths:
     get:
       security:
         - google_auth:
-          - email
-          - profile
+            - email
+            - profile
         - state: []
       summary: Callback for Google OAuth
       operationId: google_oauth_callback
@@ -124,7 +131,7 @@ paths:
       responses:
         "204":
           description: OK
-                
+
   /user/{userId}:
     get:
       security:
@@ -146,7 +153,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
-    
+
   /posts:
     get:
       security:
@@ -178,7 +185,7 @@ paths:
       responses:
         "201":
           description: OK
-  
+
   /posts/{postId}:
     get:
       security:
@@ -199,7 +206,7 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: "#/components/schemas/Post"
+                $ref: "#/components/schemas/Post"
     delete:
       security:
         - X-CSRF-TOKEN: []
@@ -216,7 +223,7 @@ paths:
       responses:
         "204":
           description: OK, post deleted successfully
-  
+
   /posts/user/{userId}:
     get:
       security:
@@ -240,7 +247,7 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Post"
-          
+
   /books:
     get:
       security:
@@ -268,7 +275,7 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Book"
-  
+
   /books-genres:
     get:
       security:
@@ -305,7 +312,7 @@ paths:
         "101":
           description: Switching Protocols
         "401":
-          description: You don't have permission to access this room 
+          description: You don't have permission to access this room
       x-websocket-doc:
         messageTypes:
           - type: "req-message"
@@ -372,7 +379,7 @@ paths:
                 properties:
                   room_id:
                     type: integer
-              
+
   /messages:
     get:
       security:
@@ -396,7 +403,7 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Message"
-  
+
   /follows:
     post:
       security:
@@ -434,7 +441,7 @@ paths:
       responses:
         "204":
           description: OK, connection deleted successfully
-      
+
   /followings:
     get:
       security:
@@ -453,11 +460,11 @@ paths:
         "200":
           description: OK
           content:
-              application/json:
-                schema:
-                  type: array
-                  items:
-                    $ref: "#/components/schemas/Connection"
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Connection"
   /followers:
     get:
       security:
@@ -476,12 +483,12 @@ paths:
         "200":
           description: OK
           content:
-              application/json:
-                schema:
-                  type: array
-                  items:
-                    $ref: "#/components/schemas/Connection"
-  
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Connection"
+
   /post-likes:
     post:
       security:
@@ -507,7 +514,7 @@ paths:
                 required:
                   - post_like_id
 
-  /post-likes/post/{PostId}:  
+  /post-likes/post/{PostId}:
     delete:
       security:
         - X-CSRF-TOKEN: []
@@ -524,7 +531,7 @@ paths:
       responses:
         "204":
           description: OK, connection deleted successfully
-          
+
   /comment-likes:
     post:
       security:
@@ -550,7 +557,7 @@ paths:
                 required:
                   - comment_like_id
 
-  /comment-likes/comment/{CommentId}:  
+  /comment-likes/comment/{CommentId}:
     delete:
       security:
         - X-CSRF-TOKEN: []
@@ -567,7 +574,7 @@ paths:
       responses:
         "204":
           description: OK, connection deleted successfully
-  
+
   /liked-posts:
     get:
       security:
@@ -602,7 +609,7 @@ paths:
                 properties:
                   comment_id:
                     type: integer
-  
+
   /search-user:
     get:
       security:
@@ -626,7 +633,7 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/User"
-                  
+
   /comments:
     post:
       security:
@@ -646,7 +653,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Comment"
-  
+
   /comments/{commentId}:
     delete:
       security:
@@ -664,8 +671,7 @@ paths:
       responses:
         "204":
           description: OK, comment deleted successfully
-        
-  
+
   /comments/post/{postId}:
     get:
       security:
@@ -677,7 +683,7 @@ paths:
         - name: postId
           in: path
           required: true
-          description: identifier of the post to get comments 
+          description: identifier of the post to get comments
           schema:
             type: integer
       responses:
@@ -686,10 +692,10 @@ paths:
           content:
             application/json:
               schema:
-                  type: array
-                  items:
-                    $ref: "#/components/schemas/Comment"
-          
+                type: array
+                items:
+                  $ref: "#/components/schemas/Comment"
+
 components:
   securitySchemes:
     X-CSRF-TOKEN:
@@ -728,10 +734,10 @@ components:
           type: string
     ReqLoginBody:
       properties:
-          identifier:
-            type: string
-          credential:
-            type: string
+        identifier:
+          type: string
+        credential:
+          type: string
     User:
       type: object
       properties:
@@ -744,9 +750,9 @@ components:
         profile_text:
           type: string
       required:
-      - user_id
-      - name
-      - profile_image
+        - user_id
+        - name
+        - profile_image
     UpdateUserReqBody:
       properties:
         name:
@@ -778,12 +784,12 @@ components:
           items:
             $ref: "#/components/schemas/PostLike"
       required:
-      - post_id
-      - user
-      - content
-      - rating
-      - created_at
-      - book
+        - post_id
+        - user
+        - content
+        - rating
+        - created_at
+        - book
     ReqCreatePostBody:
       properties:
         content:
@@ -974,6 +980,3 @@ components:
       required:
         - post_id
         - content
-  
-    
-                  

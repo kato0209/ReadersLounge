@@ -30,3 +30,7 @@ func (s *Server) Csrftoken(ctx echo.Context) error {
 	csrfToken := openapi.ResCsrfToken{CsrfToken: &token}
 	return ctx.JSON(http.StatusOK, csrfToken)
 }
+
+func (s *Server) HealthCheck(ctx echo.Context) error {
+	return ctx.JSON(http.StatusOK, map[string]interface{}{"hello": "world"})
+}

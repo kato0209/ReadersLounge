@@ -58,7 +58,7 @@ resource "aws_lb_target_group" "api" {
   health_check {
     enabled             = true
     interval            = 60
-    path                = "/"
+    path                = "/health"
     port                = 8080
     protocol            = "HTTP"
     matcher             = 200
