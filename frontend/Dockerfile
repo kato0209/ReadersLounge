@@ -29,6 +29,9 @@ COPY package*.json ./
 RUN npm install
 COPY . .
 EXPOSE 80
-ENTRYPOINT [ "npm", "run", "build" ]
+RUN npm run build
 
-CMD ["npm", "run", "preview"]
+FROM nginx:1.15-alpine
+
+COPY --from=release /readers-lounge/frontend/dist /usr/share/nginx/html
+CMD ["nginx", "-g", "daemon off;"]
