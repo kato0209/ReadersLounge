@@ -1,5 +1,5 @@
 export const getGoogleAuthUrl = (state: string) => {
-  const rootUrl = `https://accounts.google.com/o/oauth2/v2/auth`;
+  const rootUrl = import.meta.env.VITE_GOOGLE_OAUTH_URL as string;
 
   const apiUrl = import.meta.env.VITE_API_URL as string;
   const googleOauthRedirectPath = import.meta.env

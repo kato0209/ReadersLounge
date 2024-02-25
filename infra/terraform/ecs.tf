@@ -29,36 +29,6 @@ resource "aws_ecs_task_definition" "front" {
           containerPort = 80
         }
       ]
-      environment = [
-        {
-          name  = "VITE_API_URL"
-          value = "https://readerslounge-server.com:8080"
-        },
-        {
-          name  = "VITE_GOOGLE_OAUTH_REDIRECT_PATH"
-          value = "/oauth/google/callback"
-        },
-        {
-          name  = "VITE_GOOGLE_OAUTH_USER_INFO_EMAIL_URL"
-          value = "https://www.googleapis.com/auth/userinfo.email"
-        },
-        {
-          name  = "VITE_GOOGLE_OAUTH_USER_INFO_PROFILE_URL"
-          value = "https://www.googleapis.com/auth/userinfo.profile"
-        },
-        {
-          name  = "VITE_WEBSOCKET_URL"
-          value = "wss://readerslounge-server.com:8080"
-        },
-        {
-          name  = "VITE_GOOGLE_OAUTH_CLIENT_ID"
-          value = var.VITE_GOOGLE_OAUTH_CLIENT_ID
-        },
-        {
-          name  = "VITE_GOOGLE_CLIENT_SECRET"
-          value = var.VITE_GOOGLE_CLIENT_SECRET
-        }
-      ]
     }
   ])
   execution_role_arn = aws_iam_role.ecs_task_execution.arn
