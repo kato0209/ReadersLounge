@@ -50,7 +50,7 @@ services:
   frontend:
     build:
       context: ./frontend
-      target: dev
+      dockerfile: "Dockerfile.dev"
     working_dir: "/readers-lounge/frontend"
     volumes:
       - ./frontend:/readers-lounge/frontend
