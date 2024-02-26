@@ -12,4 +12,6 @@ RUN npm run build
 FROM nginx:1.15-alpine
 
 COPY --from=release /readers-lounge/frontend/dist /usr/share/nginx/html
+COPY ../infra/frontend/nginx /etc/nginx/conf.d/
+
 CMD ["nginx", "-g", "daemon off;"]
