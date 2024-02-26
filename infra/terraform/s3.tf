@@ -7,6 +7,7 @@ resource "aws_s3_bucket" "images" {
   tags = {
     Name = "readerslounge-s3-bucket-for-images"
   }
+  force_destroy = true
 }
 
 resource "aws_s3_bucket_ownership_controls" "images" {
