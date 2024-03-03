@@ -1,3 +1,4 @@
+'use client';
 import * as React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import ErrorFallback from '../components/Error/ErrorFallback';
