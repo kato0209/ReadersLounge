@@ -2,10 +2,10 @@ import { DefaultApi } from '../../openapi/api';
 import { Configuration } from '../../openapi';
 import { ResCsrfToken } from '../../openapi/models';
 
-const BASE_API_URL = import.meta.env.VITE_API_URL as string;
+const BASE_API_URL = process.env.NEXT_PUBLIC_API_URL as string;
 
 if (!BASE_API_URL) {
-  throw new Error('Environment variable VITE_API_URL is not set.');
+  throw new Error('Environment variable NEXT_PUBLIC_API_URL is not set.');
 }
 
 const createApiInstance = async (): Promise<DefaultApi> => {
