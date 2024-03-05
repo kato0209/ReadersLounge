@@ -1,3 +1,4 @@
+'use client';
 import * as React from 'react';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
@@ -20,7 +21,7 @@ import UserAvatar from '../../components/Avatar/UserAvatar';
 import { useAuthUserContext } from '../../lib/auth/auth';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { CreatePostLikeReqBody, PostLike } from '../../openapi';
-import { useNavigate } from 'react-router-dom';
+import { redirect } from 'next/navigation';
 
 const PostListContainer = {
   display: 'flex',
@@ -49,7 +50,6 @@ export const PostList: React.FC<PostListProps> = ({ propPosts }) => {
   const [likedPostIDs, setLikedPostIDs] = React.useState<number[]>([]);
 
   const [posts, setPosts] = React.useState<Post[]>([]);
-  const navigate = useNavigate();
 
   const handleSettingClick = (
     event: React.MouseEvent<HTMLElement>,
@@ -162,7 +162,7 @@ export const PostList: React.FC<PostListProps> = ({ propPosts }) => {
   };
 
   const handlePostClick = async (postID: number) => {
-    navigate(`/post/${postID}`);
+    redirect(`/post/${postID}`);
   };
 
   return (

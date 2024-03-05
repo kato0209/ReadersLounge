@@ -1,3 +1,4 @@
+'use client';
 import * as React from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -7,7 +8,6 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import { useAuthUserContext } from '../../lib/auth/auth';
 import Avatar from '@mui/material/Avatar';
 import { isValidUrl } from '../../utils/isValidUrl';
 import Box from '@mui/material/Box';
@@ -23,6 +23,8 @@ import { Book } from '../../openapi';
 import ImportContactsIcon from '@mui/icons-material/ImportContacts';
 import { BookSearchDialog } from './BookSearchDialog';
 import { PostSchema } from '../../types/PostSchema';
+import { User } from '../../openapi';
+import { fetchUserData } from '../../lib/user/fetchUser';
 
 type FormData = z.infer<typeof PostSchema>;
 
@@ -38,8 +40,14 @@ export const CreatePost: React.FC<CreatePostProps> = ({
   formData,
 }) => {
   const [openCreatePostDialog, setOpenCreatePostDialog] = React.useState(false);
-  const { user } = useAuthUserContext();
   const [imagePreview, setImagePreview] = React.useState<string | null>(null);
+  const [user, setUser] = React.useState<User | null>(null);
+
+  React.useEffect(() => {
+    fetchUserData().then((data) => {
+      setUser(data);
+    });
+  }, []);
 
   const {
     register,
@@ -201,9 +209,9 @@ export const CreatePost: React.FC<CreatePostProps> = ({
             <Box sx={{ display: 'flex', alignItems: 'start', gap: 2 }}>
               <Avatar
                 src={
-                  isValidUrl(user.profile_image)
-                    ? user.profile_image
-                    : `data:image/png;base64,${user.profile_image}`
+                  isValidUrl(user?.profile_image)
+                    ? user?.profile_image
+                    : `data:image/png;base64,${user?.profile_image}`
                 }
               ></Avatar>
               <PostTextarea

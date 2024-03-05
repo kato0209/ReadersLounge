@@ -1,3 +1,4 @@
+'use client';
 import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -9,15 +10,16 @@ import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import { FaBookOpen } from 'react-icons/fa';
 import useLogout from '../../features/logout/logout';
-import { Link } from 'react-router-dom';
 import { CreatePost } from '../../features/home/CreatePost';
 import HomeIcon from '@mui/icons-material/Home';
 import MailIcon from '@mui/icons-material/Mail';
 import SearchIcon from '@mui/icons-material/Search';
-import { useAuthUserContext } from '../../lib/auth/auth';
 import { Avatar, Button } from '@mui/material';
 import { isValidUrl } from '../../utils/isValidUrl';
 import PersonSearchIcon from '@mui/icons-material/PersonSearch';
+import Link from 'next/link';
+import { User } from '../../openapi';
+import { fetchUserData } from '../../lib/user/fetchUser';
 
 export default function AppHeader() {
   const [profileAnchorEl, setProfileAnchorEl] =
@@ -25,7 +27,13 @@ export default function AppHeader() {
   const [MenuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(
     null,
   );
-  const { user } = useAuthUserContext();
+  const [user, setUser] = React.useState<User | null>(null);
+
+  React.useEffect(() => {
+    fetchUserData().then((data) => {
+      setUser(data);
+    });
+  }, []);
 
   const handleProfile = (event: React.MouseEvent<HTMLElement>) => {
     setProfileAnchorEl(event.currentTarget);
@@ -95,58 +103,79 @@ export default function AppHeader() {
               open={Boolean(MenuAnchorEl)}
               onClose={handleMenuClose}
             >
-              <MenuItem
-                component={Link}
-                to="/"
-                sx={{ display: 'flex', '&:hover': { color: 'black' } }}
-              >
-                <HomeIcon sx={{ marginRight: '0.5rem' }} />
-                Home
-              </MenuItem>
-              <MenuItem
-                component={Link}
-                to="/user-search"
-                sx={{ display: 'flex', '&:hover': { color: 'black' } }}
-              >
-                <PersonSearchIcon sx={{ marginRight: '0.5rem' }} />
-                ユーザー検索
-              </MenuItem>
-              <MenuItem
-                component={Link}
-                to="/chat-room-list"
-                sx={{ display: 'flex', '&:hover': { color: 'black' } }}
-              >
-                <MailIcon sx={{ marginRight: '0.5rem' }} />
-                Messages
-              </MenuItem>
-              <MenuItem
-                component={Link}
-                to="/search-book"
-                sx={{ display: 'flex', '&:hover': { color: 'black' } }}
-              >
-                <SearchIcon sx={{ marginRight: '0.5rem' }} />
-                本を探す
-              </MenuItem>
+              <Link href="/" passHref>
+                <MenuItem
+                  component="a"
+                  sx={{
+                    display: 'flex',
+                    color: 'black',
+                    '&:hover': { color: 'black' },
+                  }}
+                >
+                  <HomeIcon sx={{ marginRight: '0.5rem' }} />
+                  Home
+                </MenuItem>
+              </Link>
+              <Link href="/user-search" passHref>
+                <MenuItem
+                  component="a"
+                  sx={{
+                    display: 'flex',
+                    color: 'black',
+                    '&:hover': { color: 'black' },
+                  }}
+                >
+                  <PersonSearchIcon sx={{ marginRight: '0.5rem' }} />
+                  ユーザー検索
+                </MenuItem>
+              </Link>
+              <Link href="/chat-room-list" passHref>
+                <MenuItem
+                  component="a"
+                  sx={{
+                    display: 'flex',
+                    color: 'black',
+                    '&:hover': { color: 'black' },
+                  }}
+                >
+                  <MailIcon sx={{ marginRight: '0.5rem' }} />
+                  Messages
+                </MenuItem>
+              </Link>
+              <Link href="/search-book" passHref>
+                <MenuItem
+                  component="a"
+                  sx={{
+                    display: 'flex',
+                    color: 'black',
+                    '&:hover': { color: 'black' },
+                  }}
+                >
+                  <SearchIcon sx={{ marginRight: '0.5rem' }} />
+                  本を探す
+                </MenuItem>
+              </Link>
               <CreatePost displayString="Post" />
             </Menu>
           </>
-          <Box
-            component={Link}
-            to="/"
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              color: 'inherit',
-              '&:hover': {
-                color: '#f0f0f0',
-              },
-            }}
-          >
-            <FaBookOpen />
-            <Typography variant="h6" component="div" sx={{ ml: 0.5 }}>
-              ReadersLounge
-            </Typography>
-          </Box>
+          <Link href="/" passHref>
+            <Box
+              component="a"
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                color: 'white',
+                '&:hover': {
+                  color: '#f0f0f0',
+                },
+              }}
+            >
+              <FaBookOpen />
+              <Typography variant="h6" component="div" sx={{ ml: 0.5 }}>
+                ReadersLounge
+              </Typography>
+            </Box>
+          </Link>
           <Box style={{ flexGrow: 1 }}></Box>
           <>
             <Button
@@ -167,9 +196,9 @@ export default function AppHeader() {
                   },
                 }}
                 src={
-                  isValidUrl(user.profile_image)
-                    ? user.profile_image
-                    : `data:image/png;base64,${user.profile_image}`
+                  isValidUrl(user?.profile_image)
+                    ? user?.profile_image
+                    : `data:image/png;base64,${user?.profile_image}`
                 }
               />
             </Button>
@@ -188,13 +217,18 @@ export default function AppHeader() {
               open={Boolean(profileAnchorEl)}
               onClose={handleProfileClose}
             >
-              <MenuItem
-                component={Link}
-                to={`/user-profile/${user.user_id}`}
-                sx={{ display: 'flex', '&:hover': { color: 'black' } }}
-              >
-                プロフィール
-              </MenuItem>
+              <Link href={`/user-profile/${user?.user_id}`} passHref>
+                <MenuItem
+                  component="a"
+                  sx={{
+                    display: 'flex',
+                    color: 'black',
+                    '&:hover': { color: 'black' },
+                  }}
+                >
+                  プロフィール
+                </MenuItem>
+              </Link>
               <MenuItem onClick={handleLogout}>ログアウト</MenuItem>
             </Menu>
           </>

@@ -5,19 +5,17 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import SubmitButton from '../../components/Button/SubmitButton';
+import SubmitButton from '../../../components/Button/SubmitButton';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useErrorHandler } from 'react-error-boundary';
-import { ReqLoginBody } from '../../openapi/models';
-import { apiInstance } from '../../lib/api/apiInstance';
+import { ReqLoginBody } from '../../../openapi/models';
+import { apiInstance } from '../../../lib/api/apiInstance';
 import { AxiosError } from 'axios';
-import { useAuthUserContext } from '../../lib/auth/auth';
-import { User } from '../../openapi';
-import { useNavigate } from 'react-router-dom';
-import PortalLogo from '../../components/Logo/PortalLogo';
-import GoogleAuth from '../../components/OAuth/GoogleAuth';
+import { redirect } from 'next/navigation';
+import PortalLogo from '../../../components/Logo/PortalLogo';
+import GoogleAuth from '../../../components/OAuth/GoogleAuth';
 
 const LoginSchema = z.object({
   email: z.string().nonempty('メールアドレスは必須です'),
@@ -36,9 +34,7 @@ export default function LoginPage() {
     resolver: zodResolver(LoginSchema),
   });
 
-  const navigate = useNavigate();
   const errorHandler = useErrorHandler();
-  const { login } = useAuthUserContext();
 
   const onSubmit = async (data: FormData) => {
     const reqLoginBody: ReqLoginBody = {
@@ -48,14 +44,8 @@ export default function LoginPage() {
 
     try {
       const api = await apiInstance;
-      const res = await api.login(reqLoginBody);
-      const user: User = {
-        user_id: res.data.user_id,
-        name: res.data.name,
-        profile_image: res.data.profile_image,
-      };
-      login(user);
-      navigate('/');
+      await api.login(reqLoginBody);
+      redirect('/');
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         if (error.response && error.response.status === 500) {
