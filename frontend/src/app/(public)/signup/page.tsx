@@ -5,16 +5,16 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { ReqSignupBody } from '../../openapi/models';
-import { apiInstance } from '../../lib/api/apiInstance';
+import { ReqSignupBody } from '../../../openapi/models';
+import { apiInstance } from '../../../lib/api/apiInstance';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AxiosError } from 'axios';
 import { useErrorHandler } from 'react-error-boundary';
-import SubmitButton from '../../components/Button/SubmitButton';
-import PortalLogo from '../../components/Logo/PortalLogo';
-import GoogleAuth from '../../components/OAuth/GoogleAuth';
+import SubmitButton from '../../../components/Button/SubmitButton';
+import PortalLogo from '../../../components/Logo/PortalLogo';
+import GoogleAuth from '../../../components/OAuth/GoogleAuth';
 import { redirect } from 'next/navigation';
 
 const SignupSchema = z

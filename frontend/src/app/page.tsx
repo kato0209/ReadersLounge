@@ -1,10 +1,9 @@
 import { authenticate } from '../lib/auth/authenticate';
 import { redirect } from 'next/navigation';
-import Home from '../features/home/Home';
 
-export default function HomePage() {
+export default function RootPage() {
   if (!authenticate()) {
     redirect('/login');
   }
-  return <Home />;
+  redirect('/home');
 }

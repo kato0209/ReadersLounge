@@ -27,7 +27,7 @@ export default function Sidebar() {
       anchor="left"
     >
       <List sx={{ width: '60%' }}>
-        <Link href="/" passHref>
+        <Link href="/home" passHref>
           <ListItem
             button
             component="a"
@@ -98,8 +98,8 @@ export default function Sidebar() {
             </ListItemIcon>
             <ListItemText primary="Book Search" />
           </ListItem>
-          <CreatePost displayString="Post" />
         </Link>
+        <CreatePost displayString="Post" />
       </List>
     </Drawer>
   );

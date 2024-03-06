@@ -7,7 +7,7 @@ export const getGoogleAuthUrl = (state: string) => {
   const redirectUri = `${apiUrl}${googleOauthRedirectPath}`;
   const options = {
     redirect_uri: redirectUri,
-    client_id: process.env.GOOGLE_OAUTH_CLIENT_ID as string,
+    client_id: process.env.NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_ID as string,
     access_type: 'offline',
     response_type: 'code',
     prompt: 'consent',

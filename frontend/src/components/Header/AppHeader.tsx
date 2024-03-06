@@ -103,7 +103,7 @@ export default function AppHeader() {
               open={Boolean(MenuAnchorEl)}
               onClose={handleMenuClose}
             >
-              <Link href="/" passHref>
+              <Link href="/home" passHref>
                 <MenuItem
                   component="a"
                   sx={{
@@ -158,7 +158,7 @@ export default function AppHeader() {
               <CreatePost displayString="Post" />
             </Menu>
           </>
-          <Link href="/" passHref>
+          <Link href="/home" passHref>
             <Box
               component="a"
               sx={{
