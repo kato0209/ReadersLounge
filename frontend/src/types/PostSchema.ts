@@ -1,3 +1,4 @@
+'use client';
 import { z } from 'zod';
 
 const IMAGE_TYPES = ['image/jpeg', 'image/png'];

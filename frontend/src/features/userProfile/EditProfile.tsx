@@ -1,3 +1,4 @@
+'use client';
 import * as React from 'react';
 import { Box, Typography, Button, Avatar, Stack } from '@mui/material';
 import Dialog from '@mui/material/Dialog';

@@ -20,9 +20,9 @@ import { Menu, MenuItem } from '@mui/material';
 import UserAvatar from '../../components/Avatar/UserAvatar';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { CreatePostLikeReqBody, PostLike } from '../../openapi';
-import { redirect } from 'next/navigation';
 import { User } from '../../openapi';
 import { fetchUserData } from '../../lib/user/fetchUser';
+import { useRouter } from 'next/navigation';
 
 const PostListContainer = {
   display: 'flex',
@@ -51,6 +51,7 @@ export const PostList: React.FC<PostListProps> = ({ propPosts }) => {
 
   const [posts, setPosts] = React.useState<Post[]>([]);
   const [user, setUser] = React.useState<User | null>(null);
+  const router = useRouter();
 
   React.useEffect(() => {
     fetchUserData().then((data) => {
@@ -169,7 +170,7 @@ export const PostList: React.FC<PostListProps> = ({ propPosts }) => {
   };
 
   const handlePostClick = async (postID: number) => {
-    redirect(`/post/${postID}`);
+    router.push(`/post/${postID}`);
   };
 
   return (

@@ -1,3 +1,4 @@
+'use client';
 import * as React from 'react';
 import { Box } from '@mui/material';
 import Card from '@mui/material/Card';
@@ -22,16 +23,16 @@ import {
 import { isValidUrl } from '../../utils/isValidUrl';
 import Link from '@mui/material/Link';
 import { Menu, MenuItem } from '@mui/material';
-import { useAuthUserContext } from '../../lib/auth/auth';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { CreatePostLikeReqBody, PostLike, CommentLike } from '../../openapi';
-import { useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { useParams } from 'react-router-dom';
+import { useParams, useRouter } from 'next/navigation';
+import { User } from '../../openapi';
+import { fetchUserData } from '../../lib/user/fetchUser';
 
 const CommentSchema = z.object({
   content: z.string().nonempty('投稿内容は必須です').max(255, {
@@ -58,14 +59,20 @@ export function CommentComponent() {
     React.useState<null | HTMLElement>(null);
   const [selectedPostID, setSelectedPostID] = React.useState<number>(0);
   const [selectedCommentID, setSelectedCommentID] = React.useState<number>(0);
-  const { user } = useAuthUserContext();
   const [likedPostIDs, setLikedPostIDs] = React.useState<number[]>([]);
   const [likedCommentIDs, setLikedCommentIDs] = React.useState<number[]>([]);
-  const navigation = useNavigate();
+  const router = useRouter();
   const { id } = useParams<{ id: string }>();
   const idNumber = id ? parseInt(id, 10) : 0;
   const [post, setPost] = React.useState<Post>();
   const [comments, setComments] = React.useState<Comment[]>([]);
+  const [user, setUser] = React.useState<User | null>(null);
+
+  React.useEffect(() => {
+    fetchUserData().then((data) => {
+      setUser(data);
+    });
+  }, []);
 
   React.useEffect(() => {
     fetchPost();
@@ -177,7 +184,7 @@ export function CommentComponent() {
       try {
         const api = await apiInstance;
         await api.deletePost(selectedPostID);
-        navigation(-1);
+        router.back();
       } catch (error: unknown) {
         errorHandler(error);
       }
@@ -214,7 +221,7 @@ export function CommentComponent() {
       if (res.status === 201 && res.data) {
         const newLike: PostLike = {
           post_like_id: res.data.post_like_id,
-          user_id: user.user_id,
+          user_id: user?.user_id as number,
         };
         setLikedPostIDs((currentLikedPostIDs) => [
           ...currentLikedPostIDs,
@@ -243,7 +250,7 @@ export function CommentComponent() {
       if (res.status === 201 && res.data) {
         const newLike: CommentLike = {
           comment_like_id: res.data.comment_like_id,
-          user_id: user.user_id,
+          user_id: user?.user_id as number,
         };
         setLikedCommentIDs((currentLikedCommentIDs) => [
           ...currentLikedCommentIDs,
@@ -278,7 +285,7 @@ export function CommentComponent() {
         if (post) {
           if (post.likes) {
             post.likes = post.likes.filter(
-              (like) => like.user_id !== user.user_id,
+              (like) => like.user_id !== user?.user_id,
             );
           }
         }
@@ -302,7 +309,7 @@ export function CommentComponent() {
               ? {
                   ...comment,
                   likes: comment.likes?.filter(
-                    (like) => like.user_id !== user.user_id,
+                    (like) => like.user_id !== user?.user_id,
                   ),
                 }
               : comment,
@@ -369,7 +376,7 @@ export function CommentComponent() {
               }
               action={
                 <>
-                  {post.user.user_id === user.user_id && (
+                  {post.user.user_id === user?.user_id && (
                     <>
                       <IconButton
                         onClick={(e) => handlePostSettingClick(e, post.post_id)}
@@ -621,7 +628,7 @@ export function CommentComponent() {
                       {comment.content}
                     </Typography>
                   </Box>
-                  {comment.user.user_id === user.user_id && (
+                  {comment.user.user_id === user?.user_id && (
                     <Box
                       sx={{
                         marginLeft: 'auto',
