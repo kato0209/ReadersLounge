@@ -49,3 +49,6 @@ https://readerslounge-server.com/  <br>
 ### チャット機能
 ![chat](https://github.com/kato0209/ReadersLounge/assets/89386373/a501fdf7-8d0e-435e-95da-39b700d3b857)
 
+# ER図
+![ReadersLounge_ERDiagram](https://github.com/kato0209/ReadersLounge/assets/89386373/0b58ccdf-7c02-4d9a-b7ca-17f1c136a7c5)
+
