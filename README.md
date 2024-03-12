@@ -20,7 +20,7 @@ https://readerslounge-server.com/  <br>
 - GitHubActions
 
 # AWS構成図
-![GitHub_BookSNS](https://github.com/kato0209/BookSNS/assets/89386373/12cbafff-a767-43d7-9302-f56ecad15ed8)
+![ReadersLounge_AWS drawio (4)](https://github.com/kato0209/ReadersLounge/assets/89386373/3e4f8fe7-b403-4de6-ab89-84029a453a06)
 
 # 機能一覧
 - ユーザー登録、ログイン機能(+GoogleOAuth)
