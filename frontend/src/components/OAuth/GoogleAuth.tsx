@@ -1,25 +1,16 @@
-'use client';
-import { useState, useEffect } from 'react';
 import Link from '@mui/material/Link';
 import { getGoogleAuthUrl } from '../../utils/getGoogleAuthUrl';
 import { FcGoogle } from 'react-icons/fc';
-import { useCookies } from 'react-cookie';
 import { generateRandomState } from '../../utils/generateRandomState';
+import { apiInstance } from '../../lib/api/apiInstance';
 
 export default function GoogleAuth() {
-  const [, setCookie] = useCookies(['state']);
-  const [state, setState] = useState<string>('');
-
-  useEffect(() => {
-    const state = generateRandomState(10);
-    setState(state);
-
-    const now = new Date();
-    const oneDay = 24 * 60 * 60 * 1000;
-    const expires = new Date(now.getTime() + oneDay);
-    setCookie('state', state, { path: '/', expires: expires });
-  }, []);
-
+  async function setState(state: string) {
+    const api = await apiInstance;
+    await api.setState(state);
+  }
+  const state = generateRandomState(10);
+  setState(state);
   return (
     <Link
       href={getGoogleAuthUrl(state)}

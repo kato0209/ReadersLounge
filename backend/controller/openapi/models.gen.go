@@ -221,6 +221,12 @@ type SearchUserParams struct {
 	Keyword string `form:"keyword" json:"keyword"`
 }
 
+// SetStateParams defines parameters for SetState.
+type SetStateParams struct {
+	// State State for setting in cookie
+	State string `form:"state" json:"state"`
+}
+
 // CreateChatRoomJSONRequestBody defines body for CreateChatRoom for application/json ContentType.
 type CreateChatRoomJSONRequestBody CreateChatRoomJSONBody
 

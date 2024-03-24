@@ -63,6 +63,21 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
+  /set-state:
+    get:
+      security: []
+      summary: set state
+      operationId: set-state
+      parameters:
+        - name: state
+          in: query
+          required: true
+          description: State for setting in cookie
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
 
   /oauth/google/callback:
     get:
