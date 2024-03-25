@@ -14,7 +14,7 @@ import { ReqLoginBody } from '../../openapi/models';
 import { AxiosError } from 'axios';
 import { redirect } from 'next/navigation';
 import PortalLogo from '../../components/Logo/PortalLogo';
-import { DefaultApi } from '../../openapi/api';
+import { apiInstance } from '../../lib/api/apiInstance';
 
 const LoginSchema = z.object({
   email: z.string().nonempty('メールアドレスは必須です'),
@@ -23,13 +23,7 @@ const LoginSchema = z.object({
 
 type FormData = z.infer<typeof LoginSchema>;
 
-export default function Login({
-  GoogleAuth,
-  ApiInstance,
-}: {
-  GoogleAuth: React.ReactNode;
-  ApiInstance: Promise<DefaultApi>;
-}) {
+export default function Login({ GoogleAuth }: { GoogleAuth: React.ReactNode }) {
   const {
     register,
     handleSubmit,
@@ -48,7 +42,8 @@ export default function Login({
     };
 
     try {
-      await (await ApiInstance).login(reqLoginBody);
+      const api = await apiInstance;
+      await api.login(reqLoginBody);
       redirect('/');
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
