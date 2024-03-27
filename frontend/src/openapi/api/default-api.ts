@@ -96,6 +96,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
             // authentication jwtAuth required
 
+            // authentication _csrf required
+
             if (roomId !== undefined) {
                 localVarQueryParameter['room_id'] = roomId;
             }
@@ -136,6 +138,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
             // authentication jwtAuth required
 
+            // authentication _csrf required
+
 
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
@@ -174,6 +178,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
 
             // authentication jwtAuth required
+
+            // authentication _csrf required
 
 
     
@@ -214,6 +220,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
             // authentication jwtAuth required
 
+            // authentication _csrf required
+
 
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
@@ -252,6 +260,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
 
             // authentication jwtAuth required
+
+            // authentication _csrf required
 
 
     
@@ -301,6 +311,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
 
             // authentication jwtAuth required
+
+            // authentication _csrf required
 
 
             if (content !== undefined) { 
@@ -356,6 +368,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
 
             // authentication jwtAuth required
+
+            // authentication _csrf required
 
 
     
@@ -429,6 +443,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
             // authentication jwtAuth required
 
+            // authentication _csrf required
+
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -467,6 +483,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
 
             // authentication jwtAuth required
+
+            // authentication _csrf required
 
 
     
@@ -507,6 +525,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
             // authentication jwtAuth required
 
+            // authentication _csrf required
+
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -545,6 +565,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
 
             // authentication jwtAuth required
+
+            // authentication _csrf required
 
 
     
@@ -585,6 +607,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
             // authentication jwtAuth required
 
+            // authentication _csrf required
+
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -621,6 +645,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
 
             // authentication jwtAuth required
+
+            // authentication _csrf required
 
             if (booksGenreId !== undefined) {
                 localVarQueryParameter['booksGenreId'] = booksGenreId;
@@ -665,6 +691,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
             // authentication jwtAuth required
 
+            // authentication _csrf required
+
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -699,6 +727,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
 
             // authentication jwtAuth required
+
+            // authentication _csrf required
 
 
     
@@ -739,6 +769,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
             // authentication jwtAuth required
 
+            // authentication _csrf required
+
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -776,6 +808,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
 
             // authentication jwtAuth required
+
+            // authentication _csrf required
 
             if (userId !== undefined) {
                 localVarQueryParameter['user_id'] = userId;
@@ -819,6 +853,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
             // authentication jwtAuth required
 
+            // authentication _csrf required
+
             if (userId !== undefined) {
                 localVarQueryParameter['user_id'] = userId;
             }
@@ -858,6 +894,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
             // authentication jwtAuth required
 
+            // authentication _csrf required
+
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -893,6 +931,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
             // authentication jwtAuth required
 
+            // authentication _csrf required
+
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -927,6 +967,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
 
             // authentication jwtAuth required
+
+            // authentication _csrf required
 
 
     
@@ -965,6 +1007,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
 
             // authentication jwtAuth required
+
+            // authentication _csrf required
 
             if (roomId !== undefined) {
                 localVarQueryParameter['room_id'] = roomId;
@@ -1009,6 +1053,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
             // authentication jwtAuth required
 
+            // authentication _csrf required
+
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -1043,6 +1089,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
 
             // authentication jwtAuth required
+
+            // authentication _csrf required
 
 
     
@@ -1083,6 +1131,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
             // authentication jwtAuth required
 
+            // authentication _csrf required
+
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -1121,6 +1171,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
 
             // authentication jwtAuth required
+
+            // authentication _csrf required
 
 
     
@@ -1238,6 +1290,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             // authentication X-CSRF-TOKEN required
             await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
 
+            // authentication _csrf required
+
 
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
@@ -1274,6 +1328,10 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
             // authentication X-CSRF-TOKEN required
             await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
+
+            // authentication jwtAuth required
+
+            // authentication _csrf required
 
 
     
@@ -1316,6 +1374,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
             // authentication jwtAuth required
 
+            // authentication _csrf required
+
             if (keyword !== undefined) {
                 localVarQueryParameter['keyword'] = keyword;
             }
@@ -1352,6 +1412,11 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+
+            // authentication X-CSRF-TOKEN required
+            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
+
+            // authentication _csrf required
 
             if (state !== undefined) {
                 localVarQueryParameter['state'] = state;
@@ -1392,6 +1457,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
 
             // authentication X-CSRF-TOKEN required
             await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
+
+            // authentication _csrf required
 
 
     
@@ -1434,6 +1501,8 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
 
             // authentication jwtAuth required
+
+            // authentication _csrf required
 
 
             if (name !== undefined) { 

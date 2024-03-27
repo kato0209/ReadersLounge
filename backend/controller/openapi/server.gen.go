@@ -138,6 +138,8 @@ func (w *ServerInterfaceWrapper) FetchBookData(ctx echo.Context) error {
 
 	ctx.Set(X_CSRF_TOKENScopes, []string{})
 
+	ctx.Set(_csrfScopes, []string{})
+
 	ctx.Set(JwtAuthScopes, []string{})
 
 	// Parameter object where we will unmarshal all parameters from the context
@@ -167,6 +169,8 @@ func (w *ServerInterfaceWrapper) GetBooksGenres(ctx echo.Context) error {
 
 	ctx.Set(X_CSRF_TOKENScopes, []string{})
 
+	ctx.Set(_csrfScopes, []string{})
+
 	ctx.Set(JwtAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -179,6 +183,8 @@ func (w *ServerInterfaceWrapper) GetChatRooms(ctx echo.Context) error {
 	var err error
 
 	ctx.Set(X_CSRF_TOKENScopes, []string{})
+
+	ctx.Set(_csrfScopes, []string{})
 
 	ctx.Set(JwtAuthScopes, []string{})
 
@@ -193,6 +199,8 @@ func (w *ServerInterfaceWrapper) CreateChatRoom(ctx echo.Context) error {
 
 	ctx.Set(X_CSRF_TOKENScopes, []string{})
 
+	ctx.Set(_csrfScopes, []string{})
+
 	ctx.Set(JwtAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -205,6 +213,8 @@ func (w *ServerInterfaceWrapper) ChatSocket(ctx echo.Context) error {
 	var err error
 
 	ctx.Set(X_CSRF_TOKENScopes, []string{})
+
+	ctx.Set(_csrfScopes, []string{})
 
 	ctx.Set(JwtAuthScopes, []string{})
 
@@ -228,6 +238,8 @@ func (w *ServerInterfaceWrapper) CreateCommentLike(ctx echo.Context) error {
 
 	ctx.Set(X_CSRF_TOKENScopes, []string{})
 
+	ctx.Set(_csrfScopes, []string{})
+
 	ctx.Set(JwtAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -248,6 +260,8 @@ func (w *ServerInterfaceWrapper) DeleteCommentLike(ctx echo.Context) error {
 
 	ctx.Set(X_CSRF_TOKENScopes, []string{})
 
+	ctx.Set(_csrfScopes, []string{})
+
 	ctx.Set(JwtAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -260,6 +274,8 @@ func (w *ServerInterfaceWrapper) CreateComment(ctx echo.Context) error {
 	var err error
 
 	ctx.Set(X_CSRF_TOKENScopes, []string{})
+
+	ctx.Set(_csrfScopes, []string{})
 
 	ctx.Set(JwtAuthScopes, []string{})
 
@@ -281,6 +297,8 @@ func (w *ServerInterfaceWrapper) GetCommentsByPostID(ctx echo.Context) error {
 
 	ctx.Set(X_CSRF_TOKENScopes, []string{})
 
+	ctx.Set(_csrfScopes, []string{})
+
 	ctx.Set(JwtAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -300,6 +318,8 @@ func (w *ServerInterfaceWrapper) DeleteComment(ctx echo.Context) error {
 	}
 
 	ctx.Set(X_CSRF_TOKENScopes, []string{})
+
+	ctx.Set(_csrfScopes, []string{})
 
 	ctx.Set(JwtAuthScopes, []string{})
 
@@ -323,6 +343,8 @@ func (w *ServerInterfaceWrapper) GetFollowerConnections(ctx echo.Context) error 
 
 	ctx.Set(X_CSRF_TOKENScopes, []string{})
 
+	ctx.Set(_csrfScopes, []string{})
+
 	ctx.Set(JwtAuthScopes, []string{})
 
 	// Parameter object where we will unmarshal all parameters from the context
@@ -344,6 +366,8 @@ func (w *ServerInterfaceWrapper) GetFollowingConnections(ctx echo.Context) error
 	var err error
 
 	ctx.Set(X_CSRF_TOKENScopes, []string{})
+
+	ctx.Set(_csrfScopes, []string{})
 
 	ctx.Set(JwtAuthScopes, []string{})
 
@@ -367,6 +391,8 @@ func (w *ServerInterfaceWrapper) CreateConnection(ctx echo.Context) error {
 
 	ctx.Set(X_CSRF_TOKENScopes, []string{})
 
+	ctx.Set(_csrfScopes, []string{})
+
 	ctx.Set(JwtAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -386,6 +412,8 @@ func (w *ServerInterfaceWrapper) DeleteConnection(ctx echo.Context) error {
 	}
 
 	ctx.Set(X_CSRF_TOKENScopes, []string{})
+
+	ctx.Set(_csrfScopes, []string{})
 
 	ctx.Set(JwtAuthScopes, []string{})
 
@@ -409,6 +437,8 @@ func (w *ServerInterfaceWrapper) GetLikedCommentList(ctx echo.Context) error {
 
 	ctx.Set(X_CSRF_TOKENScopes, []string{})
 
+	ctx.Set(_csrfScopes, []string{})
+
 	ctx.Set(JwtAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -421,6 +451,8 @@ func (w *ServerInterfaceWrapper) GetLikedPostList(ctx echo.Context) error {
 	var err error
 
 	ctx.Set(X_CSRF_TOKENScopes, []string{})
+
+	ctx.Set(_csrfScopes, []string{})
 
 	ctx.Set(JwtAuthScopes, []string{})
 
@@ -435,6 +467,8 @@ func (w *ServerInterfaceWrapper) Login(ctx echo.Context) error {
 
 	ctx.Set(X_CSRF_TOKENScopes, []string{})
 
+	ctx.Set(_csrfScopes, []string{})
+
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.Login(ctx)
 	return err
@@ -446,6 +480,10 @@ func (w *ServerInterfaceWrapper) Logout(ctx echo.Context) error {
 
 	ctx.Set(X_CSRF_TOKENScopes, []string{})
 
+	ctx.Set(_csrfScopes, []string{})
+
+	ctx.Set(JwtAuthScopes, []string{})
+
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.Logout(ctx)
 	return err
@@ -456,6 +494,8 @@ func (w *ServerInterfaceWrapper) GetMessages(ctx echo.Context) error {
 	var err error
 
 	ctx.Set(X_CSRF_TOKENScopes, []string{})
+
+	ctx.Set(_csrfScopes, []string{})
 
 	ctx.Set(JwtAuthScopes, []string{})
 
@@ -508,6 +548,8 @@ func (w *ServerInterfaceWrapper) CreatePostLike(ctx echo.Context) error {
 
 	ctx.Set(X_CSRF_TOKENScopes, []string{})
 
+	ctx.Set(_csrfScopes, []string{})
+
 	ctx.Set(JwtAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -528,6 +570,8 @@ func (w *ServerInterfaceWrapper) DeletePostLike(ctx echo.Context) error {
 
 	ctx.Set(X_CSRF_TOKENScopes, []string{})
 
+	ctx.Set(_csrfScopes, []string{})
+
 	ctx.Set(JwtAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -541,6 +585,8 @@ func (w *ServerInterfaceWrapper) GetPosts(ctx echo.Context) error {
 
 	ctx.Set(X_CSRF_TOKENScopes, []string{})
 
+	ctx.Set(_csrfScopes, []string{})
+
 	ctx.Set(JwtAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -553,6 +599,8 @@ func (w *ServerInterfaceWrapper) CreatePost(ctx echo.Context) error {
 	var err error
 
 	ctx.Set(X_CSRF_TOKENScopes, []string{})
+
+	ctx.Set(_csrfScopes, []string{})
 
 	ctx.Set(JwtAuthScopes, []string{})
 
@@ -574,6 +622,8 @@ func (w *ServerInterfaceWrapper) GetPostsOfUser(ctx echo.Context) error {
 
 	ctx.Set(X_CSRF_TOKENScopes, []string{})
 
+	ctx.Set(_csrfScopes, []string{})
+
 	ctx.Set(JwtAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -593,6 +643,8 @@ func (w *ServerInterfaceWrapper) DeletePost(ctx echo.Context) error {
 	}
 
 	ctx.Set(X_CSRF_TOKENScopes, []string{})
+
+	ctx.Set(_csrfScopes, []string{})
 
 	ctx.Set(JwtAuthScopes, []string{})
 
@@ -614,6 +666,8 @@ func (w *ServerInterfaceWrapper) GetPostByPostID(ctx echo.Context) error {
 
 	ctx.Set(X_CSRF_TOKENScopes, []string{})
 
+	ctx.Set(_csrfScopes, []string{})
+
 	ctx.Set(JwtAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -626,6 +680,8 @@ func (w *ServerInterfaceWrapper) SearchUser(ctx echo.Context) error {
 	var err error
 
 	ctx.Set(X_CSRF_TOKENScopes, []string{})
+
+	ctx.Set(_csrfScopes, []string{})
 
 	ctx.Set(JwtAuthScopes, []string{})
 
@@ -647,6 +703,10 @@ func (w *ServerInterfaceWrapper) SearchUser(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) SetState(ctx echo.Context) error {
 	var err error
 
+	ctx.Set(X_CSRF_TOKENScopes, []string{})
+
+	ctx.Set(_csrfScopes, []string{})
+
 	// Parameter object where we will unmarshal all parameters from the context
 	var params SetStateParams
 	// ------------- Required query parameter "state" -------------
@@ -667,6 +727,8 @@ func (w *ServerInterfaceWrapper) Signup(ctx echo.Context) error {
 
 	ctx.Set(X_CSRF_TOKENScopes, []string{})
 
+	ctx.Set(_csrfScopes, []string{})
+
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.Signup(ctx)
 	return err
@@ -677,6 +739,8 @@ func (w *ServerInterfaceWrapper) GetLoginUser(ctx echo.Context) error {
 	var err error
 
 	ctx.Set(X_CSRF_TOKENScopes, []string{})
+
+	ctx.Set(_csrfScopes, []string{})
 
 	ctx.Set(JwtAuthScopes, []string{})
 
@@ -690,6 +754,8 @@ func (w *ServerInterfaceWrapper) UpdateUser(ctx echo.Context) error {
 	var err error
 
 	ctx.Set(X_CSRF_TOKENScopes, []string{})
+
+	ctx.Set(_csrfScopes, []string{})
 
 	ctx.Set(JwtAuthScopes, []string{})
 
@@ -710,6 +776,8 @@ func (w *ServerInterfaceWrapper) GetUser(ctx echo.Context) error {
 	}
 
 	ctx.Set(X_CSRF_TOKENScopes, []string{})
+
+	ctx.Set(_csrfScopes, []string{})
 
 	ctx.Set(JwtAuthScopes, []string{})
 
@@ -787,50 +855,51 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
+	"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",
+	"//8J/ghaZkYAAA==",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

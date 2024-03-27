@@ -8,6 +8,7 @@ servers:
 paths:
   /health:
     get:
+      security: []
       summary: Health Check
       operationId: healthCheck
       responses:
@@ -29,6 +30,7 @@ paths:
     post:
       security:
         - X-CSRF-TOKEN: []
+        - _csrf: []
       summary: create new user
       operationId: signup
       requestBody:
@@ -48,6 +50,7 @@ paths:
     post:
       security:
         - X-CSRF-TOKEN: []
+        - _csrf: []
       summary: login
       operationId: login
       requestBody:
@@ -65,7 +68,9 @@ paths:
                 $ref: "#/components/schemas/User"
   /set-state:
     get:
-      security: []
+      security:
+        - X-CSRF-TOKEN: []
+        - _csrf: []
       summary: set state
       operationId: set-state
       parameters:
@@ -108,6 +113,8 @@ paths:
     post:
       security:
         - X-CSRF-TOKEN: []
+        - _csrf: []
+        - jwtAuth: []
       summary: logout
       operationId: logout
       requestBody:
@@ -122,6 +129,7 @@ paths:
     get:
       security:
         - X-CSRF-TOKEN: []
+        - _csrf: []
         - jwtAuth: []
       summary: get user
       operationId: get-login-user
@@ -135,6 +143,7 @@ paths:
     put:
       security:
         - X-CSRF-TOKEN: []
+        - _csrf: []
         - jwtAuth: []
       summary: update user
       operationId: update-user
@@ -152,6 +161,7 @@ paths:
     get:
       security:
         - X-CSRF-TOKEN: []
+        - _csrf: []
         - jwtAuth: []
       summary: get user by user_id
       operationId: get-user
@@ -174,6 +184,7 @@ paths:
     get:
       security:
         - X-CSRF-TOKEN: []
+        - _csrf: []
         - jwtAuth: []
       summary: get posts
       operationId: get-posts
@@ -189,6 +200,7 @@ paths:
     post:
       security:
         - X-CSRF-TOKEN: []
+        - _csrf: []
         - jwtAuth: []
       summary: create post
       operationId: create-post
@@ -206,6 +218,7 @@ paths:
     get:
       security:
         - X-CSRF-TOKEN: []
+        - _csrf: []
         - jwtAuth: []
       summary: get post by postID
       operationId: get-post-by-postID
@@ -226,6 +239,7 @@ paths:
     delete:
       security:
         - X-CSRF-TOKEN: []
+        - _csrf: []
         - jwtAuth: []
       summary: delete a post
       operationId: delete-post
@@ -244,6 +258,7 @@ paths:
     get:
       security:
         - X-CSRF-TOKEN: []
+        - _csrf: []
         - jwtAuth: []
       summary: get posts corresponding to userId
       operationId: get-posts-of-user
@@ -268,6 +283,7 @@ paths:
     get:
       security:
         - X-CSRF-TOKEN: []
+        - _csrf: []
         - jwtAuth: []
       summary: fetch book data from RakutenAPI
       operationId: fetch-book-data
@@ -296,6 +312,7 @@ paths:
     get:
       security:
         - X-CSRF-TOKEN: []
+        - _csrf: []
         - jwtAuth: []
       summary: Get books genres
       operationId: get-books-genres
@@ -314,6 +331,7 @@ paths:
         - url: "ws://localhost:8080"
       security:
         - X-CSRF-TOKEN: []
+        - _csrf: []
         - jwtAuth: []
       summary: WebSocket Connection for chat
       operationId: chat-socket
@@ -357,6 +375,7 @@ paths:
     get:
       security:
         - X-CSRF-TOKEN: []
+        - _csrf: []
         - jwtAuth: []
       summary: return users chat room list
       operationId: get-chat-rooms
@@ -372,6 +391,7 @@ paths:
     post:
       security:
         - X-CSRF-TOKEN: []
+        - _csrf: []
         - jwtAuth: []
       summary: create chat room
       operationId: create-chat-room
@@ -400,6 +420,7 @@ paths:
     get:
       security:
         - X-CSRF-TOKEN: []
+        - _csrf: []
         - jwtAuth: []
       summary: return messages in a chat room
       operationId: get-messages
@@ -424,6 +445,7 @@ paths:
     post:
       security:
         - X-CSRF-TOKEN: []
+        - _csrf: []
         - jwtAuth: []
       summary: create connection of following
       operationId: create-connection
@@ -444,6 +466,7 @@ paths:
     delete:
       security:
         - X-CSRF-TOKEN: []
+        - _csrf: []
         - jwtAuth: []
       summary: delete connection of following
       operationId: delete-connection
@@ -462,6 +485,7 @@ paths:
     get:
       security:
         - X-CSRF-TOKEN: []
+        - _csrf: []
         - jwtAuth: []
       summary: get following connections
       operationId: get-following-connections
@@ -485,6 +509,7 @@ paths:
     get:
       security:
         - X-CSRF-TOKEN: []
+        - _csrf: []
         - jwtAuth: []
       summary: get followers connections
       operationId: get-follower-connections
@@ -509,6 +534,7 @@ paths:
     post:
       security:
         - X-CSRF-TOKEN: []
+        - _csrf: []
         - jwtAuth: []
       summary: Create like of Post
       operationId: create-post-like
@@ -534,6 +560,7 @@ paths:
     delete:
       security:
         - X-CSRF-TOKEN: []
+        - _csrf: []
         - jwtAuth: []
       summary: delete like of Post
       operationId: delete-post-like
@@ -552,6 +579,7 @@ paths:
     post:
       security:
         - X-CSRF-TOKEN: []
+        - _csrf: []
         - jwtAuth: []
       summary: Create like of Comment
       operationId: create-comment-like
@@ -577,6 +605,7 @@ paths:
     delete:
       security:
         - X-CSRF-TOKEN: []
+        - _csrf: []
         - jwtAuth: []
       summary: delete like of Comment
       operationId: delete-comment-like
@@ -595,6 +624,7 @@ paths:
     get:
       security:
         - X-CSRF-TOKEN: []
+        - _csrf: []
         - jwtAuth: []
       summary: Get postID list of User liked
       operationId: get-liked-post-list
@@ -612,6 +642,7 @@ paths:
     get:
       security:
         - X-CSRF-TOKEN: []
+        - _csrf: []
         - jwtAuth: []
       summary: Get commentID list of User liked
       operationId: get-liked-comment-list
@@ -630,6 +661,7 @@ paths:
     get:
       security:
         - X-CSRF-TOKEN: []
+        - _csrf: []
         - jwtAuth: []
       summary: search user by keyword
       operationId: search-user
@@ -654,6 +686,7 @@ paths:
     post:
       security:
         - X-CSRF-TOKEN: []
+        - _csrf: []
         - jwtAuth: []
       summary: create comment
       operationId: create-comment
@@ -674,6 +707,7 @@ paths:
     delete:
       security:
         - X-CSRF-TOKEN: []
+        - _csrf: []
         - jwtAuth: []
       summary: delete comment
       operationId: delete-comment
@@ -692,6 +726,7 @@ paths:
     get:
       security:
         - X-CSRF-TOKEN: []
+        - _csrf: []
         - jwtAuth: []
       summary: get comments by postID
       operationId: get-comments-by-postID
@@ -718,6 +753,10 @@ components:
       type: apiKey
       name: X-CSRF-TOKEN
       in: header
+    _csrf:
+      type: apiKey
+      name: _csrf
+      in: cookie
     jwtAuth:
       type: apiKey
       name: jwt_token

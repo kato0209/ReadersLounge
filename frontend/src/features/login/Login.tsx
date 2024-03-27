@@ -6,61 +6,17 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import SubmitButton from '../../components/Button/SubmitButton';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { useErrorHandler } from 'react-error-boundary';
-import { ReqLoginBody } from '../../openapi/models';
-import { AxiosError } from 'axios';
-import { redirect } from 'next/navigation';
 import PortalLogo from '../../components/Logo/PortalLogo';
-import { apiInstance } from '../../lib/api/apiInstance';
+import { useFormState } from 'react-dom';
+import { login } from './SubmitLogin';
+import { State } from './SubmitLogin';
 
-const LoginSchema = z.object({
-  email: z.string().nonempty('メールアドレスは必須です'),
-  password: z.string().nonempty('パスワードは必須です'),
-});
-
-type FormData = z.infer<typeof LoginSchema>;
+export const initialState: State = {
+  error: null,
+};
 
 export default function Login({ GoogleAuth }: { GoogleAuth: React.ReactNode }) {
-  const {
-    register,
-    handleSubmit,
-    setError,
-    formState: { errors },
-  } = useForm<FormData>({
-    resolver: zodResolver(LoginSchema),
-  });
-
-  const errorHandler = useErrorHandler();
-
-  const onSubmit = async (data: FormData) => {
-    const reqLoginBody: ReqLoginBody = {
-      identifier: data.email,
-      credential: data.password,
-    };
-
-    try {
-      const api = await apiInstance;
-      await api.login(reqLoginBody);
-      redirect('/');
-    } catch (error: unknown) {
-      if (error instanceof AxiosError) {
-        if (error.response && error.response.status === 500) {
-          setError('password', {
-            type: 'manual',
-            message: 'メールアドレスまたはパスワードが間違っています',
-          });
-        } else {
-          errorHandler(error);
-        }
-      } else {
-        errorHandler(error);
-      }
-    }
-  };
-
+  const [, formAction] = useFormState(login, initialState);
   return (
     <Container component="main" maxWidth="xs">
       <Box
@@ -75,14 +31,8 @@ export default function Login({ GoogleAuth }: { GoogleAuth: React.ReactNode }) {
         <Typography component="h1" variant="h5" sx={{ mt: 1 }}>
           Login
         </Typography>
-        <Box
-          component="form"
-          onSubmit={handleSubmit(onSubmit)}
-          noValidate
-          sx={{ mt: 1 }}
-        >
+        <form action={formAction}>
           <TextField
-            {...register('email')}
             required
             fullWidth
             id="email"
@@ -91,11 +41,7 @@ export default function Login({ GoogleAuth }: { GoogleAuth: React.ReactNode }) {
             autoComplete="email"
             autoFocus
           />
-          {errors.email && (
-            <span style={{ color: 'red' }}>{errors.email.message}</span>
-          )}
           <TextField
-            {...register('password')}
             margin="normal"
             required
             fullWidth
@@ -105,9 +51,6 @@ export default function Login({ GoogleAuth }: { GoogleAuth: React.ReactNode }) {
             id="password"
             autoComplete="current-password"
           />
-          {errors.password && (
-            <span style={{ color: 'red' }}>{errors.password.message}</span>
-          )}
           <SubmitButton content="LOGIN" />
           <Grid container justifyContent="flex-end">
             <Grid item>
@@ -124,7 +67,7 @@ export default function Login({ GoogleAuth }: { GoogleAuth: React.ReactNode }) {
             Login with another provider
           </Typography>
           {GoogleAuth}
-        </Box>
+        </form>
       </Box>
     </Container>
   );

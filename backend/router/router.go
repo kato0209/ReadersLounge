@@ -24,10 +24,10 @@ func NewRouter(server *controller.Server) *echo.Echo {
 		CookiePath:   "/",
 		CookieDomain: os.Getenv("API_DOMAIN"),
 		//CookieDomain: "localhost",
-		//CookieSameSite: http.SameSiteNoneMode,
+		CookieSameSite: http.SameSiteNoneMode,
 		CookieHTTPOnly: true,
 		//CookieSecure:   false,
-		CookieSameSite: http.SameSiteDefaultMode,
+		//CookieSameSite: http.SameSiteDefaultMode,
 		CookieMaxAge:   24 * 60 * 60,
 	}))
 
