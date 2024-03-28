@@ -1,3 +1,4 @@
+'use client';
 import * as React from 'react';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
@@ -17,10 +18,11 @@ import { isValidUrl } from '../../utils/isValidUrl';
 import Link from '@mui/material/Link';
 import { Menu, MenuItem } from '@mui/material';
 import UserAvatar from '../../components/Avatar/UserAvatar';
-import { useAuthUserContext } from '../../lib/auth/auth';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { CreatePostLikeReqBody, PostLike } from '../../openapi';
-import { useNavigate } from 'react-router-dom';
+import { User } from '../../openapi';
+import { fetchUserData } from '../../lib/user/fetchUser';
+import { useRouter } from 'next/navigation';
 
 const PostListContainer = {
   display: 'flex',
@@ -45,11 +47,17 @@ export const PostList: React.FC<PostListProps> = ({ propPosts }) => {
     null,
   );
   const [selectedPostID, setSelectedPostID] = React.useState<number>(0);
-  const { user } = useAuthUserContext();
   const [likedPostIDs, setLikedPostIDs] = React.useState<number[]>([]);
 
   const [posts, setPosts] = React.useState<Post[]>([]);
-  const navigate = useNavigate();
+  const [user, setUser] = React.useState<User | null>(null);
+  const router = useRouter();
+
+  React.useEffect(() => {
+    fetchUserData().then((data) => {
+      setUser(data);
+    });
+  }, []);
 
   const handleSettingClick = (
     event: React.MouseEvent<HTMLElement>,
@@ -111,7 +119,7 @@ export const PostList: React.FC<PostListProps> = ({ propPosts }) => {
       if (res.status === 201 && res.data) {
         const newLike: PostLike = {
           post_like_id: res.data.post_like_id,
-          user_id: user.user_id,
+          user_id: user?.user_id as number,
         };
         setLikedPostIDs((currentLikedPostIDs) => [
           ...currentLikedPostIDs,
@@ -149,7 +157,7 @@ export const PostList: React.FC<PostListProps> = ({ propPosts }) => {
               ? {
                   ...post,
                   likes: post.likes?.filter(
-                    (like) => like.user_id !== user.user_id,
+                    (like) => like.user_id !== user?.user_id,
                   ),
                 }
               : post,
@@ -162,7 +170,7 @@ export const PostList: React.FC<PostListProps> = ({ propPosts }) => {
   };
 
   const handlePostClick = async (postID: number) => {
-    navigate(`/post/${postID}`);
+    router.push(`/post/${postID}`);
   };
 
   return (
@@ -198,7 +206,7 @@ export const PostList: React.FC<PostListProps> = ({ propPosts }) => {
                 }
                 action={
                   <>
-                    {post.user.user_id === user.user_id && (
+                    {post.user.user_id === user?.user_id && (
                       <>
                         <IconButton
                           onClick={(e) => handleSettingClick(e, post.post_id)}

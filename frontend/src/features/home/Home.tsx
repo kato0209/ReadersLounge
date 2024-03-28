@@ -1,3 +1,4 @@
+'use client';
 import { useState, useEffect } from 'react';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import { PostList } from '../../components/PostList/PostList';

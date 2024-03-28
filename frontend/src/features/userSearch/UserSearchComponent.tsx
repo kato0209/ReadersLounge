@@ -1,3 +1,4 @@
+'use client';
 import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -10,8 +11,8 @@ import { apiInstance } from '../../lib/api/apiInstance';
 import { useErrorHandler } from 'react-error-boundary';
 import { useForm } from 'react-hook-form';
 import { User } from '../../openapi';
-import { useNavigate } from 'react-router-dom';
 import UserAvatar from '../../components/Avatar/UserAvatar';
+import { redirect } from 'next/navigation';
 
 const searchUserSchema = z.object({
   keyword: z.string().nonempty(),
@@ -26,7 +27,6 @@ export default function UserSearchComponent() {
   const errorHandler = useErrorHandler();
   const [users, setUsers] = useState<User[]>([]);
   const [userNotFound, setUserNotFound] = useState<boolean>(false);
-  const navigate = useNavigate();
 
   const onSubmit = async (data: FormData) => {
     try {
@@ -87,7 +87,7 @@ export default function UserSearchComponent() {
         {users.map((user) => (
           <Box
             key={user.user_id}
-            onClick={() => navigate(`/user-profile/${user.user_id}`)}
+            onClick={() => redirect(`/user-profile/${user.user_id}`)}
             sx={{
               display: 'flex',
               alignItems: 'center',

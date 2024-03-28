@@ -60,8 +60,6 @@ import { ReqLoginBody } from '../models';
 // @ts-ignore
 import { ReqSignupBody } from '../models';
 // @ts-ignore
-import { ResCsrfToken } from '../models';
-// @ts-ignore
 import { User } from '../models';
 /**
  * DefaultApi - axios parameter creator
@@ -90,9 +88,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
-
-            // authentication X-CSRF-TOKEN required
-            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
 
             // authentication jwtAuth required
 
@@ -131,9 +126,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication X-CSRF-TOKEN required
-            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
-
             // authentication jwtAuth required
 
 
@@ -169,9 +161,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
-
-            // authentication X-CSRF-TOKEN required
-            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
 
             // authentication jwtAuth required
 
@@ -209,9 +198,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication X-CSRF-TOKEN required
-            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
-
             // authentication jwtAuth required
 
 
@@ -247,9 +233,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
-
-            // authentication X-CSRF-TOKEN required
-            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
 
             // authentication jwtAuth required
 
@@ -296,9 +279,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
             const localVarFormParams = new ((configuration && configuration.formDataCtor) || FormData)();
-
-            // authentication X-CSRF-TOKEN required
-            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
 
             // authentication jwtAuth required
 
@@ -352,9 +332,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication X-CSRF-TOKEN required
-            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
-
             // authentication jwtAuth required
 
 
@@ -365,36 +342,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(createPostLikeReqBody, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary get csrf token
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        csrftoken: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/csrftoken`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -423,9 +370,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
-
-            // authentication X-CSRF-TOKEN required
-            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
 
             // authentication jwtAuth required
 
@@ -463,9 +407,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication X-CSRF-TOKEN required
-            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
-
             // authentication jwtAuth required
 
 
@@ -501,9 +442,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
-
-            // authentication X-CSRF-TOKEN required
-            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
 
             // authentication jwtAuth required
 
@@ -541,9 +479,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication X-CSRF-TOKEN required
-            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
-
             // authentication jwtAuth required
 
 
@@ -580,9 +515,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication X-CSRF-TOKEN required
-            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
-
             // authentication jwtAuth required
 
 
@@ -616,9 +548,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
-
-            // authentication X-CSRF-TOKEN required
-            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
 
             // authentication jwtAuth required
 
@@ -660,9 +589,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication X-CSRF-TOKEN required
-            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
-
             // authentication jwtAuth required
 
 
@@ -694,9 +620,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
-
-            // authentication X-CSRF-TOKEN required
-            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
 
             // authentication jwtAuth required
 
@@ -734,9 +657,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication X-CSRF-TOKEN required
-            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
-
             // authentication jwtAuth required
 
 
@@ -771,9 +691,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
-
-            // authentication X-CSRF-TOKEN required
-            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
 
             // authentication jwtAuth required
 
@@ -814,9 +731,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication X-CSRF-TOKEN required
-            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
-
             // authentication jwtAuth required
 
             if (userId !== undefined) {
@@ -853,9 +767,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication X-CSRF-TOKEN required
-            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
-
             // authentication jwtAuth required
 
 
@@ -888,9 +799,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication X-CSRF-TOKEN required
-            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
-
             // authentication jwtAuth required
 
 
@@ -922,9 +830,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
-
-            // authentication X-CSRF-TOKEN required
-            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
 
             // authentication jwtAuth required
 
@@ -960,9 +865,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
-
-            // authentication X-CSRF-TOKEN required
-            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
 
             // authentication jwtAuth required
 
@@ -1004,9 +906,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication X-CSRF-TOKEN required
-            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
-
             // authentication jwtAuth required
 
 
@@ -1038,9 +937,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
-
-            // authentication X-CSRF-TOKEN required
-            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
 
             // authentication jwtAuth required
 
@@ -1078,9 +974,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication X-CSRF-TOKEN required
-            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
-
             // authentication jwtAuth required
 
 
@@ -1116,9 +1009,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
-
-            // authentication X-CSRF-TOKEN required
-            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
 
             // authentication jwtAuth required
 
@@ -1235,9 +1125,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication X-CSRF-TOKEN required
-            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
-
 
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
@@ -1272,8 +1159,7 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication X-CSRF-TOKEN required
-            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
+            // authentication jwtAuth required
 
 
     
@@ -1310,9 +1196,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
-
-            // authentication X-CSRF-TOKEN required
-            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
 
             // authentication jwtAuth required
 
@@ -1353,9 +1236,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-            // authentication X-CSRF-TOKEN required
-            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
-
 
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
@@ -1392,9 +1272,6 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
             const localVarFormParams = new ((configuration && configuration.formDataCtor) || FormData)();
-
-            // authentication X-CSRF-TOKEN required
-            await setApiKeyToObject(localVarHeaderParameter, "X-CSRF-TOKEN", configuration)
 
             // authentication jwtAuth required
 
@@ -1512,16 +1389,6 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          */
         async createPostLike(createPostLikeReqBody?: CreatePostLikeReqBody, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreatePostLike201Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createPostLike(createPostLikeReqBody, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @summary get csrf token
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async csrftoken(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ResCsrfToken>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.csrftoken(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1892,15 +1759,6 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * 
-         * @summary get csrf token
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        csrftoken(options?: any): AxiosPromise<ResCsrfToken> {
-            return localVarFp.csrftoken(options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
          * @summary delete comment
          * @param {number} commentId identifier of the comment to be deleted
          * @param {*} [options] Override http request option.
@@ -2251,17 +2109,6 @@ export class DefaultApi extends BaseAPI {
      */
     public createPostLike(createPostLikeReqBody?: CreatePostLikeReqBody, options?: AxiosRequestConfig) {
         return DefaultApiFp(this.configuration).createPostLike(createPostLikeReqBody, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary get csrf token
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof DefaultApi
-     */
-    public csrftoken(options?: AxiosRequestConfig) {
-        return DefaultApiFp(this.configuration).csrftoken(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

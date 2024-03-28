@@ -1,5 +1,4 @@
 import { Box, Typography } from '@mui/material';
-import ReadersLoungeLogo from '../../assets/images/ReadersLounge-logo-book.png';
 
 function PortalLogo() {
   return (
@@ -13,7 +12,11 @@ function PortalLogo() {
         height: '100%',
       }}
     >
-      <Box component="img" src={ReadersLoungeLogo} alt="ReadersLounge Logo" />
+      <Box
+        component="img"
+        src="/images/ReadersLounge-logo-book.png"
+        alt="ReadersLounge Logo"
+      />
       <Typography component="h1" variant="h3" style={{ color: '#FF7E73' }}>
         ReadersLounge
       </Typography>

@@ -1,3 +1,4 @@
+'use client';
 import { useState, useEffect } from 'react';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
@@ -9,8 +10,7 @@ import { useIsMobileContext } from '../../providers/mobile/isMobile';
 import UserAvatar from '../../components/Avatar/UserAvatar';
 import Typography from '@mui/material/Typography';
 import Room from './Room';
-import { useParams } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { useParams, useRouter } from 'next/navigation';
 
 export default function RoomList() {
   const errorHandler = useErrorHandler();
@@ -18,7 +18,7 @@ export default function RoomList() {
   const { id } = useParams<{ id: string }>();
   const roomID = id ? parseInt(id, 10) : 0;
   const isMobile = useIsMobileContext();
-  const navigate = useNavigate();
+  const router = useRouter();
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -74,7 +74,7 @@ export default function RoomList() {
                 <Box
                   key={chatRoom.room_id}
                   onClick={() =>
-                    navigate(`/chat-room-list/${chatRoom.room_id}`)
+                    router.push(`/chat-room-list/${chatRoom.room_id}`)
                   }
                   sx={{
                     display: 'flex',

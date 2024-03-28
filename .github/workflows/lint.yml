@@ -1,0 +1,43 @@
+name: ReadersLounge Lint
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - ".github/workflows/lint.yml"
+      - "frontend/**"
+
+permissions:
+  id-token: write
+  contents: read
+
+defaults:
+  run:
+    working-directory: ./frontend
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Cache CDK Dependency
+        uses: actions/cache@v3
+        id: npm-cache
+        env:
+          cache-name: cache-npm
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: ${{ runner.os }}-build-${{ env.cache-name }}-
+
+      - name: Install Dependencies
+        if: ${{ steps.cache_cdk_dependency_id.outputs.cache-hit != 'true' }}
+        run: npm ci --no-audit --progress=false --silent
+
+      - name: ESLint & Prettier
+        run: |
+          npm run lint:eslint
+          npm run lint:prettier

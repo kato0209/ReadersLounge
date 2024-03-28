@@ -1,8 +1,9 @@
+'use client';
 import * as React from 'react';
 import { Connection } from '../../openapi/';
 import { Box, Typography } from '@mui/material';
 import UserAvatar from '../../components/Avatar/UserAvatar';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
 
 type ConnectionListProps = {
   connections: Connection[];
@@ -11,13 +12,15 @@ type ConnectionListProps = {
 export const ConnectionList: React.FC<ConnectionListProps> = ({
   connections,
 }) => {
-  const navigate = useNavigate();
+  const router = useRouter();
   return (
     <Box sx={{ marginTop: '2rem' }}>
       {connections.map((connection) => (
         <Box
           key={connection.connection_id}
-          onClick={() => navigate(`/user-profile/${connection.target_user_id}`)}
+          onClick={() =>
+            router.push(`/user-profile/${connection.target_user_id}`)
+          }
           sx={{
             display: 'flex',
             alignItems: 'center',

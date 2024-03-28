@@ -1,6 +1,7 @@
+'use client';
 import { useState, useEffect } from 'react';
 import { isValidUrl } from '../../utils/isValidUrl';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'next/navigation';
 import { apiInstance } from '../../lib/api/apiInstance';
 import { useErrorHandler } from 'react-error-boundary';
 import { User } from '../../openapi';
@@ -15,19 +16,17 @@ import {
   Stack,
   CardMedia,
 } from '@mui/material';
-import UserHeaderImage from '../../assets/images/UserProfileHeader.jpg';
-import { useAuthUserContext } from '../../lib/auth/auth';
 import { CreateChatRoomRequest } from '../../openapi';
-import { useNavigate } from 'react-router-dom';
 import { EditProfile } from './EditProfile';
 import { ConnectionList } from './ConnectionList';
 import { PostList } from '../../components/PostList/PostList';
 import { Post } from '../../openapi';
+import { redirect } from 'next/navigation';
+import { fetchUserData } from '../../lib/user/fetchUser';
 
 export default function UserProfileMain() {
   const { id } = useParams<{ id: string }>();
   const idNumber = id ? parseInt(id, 10) : 0;
-  const { user: loginUser } = useAuthUserContext();
   const [user, setUser] = useState<User | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [followerConnections, setfollowerConnections] = useState<Connection[]>(
@@ -41,10 +40,17 @@ export default function UserProfileMain() {
   const [isFollowActionLoading, setIsFollowActionLoading] =
     useState<boolean>(false);
   const errorHandler = useErrorHandler();
-  const navigate = useNavigate();
   const [activeConnectionList, setActiveConnectionList] = useState<
     string | null
   >(null);
+
+  const [loginUser, setLoginUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    fetchUserData().then((data) => {
+      setLoginUser(data);
+    });
+  }, []);
 
   const fetchUser = async () => {
     try {
@@ -148,7 +154,7 @@ export default function UserProfileMain() {
 
   useEffect(() => {
     const connection = followerConnections.find(
-      (connection) => connection.target_user_id === loginUser.user_id,
+      (connection) => connection.target_user_id === loginUser?.user_id,
     );
     if (connection) {
       setFollowingConnection(connection);
@@ -165,7 +171,7 @@ export default function UserProfileMain() {
       const api = await apiInstance;
       const res = await api.createChatRoom(req);
       if (res.status === 201) {
-        navigate(`/chat-room-list/${res.data}`);
+        redirect(`/chat-room-list/${res.data}`);
       }
     } catch (error: unknown) {
       errorHandler(error);
@@ -226,7 +232,7 @@ export default function UserProfileMain() {
           <CardMedia
             component="img"
             height="200"
-            image={UserHeaderImage}
+            image="/images/UserProfileHeader.jpg"
             alt="Cover image"
           />
           <Box
@@ -391,9 +397,11 @@ export default function UserProfileMain() {
             </Stack>
           </CardContent>
         </Card>
-        <Box sx={{ flex: 1, maxWidth: 500, width: '100%' }}>
-          <PostList propPosts={posts} />
-        </Box>
+        {posts && posts.length > 0 && (
+          <Box sx={{ flex: 1, maxWidth: 500, width: '100%' }}>
+            <PostList propPosts={posts} />
+          </Box>
+        )}
       </Box>
       <Box sx={{ flex: 1 }}>
         {activeConnectionList === 'followings' && (

@@ -1,3 +1,4 @@
+'use client';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import { useIsMobileContext } from '../../providers/mobile/isMobile';
 import { Box } from '@mui/material';

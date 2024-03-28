@@ -1,3 +1,4 @@
+'use client';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
@@ -9,8 +10,9 @@ import SendIcon from '@mui/icons-material/Send';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import ReconnectingWebSocket from 'reconnecting-websocket';
-import { useAuthUserContext } from '../../lib/auth/auth';
 import { Typography, Paper } from '@mui/material';
+import { User } from '../../openapi';
+import { fetchUserData } from '../../lib/user/fetchUser';
 
 type RoomProps = {
   roomID: number;
@@ -22,14 +24,20 @@ export default function Room(props: RoomProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const socketRef = useRef<ReconnectingWebSocket | null>(null);
   const isConnectedRef = useRef<boolean>(false);
-  const { user } = useAuthUserContext();
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    fetchUserData().then((data) => {
+      setUser(data);
+    });
+  }, []);
 
   useEffect(() => {
     const connect = (): Promise<ReconnectingWebSocket> => {
       isConnectedRef.current = false;
       return new Promise((resolve, reject) => {
         socketRef.current = new ReconnectingWebSocket(
-          `${import.meta.env.VITE_WEBSOCKET_URL}/chats?room_id=${props.roomID}`,
+          `${process.env.NEXT_PUBLIC_WEBSOCKET_URL}/chats?room_id=${props.roomID}`,
         );
 
         if (socketRef.current) {
@@ -139,7 +147,7 @@ export default function Room(props: RoomProps) {
                 sx={{
                   display: 'flex',
                   justifyContent:
-                    message.user_id === user.user_id
+                    message.user_id === user?.user_id
                       ? 'flex-end'
                       : 'flex-start',
                 }}
@@ -148,7 +156,7 @@ export default function Room(props: RoomProps) {
                   sx={{
                     display: 'flex',
                     flexDirection:
-                      message.user_id === user.user_id ? 'row-reverse' : 'row',
+                      message.user_id === user?.user_id ? 'row-reverse' : 'row',
                     alignItems: 'center',
                   }}
                 >
@@ -156,10 +164,10 @@ export default function Room(props: RoomProps) {
                     variant="outlined"
                     sx={{
                       p: 2,
-                      ml: message.user_id === user.user_id ? 0 : 1,
-                      mr: message.user_id === user.user_id ? 1 : 0,
+                      ml: message.user_id === user?.user_id ? 0 : 1,
+                      mr: message.user_id === user?.user_id ? 1 : 0,
                       borderRadius:
-                        message.user_id === user.user_id
+                        message.user_id === user?.user_id
                           ? '20px 20px 5px 20px'
                           : '20px 20px 20px 5px',
                     }}
@@ -172,7 +180,7 @@ export default function Room(props: RoomProps) {
                 style={{
                   display: 'flex',
                   justifyContent:
-                    message.user_id === user.user_id
+                    message.user_id === user?.user_id
                       ? 'flex-end'
                       : 'flex-start',
                   fontSize: '0.7rem',
