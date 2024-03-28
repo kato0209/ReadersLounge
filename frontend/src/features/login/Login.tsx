@@ -12,11 +12,16 @@ import { login } from './SubmitLogin';
 import { State } from './SubmitLogin';
 
 export const initialState: State = {
-  error: null,
+  error: '',
+  fieldErrors: {
+    email: '',
+    password: '',
+  },
 };
 
 export default function Login({ GoogleAuth }: { GoogleAuth: React.ReactNode }) {
-  const [, formAction] = useFormState(login, initialState);
+  const [state, formAction] = useFormState(login, initialState);
+  console.log(state);
   return (
     <Container component="main" maxWidth="xs">
       <Box
@@ -51,6 +56,7 @@ export default function Login({ GoogleAuth }: { GoogleAuth: React.ReactNode }) {
             id="password"
             autoComplete="current-password"
           />
+          {state.error && <span style={{ color: 'red' }}>{state.error}</span>}
           <SubmitButton content="LOGIN" />
           <Grid container justifyContent="flex-end">
             <Grid item>

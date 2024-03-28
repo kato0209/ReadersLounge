@@ -50,9 +50,6 @@ type ServerInterface interface {
 	// delete comment
 	// (DELETE /comments/{commentId})
 	DeleteComment(ctx echo.Context, commentId int) error
-	// get csrf token
-	// (GET /csrftoken)
-	Csrftoken(ctx echo.Context) error
 	// get followers connections
 	// (GET /followers)
 	GetFollowerConnections(ctx echo.Context, params GetFollowerConnectionsParams) error
@@ -110,9 +107,6 @@ type ServerInterface interface {
 	// search user by keyword
 	// (GET /search-user)
 	SearchUser(ctx echo.Context, params SearchUserParams) error
-	// set state
-	// (GET /set-state)
-	SetState(ctx echo.Context, params SetStateParams) error
 	// create new user
 	// (POST /signup)
 	Signup(ctx echo.Context) error
@@ -135,10 +129,6 @@ type ServerInterfaceWrapper struct {
 // FetchBookData converts echo context to params.
 func (w *ServerInterfaceWrapper) FetchBookData(ctx echo.Context) error {
 	var err error
-
-	ctx.Set(X_CSRF_TOKENScopes, []string{})
-
-	ctx.Set(_csrfScopes, []string{})
 
 	ctx.Set(JwtAuthScopes, []string{})
 
@@ -167,10 +157,6 @@ func (w *ServerInterfaceWrapper) FetchBookData(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) GetBooksGenres(ctx echo.Context) error {
 	var err error
 
-	ctx.Set(X_CSRF_TOKENScopes, []string{})
-
-	ctx.Set(_csrfScopes, []string{})
-
 	ctx.Set(JwtAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -181,10 +167,6 @@ func (w *ServerInterfaceWrapper) GetBooksGenres(ctx echo.Context) error {
 // GetChatRooms converts echo context to params.
 func (w *ServerInterfaceWrapper) GetChatRooms(ctx echo.Context) error {
 	var err error
-
-	ctx.Set(X_CSRF_TOKENScopes, []string{})
-
-	ctx.Set(_csrfScopes, []string{})
 
 	ctx.Set(JwtAuthScopes, []string{})
 
@@ -197,10 +179,6 @@ func (w *ServerInterfaceWrapper) GetChatRooms(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) CreateChatRoom(ctx echo.Context) error {
 	var err error
 
-	ctx.Set(X_CSRF_TOKENScopes, []string{})
-
-	ctx.Set(_csrfScopes, []string{})
-
 	ctx.Set(JwtAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -211,10 +189,6 @@ func (w *ServerInterfaceWrapper) CreateChatRoom(ctx echo.Context) error {
 // ChatSocket converts echo context to params.
 func (w *ServerInterfaceWrapper) ChatSocket(ctx echo.Context) error {
 	var err error
-
-	ctx.Set(X_CSRF_TOKENScopes, []string{})
-
-	ctx.Set(_csrfScopes, []string{})
 
 	ctx.Set(JwtAuthScopes, []string{})
 
@@ -236,10 +210,6 @@ func (w *ServerInterfaceWrapper) ChatSocket(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) CreateCommentLike(ctx echo.Context) error {
 	var err error
 
-	ctx.Set(X_CSRF_TOKENScopes, []string{})
-
-	ctx.Set(_csrfScopes, []string{})
-
 	ctx.Set(JwtAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -258,10 +228,6 @@ func (w *ServerInterfaceWrapper) DeleteCommentLike(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter CommentId: %s", err))
 	}
 
-	ctx.Set(X_CSRF_TOKENScopes, []string{})
-
-	ctx.Set(_csrfScopes, []string{})
-
 	ctx.Set(JwtAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -272,10 +238,6 @@ func (w *ServerInterfaceWrapper) DeleteCommentLike(ctx echo.Context) error {
 // CreateComment converts echo context to params.
 func (w *ServerInterfaceWrapper) CreateComment(ctx echo.Context) error {
 	var err error
-
-	ctx.Set(X_CSRF_TOKENScopes, []string{})
-
-	ctx.Set(_csrfScopes, []string{})
 
 	ctx.Set(JwtAuthScopes, []string{})
 
@@ -295,10 +257,6 @@ func (w *ServerInterfaceWrapper) GetCommentsByPostID(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter postId: %s", err))
 	}
 
-	ctx.Set(X_CSRF_TOKENScopes, []string{})
-
-	ctx.Set(_csrfScopes, []string{})
-
 	ctx.Set(JwtAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -317,10 +275,6 @@ func (w *ServerInterfaceWrapper) DeleteComment(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter commentId: %s", err))
 	}
 
-	ctx.Set(X_CSRF_TOKENScopes, []string{})
-
-	ctx.Set(_csrfScopes, []string{})
-
 	ctx.Set(JwtAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -328,22 +282,9 @@ func (w *ServerInterfaceWrapper) DeleteComment(ctx echo.Context) error {
 	return err
 }
 
-// Csrftoken converts echo context to params.
-func (w *ServerInterfaceWrapper) Csrftoken(ctx echo.Context) error {
-	var err error
-
-	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.Csrftoken(ctx)
-	return err
-}
-
 // GetFollowerConnections converts echo context to params.
 func (w *ServerInterfaceWrapper) GetFollowerConnections(ctx echo.Context) error {
 	var err error
-
-	ctx.Set(X_CSRF_TOKENScopes, []string{})
-
-	ctx.Set(_csrfScopes, []string{})
 
 	ctx.Set(JwtAuthScopes, []string{})
 
@@ -365,10 +306,6 @@ func (w *ServerInterfaceWrapper) GetFollowerConnections(ctx echo.Context) error 
 func (w *ServerInterfaceWrapper) GetFollowingConnections(ctx echo.Context) error {
 	var err error
 
-	ctx.Set(X_CSRF_TOKENScopes, []string{})
-
-	ctx.Set(_csrfScopes, []string{})
-
 	ctx.Set(JwtAuthScopes, []string{})
 
 	// Parameter object where we will unmarshal all parameters from the context
@@ -389,10 +326,6 @@ func (w *ServerInterfaceWrapper) GetFollowingConnections(ctx echo.Context) error
 func (w *ServerInterfaceWrapper) CreateConnection(ctx echo.Context) error {
 	var err error
 
-	ctx.Set(X_CSRF_TOKENScopes, []string{})
-
-	ctx.Set(_csrfScopes, []string{})
-
 	ctx.Set(JwtAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -410,10 +343,6 @@ func (w *ServerInterfaceWrapper) DeleteConnection(ctx echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter connectionId: %s", err))
 	}
-
-	ctx.Set(X_CSRF_TOKENScopes, []string{})
-
-	ctx.Set(_csrfScopes, []string{})
 
 	ctx.Set(JwtAuthScopes, []string{})
 
@@ -435,10 +364,6 @@ func (w *ServerInterfaceWrapper) HealthCheck(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) GetLikedCommentList(ctx echo.Context) error {
 	var err error
 
-	ctx.Set(X_CSRF_TOKENScopes, []string{})
-
-	ctx.Set(_csrfScopes, []string{})
-
 	ctx.Set(JwtAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -449,10 +374,6 @@ func (w *ServerInterfaceWrapper) GetLikedCommentList(ctx echo.Context) error {
 // GetLikedPostList converts echo context to params.
 func (w *ServerInterfaceWrapper) GetLikedPostList(ctx echo.Context) error {
 	var err error
-
-	ctx.Set(X_CSRF_TOKENScopes, []string{})
-
-	ctx.Set(_csrfScopes, []string{})
 
 	ctx.Set(JwtAuthScopes, []string{})
 
@@ -465,10 +386,6 @@ func (w *ServerInterfaceWrapper) GetLikedPostList(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) Login(ctx echo.Context) error {
 	var err error
 
-	ctx.Set(X_CSRF_TOKENScopes, []string{})
-
-	ctx.Set(_csrfScopes, []string{})
-
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.Login(ctx)
 	return err
@@ -477,10 +394,6 @@ func (w *ServerInterfaceWrapper) Login(ctx echo.Context) error {
 // Logout converts echo context to params.
 func (w *ServerInterfaceWrapper) Logout(ctx echo.Context) error {
 	var err error
-
-	ctx.Set(X_CSRF_TOKENScopes, []string{})
-
-	ctx.Set(_csrfScopes, []string{})
 
 	ctx.Set(JwtAuthScopes, []string{})
 
@@ -492,10 +405,6 @@ func (w *ServerInterfaceWrapper) Logout(ctx echo.Context) error {
 // GetMessages converts echo context to params.
 func (w *ServerInterfaceWrapper) GetMessages(ctx echo.Context) error {
 	var err error
-
-	ctx.Set(X_CSRF_TOKENScopes, []string{})
-
-	ctx.Set(_csrfScopes, []string{})
 
 	ctx.Set(JwtAuthScopes, []string{})
 
@@ -546,10 +455,6 @@ func (w *ServerInterfaceWrapper) GoogleOauthCallback(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) CreatePostLike(ctx echo.Context) error {
 	var err error
 
-	ctx.Set(X_CSRF_TOKENScopes, []string{})
-
-	ctx.Set(_csrfScopes, []string{})
-
 	ctx.Set(JwtAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -568,10 +473,6 @@ func (w *ServerInterfaceWrapper) DeletePostLike(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter PostId: %s", err))
 	}
 
-	ctx.Set(X_CSRF_TOKENScopes, []string{})
-
-	ctx.Set(_csrfScopes, []string{})
-
 	ctx.Set(JwtAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -583,10 +484,6 @@ func (w *ServerInterfaceWrapper) DeletePostLike(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) GetPosts(ctx echo.Context) error {
 	var err error
 
-	ctx.Set(X_CSRF_TOKENScopes, []string{})
-
-	ctx.Set(_csrfScopes, []string{})
-
 	ctx.Set(JwtAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -597,10 +494,6 @@ func (w *ServerInterfaceWrapper) GetPosts(ctx echo.Context) error {
 // CreatePost converts echo context to params.
 func (w *ServerInterfaceWrapper) CreatePost(ctx echo.Context) error {
 	var err error
-
-	ctx.Set(X_CSRF_TOKENScopes, []string{})
-
-	ctx.Set(_csrfScopes, []string{})
 
 	ctx.Set(JwtAuthScopes, []string{})
 
@@ -620,10 +513,6 @@ func (w *ServerInterfaceWrapper) GetPostsOfUser(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter userId: %s", err))
 	}
 
-	ctx.Set(X_CSRF_TOKENScopes, []string{})
-
-	ctx.Set(_csrfScopes, []string{})
-
 	ctx.Set(JwtAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -641,10 +530,6 @@ func (w *ServerInterfaceWrapper) DeletePost(ctx echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter postId: %s", err))
 	}
-
-	ctx.Set(X_CSRF_TOKENScopes, []string{})
-
-	ctx.Set(_csrfScopes, []string{})
 
 	ctx.Set(JwtAuthScopes, []string{})
 
@@ -664,10 +549,6 @@ func (w *ServerInterfaceWrapper) GetPostByPostID(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter postId: %s", err))
 	}
 
-	ctx.Set(X_CSRF_TOKENScopes, []string{})
-
-	ctx.Set(_csrfScopes, []string{})
-
 	ctx.Set(JwtAuthScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -678,10 +559,6 @@ func (w *ServerInterfaceWrapper) GetPostByPostID(ctx echo.Context) error {
 // SearchUser converts echo context to params.
 func (w *ServerInterfaceWrapper) SearchUser(ctx echo.Context) error {
 	var err error
-
-	ctx.Set(X_CSRF_TOKENScopes, []string{})
-
-	ctx.Set(_csrfScopes, []string{})
 
 	ctx.Set(JwtAuthScopes, []string{})
 
@@ -699,35 +576,9 @@ func (w *ServerInterfaceWrapper) SearchUser(ctx echo.Context) error {
 	return err
 }
 
-// SetState converts echo context to params.
-func (w *ServerInterfaceWrapper) SetState(ctx echo.Context) error {
-	var err error
-
-	ctx.Set(X_CSRF_TOKENScopes, []string{})
-
-	ctx.Set(_csrfScopes, []string{})
-
-	// Parameter object where we will unmarshal all parameters from the context
-	var params SetStateParams
-	// ------------- Required query parameter "state" -------------
-
-	err = runtime.BindQueryParameter("form", true, true, "state", ctx.QueryParams(), &params.State)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter state: %s", err))
-	}
-
-	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.SetState(ctx, params)
-	return err
-}
-
 // Signup converts echo context to params.
 func (w *ServerInterfaceWrapper) Signup(ctx echo.Context) error {
 	var err error
-
-	ctx.Set(X_CSRF_TOKENScopes, []string{})
-
-	ctx.Set(_csrfScopes, []string{})
 
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.Signup(ctx)
@@ -737,10 +588,6 @@ func (w *ServerInterfaceWrapper) Signup(ctx echo.Context) error {
 // GetLoginUser converts echo context to params.
 func (w *ServerInterfaceWrapper) GetLoginUser(ctx echo.Context) error {
 	var err error
-
-	ctx.Set(X_CSRF_TOKENScopes, []string{})
-
-	ctx.Set(_csrfScopes, []string{})
 
 	ctx.Set(JwtAuthScopes, []string{})
 
@@ -752,10 +599,6 @@ func (w *ServerInterfaceWrapper) GetLoginUser(ctx echo.Context) error {
 // UpdateUser converts echo context to params.
 func (w *ServerInterfaceWrapper) UpdateUser(ctx echo.Context) error {
 	var err error
-
-	ctx.Set(X_CSRF_TOKENScopes, []string{})
-
-	ctx.Set(_csrfScopes, []string{})
 
 	ctx.Set(JwtAuthScopes, []string{})
 
@@ -774,10 +617,6 @@ func (w *ServerInterfaceWrapper) GetUser(ctx echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter userId: %s", err))
 	}
-
-	ctx.Set(X_CSRF_TOKENScopes, []string{})
-
-	ctx.Set(_csrfScopes, []string{})
 
 	ctx.Set(JwtAuthScopes, []string{})
 
@@ -824,7 +663,6 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.POST(baseURL+"/comments", wrapper.CreateComment)
 	router.GET(baseURL+"/comments/post/:postId", wrapper.GetCommentsByPostID)
 	router.DELETE(baseURL+"/comments/:commentId", wrapper.DeleteComment)
-	router.GET(baseURL+"/csrftoken", wrapper.Csrftoken)
 	router.GET(baseURL+"/followers", wrapper.GetFollowerConnections)
 	router.GET(baseURL+"/followings", wrapper.GetFollowingConnections)
 	router.POST(baseURL+"/follows", wrapper.CreateConnection)
@@ -844,7 +682,6 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.DELETE(baseURL+"/posts/:postId", wrapper.DeletePost)
 	router.GET(baseURL+"/posts/:postId", wrapper.GetPostByPostID)
 	router.GET(baseURL+"/search-user", wrapper.SearchUser)
-	router.GET(baseURL+"/set-state", wrapper.SetState)
 	router.POST(baseURL+"/signup", wrapper.Signup)
 	router.GET(baseURL+"/user", wrapper.GetLoginUser)
 	router.PUT(baseURL+"/user", wrapper.UpdateUser)
@@ -855,51 +692,48 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/+xcbW/buhX+K4Q2YBsQ17m9/XDhb0269gZ9SZA02IYiMBjp2GYtiQpJJdcL/N+HQ1Lv",
-	"pCwntpMN+9IkFqlz+DyHDw8P6T4GIU8ynkKqZDB5DGS4gITqX084X+LPTPAMhGKgPz27OvkW8gjwd7XK",
-	"IJgEUgmWzoP1UUBzteDC+eiW8+WURbVnLFUwB4EPWULn7jcyBck0F7HzYSZYCO43ZvltzOQCoilV7r62",
-	"gdtbxVTscmh9FAi4y5mAKJj8KAd1VMFS9C3BKNysm2z5VxtmgcXNUWGa3/6EUKFTSMgnSAV8s/g3mUFn",
-	"5HSODZpAN0komqQ0cUMeLlgcCUjxIfqlX/5nAbNgEvxpXIXL2MbKuOnXuvScCkFX+LcxGMM9xB7+PXGR",
-	"UQGp6htTixDNRQsIx7CbLnXt1EBwEXG6oOqS86TLQUylmiYgpS+e6w2mEo164lNwnnjni6JiDmqaSxCD",
-	"2ni5rjfKBJ+xGKa+ydiCunCw443DdJ8hJ8A8SSBVXXxD88A76JCnynbsxrUAqvyCELOlsTEo5q2HX9jS",
-	"GfEZl34nEYRN77/GNm3Ia6O3b6lG3BjfTYWh9tCLIw6610/PQ49jxeuqvsaTNIVQMZ66HCmevepgb7r5",
-	"7JBHUDRbNZIu4e6ER6ttY94fIpWVCy77TfSEa+v9RUt8+ddK5zqkemdhoX0+Jvs0cXhA1qxU3eqTpTDj",
-	"Uh+Ey728DlkJnylD/lRoO4EqON9anQRVaHC3ylVYdMiWtdcAxizZXnLcmqZt7EjQGu9qqtkl3DXmrm/S",
-	"+iNg+9lW4dXwALFwm+/N0vt8K8NvxkWCIRrcspSKVXDkSFG8kdJVzzbZpYN2QF/4nKUeKAVEkCpG3ZsA",
-	"ph/OmDOTX5u3X7F5mme7f72JDM+CY2zLUylm3/kSXIufFLOpKp45ul9BGlmV7Vke/Gz2JJF+imwfJOY6",
-	"i6gCnNFe897VtrPCDoiooo+CP5QHkmsrQU/1Ylub26hGtdDYFGBTpqvXuzAXTK2uUD7NYP45Or26/Dj6",
-	"fv7579+03qfBJFgAjbRymqE2G1USn7HPoDV+isFV9g45XzKoepunjm5zzucxTHHvqjmL+YP2yWxm2b8p",
-	"5kCnVlkaH17jJj1YKJXJyXhMw5DnqZJvzAvfhDwZ8zHHHm/H92/H2sBRIEOemUFDQhm+QP8kNIoESFlB",
-	"iGFDJQuJ/Zuw1MQTZpW4xOEsarpgjFkHaMakdsJMt3W1Kppm+I6fD+q9HbcTtJ8Pys5WB3BSUQXeruZp",
-	"pxu6gQPBfhHIULDMpMnBpaZbfuF5Ogfy/uKsLCy4n92DkKbnL2+O3xyjRzyDlGYsmAS/6o9wm6sWGuyx",
-	"3hHjb3PQQY9zSWN5FgWT4COocIG5zAeqqNke0wQUCBlMfrQ9PftAFCcyg5DNVkQtgOhtNGEpuaTLXEFK",
-	"TrS1IwPNXQ568ltktCe6enAW6YDALMKZkLcNL2H1wEWkrQMV4YLc9tixrXtN3OB0lhlPpYnJt8fHLYWl",
-	"WRazUCM1/inNhqZ63+BqSTcpw0hoDu/8c0MfNPJNZfhxg6DYiW7+KEP4xw2ORuZJglI7CWZIqQaIRFRR",
-	"MhM8KfjBCEJTJipGmj5/cHwCdVJyhmgfBrKeAtO+sfsEyoQWsdBosMIFVSNcLHuhKkpFhwGqLEwdHCMB",
-	"KhcpwRVQEoSGIDQkZlIVKW8XH5tHF06bxRSqnHYwOK2MaEHVNKNCpYPrF60ejpXadGkQ+MszfOzPzDrG",
-	"90ue2XlVtFUB7o9tZO2Kh0tQ2y8QlSG3VlelxYokJXJwaHeFWlu8fzH8NH25emAqXLB0Ti4EVzzkscTw",
-	"fOdq+y+ek4inf1FkQe+BZCASJnGRxeHQMAQpiVowWUH2PDpA3BcA6gOP4AGzmJiHNF5wqSa/Hf92HDSJ",
-	"+wfcGg5IVWMjMy40wsFR8MfoAW6lbjGKeIhjtJWR7yudd3XIQlqJbUMkpIrcrgjV85r81aA/IU7t6e5V",
-	"/qYjYxVzGu1g2+KaGOUHAu5GRdm9myk0BiUgZHAPZgUcNDI7qicPx1fyelK5awMMsoLhZm2msSlTjMry",
-	"Ua8W14rGT5fj3iXKV/fcucQOqHFvKGPfHFyJDToEHSB8RopzkC6RxV/jR9vmLFobCYvB7EOa9H7Qnzfp",
-	"7VXtqu6BjqBql4bwg4YzKIi3QIztqBB13G1Uml72fp6qvz1+11Xq889HpKrQF34QmWuRnuVxvNolSeb9",
-	"vSQNnWh7mmTOGuUOJtiAE7HDZSsu2MeI+fgR/7UTwpuY2x4nqwts/GH7+YBGMPLnoEhJuzP2jTvPDfx9",
-	"7BcKDA+9XahjhhlGZjhocvkYbi9t29NojQzRsHDvGmZcOZCANWeQFLOyFO3O+MsWzwzNfuWqFcwHhWE3",
-	"rqSYkarMN57xOOYPOhz8cvDRNqryaLn9vsaebbm2NFVp+PVpQHk6/yIyUNJTW8JlnTmWzgdQx9L5/7l7",
-	"Ge5wO+3hbkAeVI5gV+WfzfdFWml/q8MWxZ+DpDllXstnFeANkHGlLFoNXCxrqPdOlOuU3eVAXMtm6deg",
-	"lbPy739mA9BLzQJobM6SnLr1u358uoBw6VlOt1r3zOuIeZ+2j7uTaFTfjvj0E3eDUbkzlOq5y/uWt5cO",
-	"vMP+VGWeZx90fRrJu5Yg9IYuqqOHwrUZOnMjZde49V8SeQHQTIruR4zPWepXe32/Y3+73er6yLqp7qgv",
-	"6z3mq/a20w7wbwBu0CyA5bnqRRafPx3aAYvd8b4XOztIPWBbwOydeF+LNq/z7GEvyd7Xsr79Mmd7BS+E",
-	"pYS2D4v0LYqxuWsxDmkc39Jw6WdQtzvHPqdF2w1MXinMhsom+pQDB0QywVWZy7gYLe5ebOTTf9Xgff2i",
-	"Cwl5BMSAAhG5XREzHILDIeYYx+OK/YbIcE/agfXr8VvXXZGICQh1CeN3nkCX+8atnh/2rk11t0bTby+w",
-	"dCrSlh8NuB3ouY4TzTtq0rCjhfLi5j7PFdo3nXd+qLDpkmnfPdIXP07QF5tbtNmK6UVVMe3fOtRofEK9",
-	"1BweVNaH7B0udlI9fXXHBk0yele7C93gEGuMceolSgkGhA1XRbR7ffqR5LFiGRVqPOMiGUVU0SecmpT3",
-	"qgclk4eqBGTNgBnnEsT4Ef/dcNShw+d8dm0qXE+YtdIec7jnp/HgFSZMLxzMJOTCDDJi6RwhtEjVOKyf",
-	"VG3W3ScXa4qjqk1Sm+1TarUTBxJZamfLUe+k2MnZ3+s58ts8Fw4V++0jPXM/d1R8fcjJyZVuM0Skuhd/",
-	"e4r31b3fp2fde1EnUzk4tDrVAEOSCnQsS2pUXmP3cKSu7G5qwGYNdwwSlEL1Y7htsnfid7NJu9lPlaKF",
-	"liLGMwOQ/hqRf6Njvma0vypX7WtMwzOT11zmsplNCg9mCmuUe1XiEyhd67M68V9Q19ukl7ks/scKx3Cr",
-	"L2DtL+3tfslrUHC923fam2u/WoExKOEdsoh4c6X6WvLyie7riVFcLooj0rV5f/vC8kKpzHVlef2fAAAA",
-	"//8J/ghaZkYAAA==",
+	"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",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

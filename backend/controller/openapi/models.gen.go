@@ -8,11 +8,9 @@ import (
 )
 
 const (
-	X_CSRF_TOKENScopes = "X_CSRF_TOKEN.Scopes"
-	_csrfScopes        = "_csrf.Scopes"
-	Google_authScopes  = "google_auth.Scopes"
-	JwtAuthScopes      = "jwtAuth.Scopes"
-	StateScopes        = "state.Scopes"
+	Google_authScopes = "google_auth.Scopes"
+	JwtAuthScopes     = "jwtAuth.Scopes"
+	StateScopes       = "state.Scopes"
 )
 
 // Book defines model for Book.
@@ -220,12 +218,6 @@ type GoogleOauthCallbackParams struct {
 type SearchUserParams struct {
 	// Keyword keyword to search user
 	Keyword string `form:"keyword" json:"keyword"`
-}
-
-// SetStateParams defines parameters for SetState.
-type SetStateParams struct {
-	// State State for setting in cookie
-	State string `form:"state" json:"state"`
 }
 
 // CreateChatRoomJSONRequestBody defines body for CreateChatRoom for application/json ContentType.

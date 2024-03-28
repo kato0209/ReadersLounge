@@ -1,16 +1,22 @@
+'use client';
 import Link from '@mui/material/Link';
 import { getGoogleAuthUrl } from '../../utils/getGoogleAuthUrl';
 import { FcGoogle } from 'react-icons/fc';
+import axios from 'axios';
 import { generateRandomState } from '../../utils/generateRandomState';
-import { apiInstance } from '../../lib/api/apiInstance';
+import { useEffect, useState } from 'react';
 
 export default function GoogleAuth() {
-  async function setState(state: string) {
-    const api = await apiInstance;
-    await api.setState(state);
+  async function setStateToCookie(state: string) {
+    await axios.get(`/api/set-state?state=${state}`);
   }
-  const state = generateRandomState(10);
-  setState(state);
+  const [state, setState] = useState<string>('');
+  useEffect(() => {
+    const state = generateRandomState(10);
+    setStateToCookie(state);
+    setState(state);
+  }, []);
+
   return (
     <Link
       href={getGoogleAuthUrl(state)}

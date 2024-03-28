@@ -17,7 +17,7 @@ func SetJwtTokenInCookie(ctx echo.Context, tokenString string) {
 	cookie.Domain = os.Getenv("API_DOMAIN")
 	//cookie.Secure = true
 	cookie.HttpOnly = true
-	//cookie.SameSite = http.SameSiteDefaultMode
-	cookie.SameSite = http.SameSiteNoneMode
+	cookie.SameSite = http.SameSiteDefaultMode
+	//cookie.SameSite = http.SameSiteNoneMode
 	ctx.SetCookie(cookie)
 }

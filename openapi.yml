@@ -14,23 +14,9 @@ paths:
       responses:
         "200":
           description: OK
-  /csrftoken:
-    get:
-      security: []
-      summary: get csrf token
-      operationId: csrftoken
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ResCsrfToken"
   /signup:
     post:
-      security:
-        - X-CSRF-TOKEN: []
-        - _csrf: []
+      security: []
       summary: create new user
       operationId: signup
       requestBody:
@@ -48,9 +34,7 @@ paths:
                 $ref: "#/components/schemas/User"
   /login:
     post:
-      security:
-        - X-CSRF-TOKEN: []
-        - _csrf: []
+      security: []
       summary: login
       operationId: login
       requestBody:
@@ -66,23 +50,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
-  /set-state:
-    get:
-      security:
-        - X-CSRF-TOKEN: []
-        - _csrf: []
-      summary: set state
-      operationId: set-state
-      parameters:
-        - name: state
-          in: query
-          required: true
-          description: State for setting in cookie
-          schema:
-            type: string
-      responses:
-        "200":
-          description: OK
 
   /oauth/google/callback:
     get:
@@ -112,8 +79,6 @@ paths:
   /logout:
     post:
       security:
-        - X-CSRF-TOKEN: []
-        - _csrf: []
         - jwtAuth: []
       summary: logout
       operationId: logout
@@ -128,8 +93,6 @@ paths:
   /user:
     get:
       security:
-        - X-CSRF-TOKEN: []
-        - _csrf: []
         - jwtAuth: []
       summary: get user
       operationId: get-login-user
@@ -142,8 +105,6 @@ paths:
                 $ref: "#/components/schemas/User"
     put:
       security:
-        - X-CSRF-TOKEN: []
-        - _csrf: []
         - jwtAuth: []
       summary: update user
       operationId: update-user
@@ -160,8 +121,6 @@ paths:
   /user/{userId}:
     get:
       security:
-        - X-CSRF-TOKEN: []
-        - _csrf: []
         - jwtAuth: []
       summary: get user by user_id
       operationId: get-user
@@ -183,8 +142,6 @@ paths:
   /posts:
     get:
       security:
-        - X-CSRF-TOKEN: []
-        - _csrf: []
         - jwtAuth: []
       summary: get posts
       operationId: get-posts
@@ -199,8 +156,6 @@ paths:
                   $ref: "#/components/schemas/Post"
     post:
       security:
-        - X-CSRF-TOKEN: []
-        - _csrf: []
         - jwtAuth: []
       summary: create post
       operationId: create-post
@@ -217,8 +172,6 @@ paths:
   /posts/{postId}:
     get:
       security:
-        - X-CSRF-TOKEN: []
-        - _csrf: []
         - jwtAuth: []
       summary: get post by postID
       operationId: get-post-by-postID
@@ -238,8 +191,6 @@ paths:
                 $ref: "#/components/schemas/Post"
     delete:
       security:
-        - X-CSRF-TOKEN: []
-        - _csrf: []
         - jwtAuth: []
       summary: delete a post
       operationId: delete-post
@@ -257,8 +208,6 @@ paths:
   /posts/user/{userId}:
     get:
       security:
-        - X-CSRF-TOKEN: []
-        - _csrf: []
         - jwtAuth: []
       summary: get posts corresponding to userId
       operationId: get-posts-of-user
@@ -282,8 +231,6 @@ paths:
   /books:
     get:
       security:
-        - X-CSRF-TOKEN: []
-        - _csrf: []
         - jwtAuth: []
       summary: fetch book data from RakutenAPI
       operationId: fetch-book-data
@@ -311,8 +258,6 @@ paths:
   /books-genres:
     get:
       security:
-        - X-CSRF-TOKEN: []
-        - _csrf: []
         - jwtAuth: []
       summary: Get books genres
       operationId: get-books-genres
@@ -330,8 +275,6 @@ paths:
       servers:
         - url: "ws://localhost:8080"
       security:
-        - X-CSRF-TOKEN: []
-        - _csrf: []
         - jwtAuth: []
       summary: WebSocket Connection for chat
       operationId: chat-socket
@@ -374,8 +317,6 @@ paths:
   /chat-rooms:
     get:
       security:
-        - X-CSRF-TOKEN: []
-        - _csrf: []
         - jwtAuth: []
       summary: return users chat room list
       operationId: get-chat-rooms
@@ -390,8 +331,6 @@ paths:
                   $ref: "#/components/schemas/ChatRoom"
     post:
       security:
-        - X-CSRF-TOKEN: []
-        - _csrf: []
         - jwtAuth: []
       summary: create chat room
       operationId: create-chat-room
@@ -419,8 +358,6 @@ paths:
   /messages:
     get:
       security:
-        - X-CSRF-TOKEN: []
-        - _csrf: []
         - jwtAuth: []
       summary: return messages in a chat room
       operationId: get-messages
@@ -444,8 +381,6 @@ paths:
   /follows:
     post:
       security:
-        - X-CSRF-TOKEN: []
-        - _csrf: []
         - jwtAuth: []
       summary: create connection of following
       operationId: create-connection
@@ -465,8 +400,6 @@ paths:
   /follows/{connectionId}:
     delete:
       security:
-        - X-CSRF-TOKEN: []
-        - _csrf: []
         - jwtAuth: []
       summary: delete connection of following
       operationId: delete-connection
@@ -484,8 +417,6 @@ paths:
   /followings:
     get:
       security:
-        - X-CSRF-TOKEN: []
-        - _csrf: []
         - jwtAuth: []
       summary: get following connections
       operationId: get-following-connections
@@ -508,8 +439,6 @@ paths:
   /followers:
     get:
       security:
-        - X-CSRF-TOKEN: []
-        - _csrf: []
         - jwtAuth: []
       summary: get followers connections
       operationId: get-follower-connections
@@ -533,8 +462,6 @@ paths:
   /post-likes:
     post:
       security:
-        - X-CSRF-TOKEN: []
-        - _csrf: []
         - jwtAuth: []
       summary: Create like of Post
       operationId: create-post-like
@@ -559,8 +486,6 @@ paths:
   /post-likes/post/{PostId}:
     delete:
       security:
-        - X-CSRF-TOKEN: []
-        - _csrf: []
         - jwtAuth: []
       summary: delete like of Post
       operationId: delete-post-like
@@ -578,8 +503,6 @@ paths:
   /comment-likes:
     post:
       security:
-        - X-CSRF-TOKEN: []
-        - _csrf: []
         - jwtAuth: []
       summary: Create like of Comment
       operationId: create-comment-like
@@ -604,8 +527,6 @@ paths:
   /comment-likes/comment/{CommentId}:
     delete:
       security:
-        - X-CSRF-TOKEN: []
-        - _csrf: []
         - jwtAuth: []
       summary: delete like of Comment
       operationId: delete-comment-like
@@ -623,8 +544,6 @@ paths:
   /liked-posts:
     get:
       security:
-        - X-CSRF-TOKEN: []
-        - _csrf: []
         - jwtAuth: []
       summary: Get postID list of User liked
       operationId: get-liked-post-list
@@ -641,8 +560,6 @@ paths:
   /liked-comments:
     get:
       security:
-        - X-CSRF-TOKEN: []
-        - _csrf: []
         - jwtAuth: []
       summary: Get commentID list of User liked
       operationId: get-liked-comment-list
@@ -660,8 +577,6 @@ paths:
   /search-user:
     get:
       security:
-        - X-CSRF-TOKEN: []
-        - _csrf: []
         - jwtAuth: []
       summary: search user by keyword
       operationId: search-user
@@ -685,8 +600,6 @@ paths:
   /comments:
     post:
       security:
-        - X-CSRF-TOKEN: []
-        - _csrf: []
         - jwtAuth: []
       summary: create comment
       operationId: create-comment
@@ -706,8 +619,6 @@ paths:
   /comments/{commentId}:
     delete:
       security:
-        - X-CSRF-TOKEN: []
-        - _csrf: []
         - jwtAuth: []
       summary: delete comment
       operationId: delete-comment
@@ -725,8 +636,6 @@ paths:
   /comments/post/{postId}:
     get:
       security:
-        - X-CSRF-TOKEN: []
-        - _csrf: []
         - jwtAuth: []
       summary: get comments by postID
       operationId: get-comments-by-postID
@@ -749,14 +658,6 @@ paths:
 
 components:
   securitySchemes:
-    X-CSRF-TOKEN:
-      type: apiKey
-      name: X-CSRF-TOKEN
-      in: header
-    _csrf:
-      type: apiKey
-      name: _csrf
-      in: cookie
     jwtAuth:
       type: apiKey
       name: jwt_token

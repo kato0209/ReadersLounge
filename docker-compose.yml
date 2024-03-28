@@ -58,8 +58,6 @@ services:
       - node_modules:/readers-lounge/frontend/node_modules
     ports:
       - "3000:3000"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
 
   swagger-editor:
     image: swaggerapi/swagger-editor:latest

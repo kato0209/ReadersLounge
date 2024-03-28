@@ -90,24 +90,8 @@ func (s *Server) Logout(ctx echo.Context) error {
 	cookie.Domain = os.Getenv("API_DOMAIN")
 	//cookie.Secure = true
 	cookie.HttpOnly = true
-	//cookie.SameSite = http.SameSiteDefaultMode
-	cookie.SameSite = http.SameSiteNoneMode
-	ctx.SetCookie(cookie)
-	return ctx.NoContent(http.StatusOK)
-}
-
-func (s *Server) SetState(ctx echo.Context, params openapi.SetStateParams) error {
-	state := params.State
-	cookie := new(http.Cookie)
-	cookie.Name = "state"
-	cookie.Value = state
-	cookie.Expires = time.Now().Add(24 * time.Hour)
-	cookie.Path = "/"
-	cookie.Domain = os.Getenv("API_DOMAIN")
-	//cookie.Secure = true
-	cookie.HttpOnly = true
-	//cookie.SameSite = http.SameSiteDefaultMode
-	cookie.SameSite = http.SameSiteNoneMode
+	cookie.SameSite = http.SameSiteDefaultMode
+	//cookie.SameSite = http.SameSiteNoneMode
 	ctx.SetCookie(cookie)
 	return ctx.NoContent(http.StatusOK)
 }

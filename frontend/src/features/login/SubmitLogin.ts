@@ -6,7 +6,11 @@ import { redirect } from 'next/navigation';
 import { apiInstance } from '../../lib/api/apiInstance';
 
 export type State = {
-  error: string | null | unknown;
+  error?: string;
+  fieldErrors?: {
+    email?: string;
+    password?: string;
+  };
 };
 
 export async function login(state: State, formData: FormData): Promise<State> {
@@ -21,9 +25,7 @@ export async function login(state: State, formData: FormData): Promise<State> {
   });
 
   if (!validatedFields.success) {
-    return {
-      error: validatedFields.error.flatten().fieldErrors,
-    };
+    throw validatedFields.error.flatten().fieldErrors;
   }
 
   const { email, password } = validatedFields.data;
@@ -34,19 +36,17 @@ export async function login(state: State, formData: FormData): Promise<State> {
 
   try {
     const api = await apiInstance;
-    console.log('api', api);
     await api.login(reqLoginBody);
     redirect('/');
   } catch (error: unknown) {
-    console.error(error);
     if (error instanceof AxiosError) {
       if (error.response && error.response.status === 500) {
         return { error: 'メールアドレスまたはパスワードが間違っています' };
       } else {
-        return { error: error };
+        throw error;
       }
     } else {
-      return { error: error };
+      throw error;
     }
   }
 }
