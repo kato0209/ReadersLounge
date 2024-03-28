@@ -1,5 +1,5 @@
 import Login from '../features/login/Login';
-import SignUp from '../features/signup/SignUp';
+import SignUp from '../features/signup/Signup';
 
 export const publicRoutes = [
   {

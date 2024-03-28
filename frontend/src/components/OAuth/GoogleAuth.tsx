@@ -1,6 +1,6 @@
 'use client';
 import Link from '@mui/material/Link';
-import { getGoogleAuthUrl } from '../../utils/getGoogleAuthUrl';
+import { getGoogleAuthUrl } from '../../lib/auth/oauth/getGoogleAuthUrl';
 import { FcGoogle } from 'react-icons/fc';
 import axios from 'axios';
 import { generateRandomState } from '../../utils/generateRandomState';

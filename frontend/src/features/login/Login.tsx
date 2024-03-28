@@ -21,7 +21,6 @@ export const initialState: State = {
 
 export default function Login({ GoogleAuth }: { GoogleAuth: React.ReactNode }) {
   const [state, formAction] = useFormState(login, initialState);
-  console.log(state);
   return (
     <Container component="main" maxWidth="xs">
       <Box

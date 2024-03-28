@@ -2,8 +2,9 @@
 import { z } from 'zod';
 import { ReqLoginBody } from '../../openapi/models';
 import { AxiosError } from 'axios';
-import { redirect } from 'next/navigation';
 import { apiInstance } from '../../lib/api/apiInstance';
+import { redirect } from 'next/navigation';
+import { setJwtTokenInCookie } from '../../lib/jwt/setJwtToken';
 
 export type State = {
   error?: string;
@@ -36,7 +37,8 @@ export async function login(state: State, formData: FormData): Promise<State> {
 
   try {
     const api = await apiInstance;
-    await api.login(reqLoginBody);
+    const res = await api.login(reqLoginBody);
+    setJwtTokenInCookie(res);
     redirect('/');
   } catch (error: unknown) {
     if (error instanceof AxiosError) {
