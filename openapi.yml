@@ -676,10 +676,6 @@ components:
       name: state
       in: cookie
   schemas:
-    ResCsrfToken:
-      properties:
-        csrf_token:
-          type: string
     ReqSignupBody:
       properties:
         username:
@@ -747,6 +743,7 @@ components:
         - created_at
         - book
     ReqCreatePostBody:
+      type: object
       properties:
         content:
           type: string

@@ -19,6 +19,5 @@ export * from './post-like';
 export * from './req-create-comment-body';
 export * from './req-login-body';
 export * from './req-signup-body';
-export * from './res-csrf-token';
 export * from './send-message-req-body';
 export * from './user';

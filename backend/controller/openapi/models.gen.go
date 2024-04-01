@@ -133,11 +133,6 @@ type ReqSignupBody struct {
 	Username   *string `json:"username,omitempty"`
 }
 
-// ResCsrfToken defines model for ResCsrfToken.
-type ResCsrfToken struct {
-	CsrfToken *string `json:"csrf_token,omitempty"`
-}
-
 // SendMessageReqBody defines model for SendMessageReqBody.
 type SendMessageReqBody struct {
 	Content string `json:"content"`
