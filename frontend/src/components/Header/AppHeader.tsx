@@ -19,9 +19,11 @@ import { isValidUrl } from '../../utils/isValidUrl';
 import PersonSearchIcon from '@mui/icons-material/PersonSearch';
 import Link from 'next/link';
 import { User } from '../../openapi';
-import { fetchUserData } from '../../lib/user/fetchUser';
+import axios from 'axios';
+import { useErrorHandler } from 'react-error-boundary';
 
 export default function AppHeader() {
+  const errorHandler = useErrorHandler();
   const [profileAnchorEl, setProfileAnchorEl] =
     React.useState<null | HTMLElement>(null);
   const [MenuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(
@@ -29,8 +31,17 @@ export default function AppHeader() {
   );
   const [user, setUser] = React.useState<User | null>(null);
 
+  async function fetchLoginUser() {
+    try {
+      const res = await axios.get(`/api/fetch-login-user`);
+      return res.data;
+    } catch (error: unknown) {
+      errorHandler(error);
+    }
+  }
+
   React.useEffect(() => {
-    fetchUserData().then((data) => {
+    fetchLoginUser().then((data) => {
       setUser(data);
     });
   }, []);

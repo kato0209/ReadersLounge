@@ -36,7 +36,7 @@ export async function login(state: State, formData: FormData): Promise<State> {
   };
 
   try {
-    const api = await apiInstance;
+    const api = apiInstance;
     const res = await api.login(reqLoginBody);
     setJwtTokenInCookie(res);
     redirect('/');

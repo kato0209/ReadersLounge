@@ -65,7 +65,7 @@ export async function signup(state: State, formData: FormData): Promise<State> {
   };
 
   try {
-    const api = await apiInstance;
+    const api = apiInstance;
     const res = await api.signup(reqSignupBody);
     setJwtTokenInCookie(res);
     redirect('/');

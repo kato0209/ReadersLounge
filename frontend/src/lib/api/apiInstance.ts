@@ -7,7 +7,7 @@ if (!BASE_API_URL) {
   throw new Error('Environment variable API_URL is not set.');
 }
 
-const createApiInstance = async (): Promise<DefaultApi> => {
+const createApiInstance = (): DefaultApi => {
   const config = new Configuration({
     basePath: BASE_API_URL,
     baseOptions: {

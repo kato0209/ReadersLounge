@@ -6,5 +6,5 @@
     "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true
   },
-  "include": ["next.config.ts"]
+  "include": ["next.config.js"]
 }

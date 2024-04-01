@@ -5,10 +5,16 @@ import { FcGoogle } from 'react-icons/fc';
 import axios from 'axios';
 import { generateRandomState } from '../../utils/generateRandomState';
 import { useEffect, useState } from 'react';
+import { useErrorHandler } from 'react-error-boundary';
 
 export default function GoogleAuth() {
+  const errorHandler = useErrorHandler();
   async function setStateToCookie(state: string) {
-    await axios.get(`/api/set-state?state=${state}`);
+    try {
+      await axios.get(`/api/set-state?state=${state}`);
+    } catch (error: unknown) {
+      errorHandler(error);
+    }
   }
   const [state, setState] = useState<string>('');
   useEffect(() => {
