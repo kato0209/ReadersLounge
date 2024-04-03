@@ -11,7 +11,7 @@ type SearchBookProps = {
 };
 
 export const SearchBook: React.FC<SearchBookProps> = async ({ formData }) => {
-  const fetchBookGenres = async () => {
+  const fetchBookGenres = async (): Promise<BookGenreNode[]> => {
     try {
       const api = apiInstance;
       const res = await api.getBooksGenres();
