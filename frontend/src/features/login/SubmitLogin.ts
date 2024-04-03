@@ -45,10 +45,10 @@ export async function login(state: State, formData: FormData): Promise<State> {
       if (error.response && error.response.status === 500) {
         return { error: 'メールアドレスまたはパスワードが間違っています' };
       } else {
-        throw error;
+        return Promise.reject(error);
       }
     } else {
-      throw error;
+      return Promise.reject(error);
     }
   }
 }

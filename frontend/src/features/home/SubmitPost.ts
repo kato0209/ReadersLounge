@@ -26,12 +26,16 @@ export async function post(state: State, formData: FormData): Promise<State> {
 
   const { content, rating, ISBNcode, postImage } = validatedFields.data;
 
-  const api = apiInstance;
-  if (postImage) {
-    await api.createPost(content, rating, ISBNcode, postImage);
-    return {};
-  } else {
-    await api.createPost(content, rating, ISBNcode);
-    return {};
+  try {
+    const api = apiInstance;
+    if (postImage) {
+      await api.createPost(content, rating, ISBNcode, postImage);
+      return {};
+    } else {
+      await api.createPost(content, rating, ISBNcode);
+      return {};
+    }
+  } catch (error: unknown) {
+    return Promise.reject(error);
   }
 }
