@@ -1,11 +1,13 @@
-'use client';
 import Sidebar from '../../components/Sidebar/Sidebar';
-import { useIsMobileContext } from '../../providers/mobile/isMobile';
 import { Box } from '@mui/material';
-import { CommentComponent } from './CommentComponent';
+import { CommentSC } from './Comment';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useSearchParams } from 'next/navigation';
 
 export default function Comments() {
-  const isMobile = useIsMobileContext();
+  const isMobile = useMediaQuery('(max-width:650px)');
+  const searchParams = useSearchParams();
+  const postID = Number(searchParams.get('id'));
 
   return (
     <>
@@ -15,14 +17,14 @@ export default function Comments() {
             <Sidebar />
           </Box>
           <Box style={{ flex: '0 0 40%', overflowX: 'hidden' }}>
-            <CommentComponent />
+            <CommentSC postID={postID} />
           </Box>
           <Box style={{ flex: '0 0 30%' }}></Box>
         </Box>
       ) : (
         <Box style={{ display: 'flex', justifyContent: 'center' }}>
           <Box style={{ flex: '0 0 80%', overflowX: 'hidden' }}>
-            <CommentComponent />
+            <CommentSC postID={postID} />
           </Box>
         </Box>
       )}

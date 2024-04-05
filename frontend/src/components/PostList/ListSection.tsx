@@ -10,7 +10,6 @@ import Typography from '@mui/material/Typography';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Rating from '@mui/material/Rating';
-import { apiInstance } from '../../lib/api/apiInstance';
 import { useErrorHandler } from 'react-error-boundary';
 import { Post } from '../../openapi';
 import Box from '@mui/material/Box';
@@ -19,7 +18,6 @@ import Link from '@mui/material/Link';
 import { Menu, MenuItem } from '@mui/material';
 import UserAvatar from '../../components/Avatar/UserAvatar';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import { CreatePostLikeReqBody, PostLike } from '../../openapi';
 import { User } from '../../openapi';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
@@ -95,33 +93,7 @@ export const ListSection: React.FC<ListSectionProps> = ({
 
   const handleLikeClick = async (postID: number) => {
     try {
-      const req: CreatePostLikeReqBody = {
-        post_id: postID,
-      };
-      const api = await apiInstance;
-      const res = await api.createPostLike(req);
-      if (res.status === 201 && res.data) {
-        const newLike: PostLike = {
-          post_like_id: res.data.post_like_id,
-          user_id: user?.user_id as number,
-        };
-        setLikedPostIDs((currentLikedPostIDs) => [
-          ...currentLikedPostIDs,
-          postID,
-        ]);
-        setPosts((currentPosts) =>
-          currentPosts.map((post) =>
-            post.post_id === postID
-              ? {
-                  ...post,
-                  likes: Array.isArray(post.likes)
-                    ? [...post.likes, newLike]
-                    : [newLike],
-                }
-              : post,
-          ),
-        );
-      }
+      await axios.get(`/api/create-post-like?postID=${postID}`);
     } catch (error: unknown) {
       errorHandler(error);
     }
@@ -129,25 +101,7 @@ export const ListSection: React.FC<ListSectionProps> = ({
 
   const handleUnLikeClick = async (postID: number) => {
     try {
-      const api = await apiInstance;
-      const res = await api.deletePostLike(postID);
-      if (res.status === 204) {
-        setLikedPostIDs((currentLikedPostIDs) =>
-          currentLikedPostIDs.filter((id) => id !== postID),
-        );
-        setPosts((currentPosts) =>
-          currentPosts.map((post) =>
-            post.post_id === postID
-              ? {
-                  ...post,
-                  likes: post.likes?.filter(
-                    (like) => like.user_id !== user?.user_id,
-                  ),
-                }
-              : post,
-          ),
-        );
-      }
+      await axios.get(`/api/delete-post-like?postID=${postID}`);
     } catch (error: unknown) {
       errorHandler(error);
     }

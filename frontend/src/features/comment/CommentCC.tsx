@@ -12,45 +12,40 @@ import Typography from '@mui/material/Typography';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Rating from '@mui/material/Rating';
-import { apiInstance } from '../../lib/api/apiInstance';
 import { useErrorHandler } from 'react-error-boundary';
-import {
-  Post,
-  Comment,
-  ReqCreateCommentBody,
-  CreateCommentLikeReqBody,
-} from '../../openapi';
+import { Post, Comment } from '../../openapi';
 import { isValidUrl } from '../../utils/isValidUrl';
 import Link from '@mui/material/Link';
 import { Menu, MenuItem } from '@mui/material';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import { CreatePostLikeReqBody, PostLike, CommentLike } from '../../openapi';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { useParams, useRouter } from 'next/navigation';
 import { User } from '../../openapi';
-import { fetchUserData } from '../../lib/user/fetchUser';
+import axios from 'axios';
+import { useFormState } from 'react-dom';
+import { createComment } from './CreateCommentAction';
+import { State } from './CreateCommentAction';
 
-const CommentSchema = z.object({
-  content: z.string().nonempty('投稿内容は必須です').max(255, {
-    message: '投稿内容は255文字以内で入力してください',
-  }),
-});
+export const initialState: State = {
+  error: '',
+  fieldErrors: {
+    content: '',
+    postID: '',
+  },
+};
 
-type FormData = z.infer<typeof CommentSchema>;
-
-export function CommentComponent() {
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors },
-  } = useForm<FormData>({
-    resolver: zodResolver(CommentSchema),
-  });
+export function CommentCC({
+  post,
+  comments,
+  likedPostIDs,
+  likedCommentIDs,
+}: {
+  post: Post;
+  comments: Comment[];
+  likedPostIDs: number[];
+  likedCommentIDs: number[];
+}) {
+  const [state, formAction] = useFormState(createComment, initialState);
   const errorHandler = useErrorHandler();
   const [postAnchorEl, setPostAnchorEl] = React.useState<null | HTMLElement>(
     null,
@@ -59,98 +54,21 @@ export function CommentComponent() {
     React.useState<null | HTMLElement>(null);
   const [selectedPostID, setSelectedPostID] = React.useState<number>(0);
   const [selectedCommentID, setSelectedCommentID] = React.useState<number>(0);
-  const [likedPostIDs, setLikedPostIDs] = React.useState<number[]>([]);
-  const [likedCommentIDs, setLikedCommentIDs] = React.useState<number[]>([]);
-  const router = useRouter();
-  const { id } = useParams<{ id: string }>();
-  const idNumber = id ? parseInt(id, 10) : 0;
-  const [post, setPost] = React.useState<Post>();
-  const [comments, setComments] = React.useState<Comment[]>([]);
   const [user, setUser] = React.useState<User | null>(null);
 
+  async function fetchLoginUser() {
+    try {
+      const res = await axios.get(`/api/fetch-login-user`);
+      return res.data;
+    } catch (error: unknown) {
+      errorHandler(error);
+    }
+  }
   React.useEffect(() => {
-    fetchUserData().then((data) => {
+    fetchLoginUser().then((data) => {
       setUser(data);
     });
   }, []);
-
-  React.useEffect(() => {
-    fetchPost();
-    fetchComments();
-    fetchLikedPostIDs();
-    fetchLikedCommentIDs();
-  }, []);
-
-  const fetchPost = async () => {
-    try {
-      const api = await apiInstance;
-      const res = await api.getPostByPostID(idNumber);
-      if (res.data) {
-        const post: Post = {
-          post_id: res.data.post_id,
-          user: res.data.user,
-          content: res.data.content,
-          rating: res.data.rating,
-          image: res.data.image,
-          created_at: res.data.created_at,
-          book: res.data.book,
-          likes: res.data.likes,
-        };
-        setPost(post);
-      }
-    } catch (error: unknown) {
-      errorHandler(error);
-    }
-  };
-
-  const fetchComments = async () => {
-    try {
-      const api = await apiInstance;
-      const res = await api.getCommentsByPostID(idNumber);
-      if (res.data) {
-        const comments: Comment[] = res.data.map((item) => ({
-          comment_id: item.comment_id,
-          user: item.user,
-          content: item.content,
-          likes: item.likes,
-          created_at: item.created_at,
-        }));
-        setComments(comments);
-      }
-    } catch (error: unknown) {
-      errorHandler(error);
-    }
-  };
-
-  const fetchLikedPostIDs = async () => {
-    try {
-      const api = await apiInstance;
-      const res = await api.getLikedPostList();
-      if (res.data && Array.isArray(res.data)) {
-        const fetchedLikedPostIDs: number[] = res.data.map(
-          (item) => item.post_id,
-        );
-        setLikedPostIDs(fetchedLikedPostIDs);
-      }
-    } catch (error: unknown) {
-      errorHandler(error);
-    }
-  };
-
-  const fetchLikedCommentIDs = async () => {
-    try {
-      const api = await apiInstance;
-      const res = await api.getLikedCommentList();
-      if (res.data && Array.isArray(res.data)) {
-        const fetchedLikedCommentIDs: number[] = res.data.map(
-          (item) => item.comment_id,
-        );
-        setLikedCommentIDs(fetchedLikedCommentIDs);
-      }
-    } catch (error: unknown) {
-      errorHandler(error);
-    }
-  };
 
   const handlePostSettingClick = (
     event: React.MouseEvent<HTMLElement>,
@@ -182,93 +100,28 @@ export function CommentComponent() {
   const DeletePost = async () => {
     if (selectedPostID > 0) {
       try {
-        const api = await apiInstance;
-        await api.deletePost(selectedPostID);
-        router.back();
+        await axios.get(`/api/delete-post?selectedPostId=${selectedPostID}`);
       } catch (error: unknown) {
         errorHandler(error);
       }
     }
-    setPostAnchorEl(null);
-    setSelectedPostID(0);
   };
 
   const DeleteComment = async () => {
-    try {
-      const api = await apiInstance;
-      const res = await api.deleteComment(selectedCommentID);
-      if (res.status === 204) {
-        setComments((currentComments) =>
-          currentComments.filter(
-            (comment) => comment.comment_id !== selectedCommentID,
-          ),
+    if (selectedCommentID > 0) {
+      try {
+        await axios.get(
+          `/api/delete-comment?selectedCommentId=${selectedCommentID}`,
         );
+      } catch (error: unknown) {
+        errorHandler(error);
       }
-    } catch (error: unknown) {
-      errorHandler(error);
     }
-    setCommentAnchorEl(null);
-    setSelectedCommentID(0);
   };
 
   const handlePostLikeClick = async (postID: number) => {
     try {
-      const req: CreatePostLikeReqBody = {
-        post_id: postID,
-      };
-      const api = await apiInstance;
-      const res = await api.createPostLike(req);
-      if (res.status === 201 && res.data) {
-        const newLike: PostLike = {
-          post_like_id: res.data.post_like_id,
-          user_id: user?.user_id as number,
-        };
-        setLikedPostIDs((currentLikedPostIDs) => [
-          ...currentLikedPostIDs,
-          postID,
-        ]);
-        if (post) {
-          if (post.likes) {
-            post.likes.push(newLike);
-          } else {
-            post.likes = [newLike];
-          }
-        }
-      }
-    } catch (error: unknown) {
-      errorHandler(error);
-    }
-  };
-
-  const handleCommentLikeClick = async (commentID: number) => {
-    try {
-      const req: CreateCommentLikeReqBody = {
-        comment_id: commentID,
-      };
-      const api = await apiInstance;
-      const res = await api.createCommentLike(req);
-      if (res.status === 201 && res.data) {
-        const newLike: CommentLike = {
-          comment_like_id: res.data.comment_like_id,
-          user_id: user?.user_id as number,
-        };
-        setLikedCommentIDs((currentLikedCommentIDs) => [
-          ...currentLikedCommentIDs,
-          commentID,
-        ]);
-        setComments((currentComments) =>
-          currentComments.map((comment) =>
-            comment.comment_id === commentID
-              ? {
-                  ...comment,
-                  likes: Array.isArray(comment.likes)
-                    ? [...comment.likes, newLike]
-                    : [newLike],
-                }
-              : comment,
-          ),
-        );
-      }
+      await axios.get(`/api/create-post-like?postID=${postID}`);
     } catch (error: unknown) {
       errorHandler(error);
     }
@@ -276,20 +129,15 @@ export function CommentComponent() {
 
   const handlePostUnLikeClick = async (postID: number) => {
     try {
-      const api = await apiInstance;
-      const res = await api.deletePostLike(postID);
-      if (res.status === 204) {
-        setLikedPostIDs((currentLikedPostIDs) =>
-          currentLikedPostIDs.filter((id) => id !== postID),
-        );
-        if (post) {
-          if (post.likes) {
-            post.likes = post.likes.filter(
-              (like) => like.user_id !== user?.user_id,
-            );
-          }
-        }
-      }
+      await axios.get(`/api/delete-post-like?postID=${postID}`);
+    } catch (error: unknown) {
+      errorHandler(error);
+    }
+  };
+
+  const handleCommentLikeClick = async (commentID: number) => {
+    try {
+      await axios.get(`/api/create-comment-like?commentID=${commentID}`);
     } catch (error: unknown) {
       errorHandler(error);
     }
@@ -297,50 +145,7 @@ export function CommentComponent() {
 
   const handleCommentUnLikeClick = async (commentID: number) => {
     try {
-      const api = await apiInstance;
-      const res = await api.deleteCommentLike(commentID);
-      if (res.status === 204) {
-        setLikedCommentIDs((currentLikedCommentIDs) =>
-          currentLikedCommentIDs.filter((id) => id !== commentID),
-        );
-        setComments((currentComments) =>
-          currentComments.map((comment) =>
-            comment.comment_id === commentID
-              ? {
-                  ...comment,
-                  likes: comment.likes?.filter(
-                    (like) => like.user_id !== user?.user_id,
-                  ),
-                }
-              : comment,
-          ),
-        );
-      }
-    } catch (error: unknown) {
-      errorHandler(error);
-    }
-  };
-
-  const onSubmit = async (data: FormData) => {
-    if (!post) return;
-    try {
-      const req: ReqCreateCommentBody = {
-        content: data.content,
-        post_id: post.post_id,
-      };
-      const api = await apiInstance;
-      const res = await api.createComment(req);
-      if (res.status == 201 && res.data) {
-        const newComment: Comment = {
-          comment_id: res.data.comment_id,
-          user: res.data.user,
-          content: data.content,
-          created_at: res.data.created_at,
-          likes: [],
-        };
-        setComments((currentComments) => [...currentComments, newComment]);
-        setValue('content', '');
-      }
+      await axios.get(`/api/delete-comment-like?commentID=${commentID}`);
     } catch (error: unknown) {
       errorHandler(error);
     }
@@ -545,18 +350,23 @@ export function CommentComponent() {
           borderBottom: '1px solid #BDBDBD',
         }}
       >
-        <Box component="form" noValidate onSubmit={handleSubmit(onSubmit)}>
+        <form action={formAction}>
           <Box
             sx={{
               display: 'flex',
             }}
           >
             <TextField
-              {...register('content')}
               fullWidth
               id="content"
               label="Post your reply"
               name="content"
+            />
+            <input
+              type="hidden"
+              id="postID"
+              name="postID"
+              value={post.post_id}
             />
             <Button
               type="submit"
@@ -575,9 +385,9 @@ export function CommentComponent() {
               Reply
             </Button>
           </Box>
-        </Box>
-        {errors.content && (
-          <span style={{ color: 'red' }}>{errors.content.message}</span>
+        </form>
+        {state.fieldErrors?.content && (
+          <span style={{ color: 'red' }}>{state.fieldErrors?.content}</span>
         )}
       </Box>
       <Box
