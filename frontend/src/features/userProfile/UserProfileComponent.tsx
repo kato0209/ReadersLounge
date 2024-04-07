@@ -1,11 +1,9 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { isValidUrl } from '../../utils/isValidUrl';
-import { useParams } from 'next/navigation';
-import { apiInstance } from '../../lib/api/apiInstance';
 import { useErrorHandler } from 'react-error-boundary';
 import { User } from '../../openapi';
-import { CreateConnectionRequest, Connection } from '../../openapi';
+import { Connection } from '../../openapi';
 import {
   Box,
   Card,
@@ -16,29 +14,26 @@ import {
   Stack,
   CardMedia,
 } from '@mui/material';
-import { CreateChatRoomRequest } from '../../openapi';
 import { EditProfile } from './EditProfile';
 import { ConnectionList } from './ConnectionList';
 import { PostList } from '../../components/PostList/PostList';
 import { Post } from '../../openapi';
 import { redirect } from 'next/navigation';
-import { fetchUserData } from '../../lib/user/fetchUser';
+import axios from 'axios';
 
-export default function UserProfileMain() {
-  const { id } = useParams<{ id: string }>();
-  const idNumber = id ? parseInt(id, 10) : 0;
-  const [user, setUser] = useState<User | null>(null);
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [followerConnections, setfollowerConnections] = useState<Connection[]>(
-    [],
-  );
-  const [followingConnections, setfollowingConnections] = useState<
-    Connection[]
-  >([]);
+export default function UserProfileComponent({
+  user,
+  posts,
+  followerConnections,
+  followingConnections,
+}: {
+  user: User;
+  posts: Post[];
+  followerConnections: Connection[];
+  followingConnections: Connection[];
+}) {
   const [followingConnection, setFollowingConnection] =
     useState<Connection | null>(null);
-  const [isFollowActionLoading, setIsFollowActionLoading] =
-    useState<boolean>(false);
   const errorHandler = useErrorHandler();
   const [activeConnectionList, setActiveConnectionList] = useState<
     string | null
@@ -46,111 +41,19 @@ export default function UserProfileMain() {
 
   const [loginUser, setLoginUser] = useState<User | null>(null);
 
+  async function fetchLoginUser() {
+    try {
+      const res = await axios.get(`/api/fetch-login-user`);
+      return res.data;
+    } catch (error: unknown) {
+      errorHandler(error);
+    }
+  }
   useEffect(() => {
-    fetchUserData().then((data) => {
+    fetchLoginUser().then((data) => {
       setLoginUser(data);
     });
   }, []);
-
-  const fetchUser = async () => {
-    try {
-      const api = await apiInstance;
-      const res = await api.getUser(idNumber);
-      if (res.data) {
-        const targetUser: User = {
-          user_id: res.data.user_id,
-          name: res.data.name,
-          profile_image: res.data.profile_image,
-          profile_text: res.data.profile_text,
-        };
-        setUser(targetUser);
-      }
-    } catch (error: unknown) {
-      errorHandler(error);
-    }
-  };
-
-  const fetchfollowerConnections = async () => {
-    try {
-      setIsFollowActionLoading(true);
-      const api = await apiInstance;
-      const res = await api.getFollowerConnections(idNumber);
-      if (res.data && res.data.length > 0) {
-        const followerConnections: Connection[] = res.data.map((connection) => {
-          return {
-            connection_id: connection.connection_id,
-            target_user_id: connection.target_user_id,
-            target_user_name: connection.target_user_name,
-            target_user_profile_image: connection.target_user_profile_image,
-          };
-        });
-        setfollowerConnections(followerConnections);
-      } else {
-        setfollowerConnections([]);
-      }
-    } catch (error: unknown) {
-      errorHandler(error);
-    } finally {
-      setIsFollowActionLoading(false);
-    }
-  };
-
-  const fetchfollowingConnections = async () => {
-    try {
-      setIsFollowActionLoading(true);
-      const api = await apiInstance;
-      const res = await api.getFollowingConnections(idNumber);
-      if (res.data && res.data.length > 0) {
-        const followingConnections: Connection[] = res.data.map(
-          (connection) => {
-            return {
-              connection_id: connection.connection_id,
-              target_user_id: connection.target_user_id,
-              target_user_name: connection.target_user_name,
-              target_user_profile_image: connection.target_user_profile_image,
-            };
-          },
-        );
-        setfollowingConnections(followingConnections);
-      } else {
-        setfollowingConnections([]);
-      }
-    } catch (error: unknown) {
-      errorHandler(error);
-    } finally {
-      setIsFollowActionLoading(false);
-    }
-  };
-
-  const fetchPostsOfUser = async () => {
-    try {
-      const api = await apiInstance;
-      const res = await api.getPostsOfUser(idNumber);
-
-      if (res.data && Array.isArray(res.data)) {
-        const fetchedPosts: Post[] = res.data.map((item) => ({
-          post_id: item.post_id,
-          user: item.user,
-          content: item.content,
-          rating: item.rating,
-          image: item.image,
-          created_at: item.created_at,
-          book: item.book,
-          likes: item.likes,
-        }));
-        setPosts(fetchedPosts);
-      }
-    } catch (error: unknown) {
-      errorHandler(error);
-    }
-  };
-
-  useEffect(() => {
-    fetchUser();
-    fetchPostsOfUser();
-    fetchfollowerConnections();
-    fetchfollowingConnections();
-  }, [idNumber]);
 
   useEffect(() => {
     const connection = followerConnections.find(
@@ -163,31 +66,20 @@ export default function UserProfileMain() {
     }
   }, [followerConnections]);
 
-  const handleMessageClick = async () => {
+  const handleMessageClick = async (chatPartnerID: number) => {
     try {
-      const req: CreateChatRoomRequest = {
-        chat_partner_id: idNumber,
-      };
-      const api = await apiInstance;
-      const res = await api.createChatRoom(req);
-      if (res.status === 201) {
-        redirect(`/chat-room-list/${res.data}`);
-      }
+      const roomID = await axios.get(
+        `/api/create-chat-room?chatPartnerID=${chatPartnerID}`,
+      );
+      redirect(`/chat-room-list/${roomID}`);
     } catch (error: unknown) {
       errorHandler(error);
     }
   };
 
-  const handleFollowClick = async () => {
+  const handleFollowClick = async (connectionID: number) => {
     try {
-      const req: CreateConnectionRequest = {
-        target_user_id: idNumber,
-      };
-      const api = await apiInstance;
-      const res = await api.createConnection(req);
-      if (res.status === 201) {
-        fetchfollowerConnections();
-      }
+      await axios.get(`/api/create-connection?connectionID=${connectionID}`);
     } catch (error: unknown) {
       errorHandler(error);
     }
@@ -195,11 +87,7 @@ export default function UserProfileMain() {
 
   const handleUnFollowClick = async (connectionID: number) => {
     try {
-      const api = await apiInstance;
-      const res = await api.deleteConnection(connectionID);
-      if (res.status === 204) {
-        fetchfollowerConnections();
-      }
+      await axios.get(`/api/delete-connection?connectionID=${connectionID}`);
     } catch (error: unknown) {
       errorHandler(error);
     }
@@ -268,7 +156,7 @@ export default function UserProfileMain() {
                   : `data:image/png;base64,${user?.profile_image}`
               }
             />
-            {loginUser?.user_id === idNumber && (
+            {loginUser?.user_id === user.user_id && (
               <Box
                 sx={{
                   display: 'flex',
@@ -277,7 +165,7 @@ export default function UserProfileMain() {
                   right: '0.3rem',
                 }}
               >
-                {user && <EditProfile user={user} fetchUser={fetchUser} />}
+                {user && <EditProfile user={user} />}
               </Box>
             )}
           </Box>
@@ -304,11 +192,10 @@ export default function UserProfileMain() {
               spacing={2}
               mt={4}
             >
-              {loginUser?.user_id !== idNumber ? (
+              {loginUser?.user_id !== user.user_id ? (
                 <Box sx={{ display: 'flex' }}>
                   {followingConnection ? (
                     <Button
-                      disabled={isFollowActionLoading}
                       variant="outlined"
                       onClick={() =>
                         handleUnFollowClick(followingConnection.connection_id)
@@ -328,9 +215,8 @@ export default function UserProfileMain() {
                     </Button>
                   ) : (
                     <Button
-                      disabled={isFollowActionLoading}
                       variant="outlined"
-                      onClick={handleFollowClick}
+                      onClick={() => handleFollowClick(user.user_id)}
                       sx={{
                         marginRight: '1rem',
                         color: 'black',
@@ -348,7 +234,7 @@ export default function UserProfileMain() {
 
                   <Button
                     variant="outlined"
-                    onClick={handleMessageClick}
+                    onClick={() => handleMessageClick(user.user_id)}
                     sx={{
                       color: 'black',
                       borderColor: 'black',

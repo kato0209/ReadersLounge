@@ -20,7 +20,7 @@ import { useFormState } from 'react-dom';
 import { searchBook } from './SearchBookAction';
 import { State } from './SearchBookAction';
 
-export const initialState: State = {
+const initialState: State = {
   error: '',
   fieldErrors: {
     keyword: '',

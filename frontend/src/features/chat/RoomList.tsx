@@ -1,49 +1,43 @@
-'use client';
-import { useState, useEffect } from 'react';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import { apiInstance } from '../../lib/api/apiInstance';
-import { useErrorHandler } from 'react-error-boundary';
 import { ChatRoom } from '../../openapi';
 import Sidebar from '../../components/Sidebar/Sidebar';
-import { useIsMobileContext } from '../../providers/mobile/isMobile';
 import UserAvatar from '../../components/Avatar/UserAvatar';
 import Typography from '@mui/material/Typography';
 import Room from './Room';
-import { useParams, useRouter } from 'next/navigation';
+import { useSearchParams, redirect } from 'next/navigation';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
-export default function RoomList() {
-  const errorHandler = useErrorHandler();
-  const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
-  const { id } = useParams<{ id: string }>();
+export default async function RoomList() {
+  const isMobile = useMediaQuery('(max-width:650px)');
+  const searchParams = useSearchParams();
+  const id = searchParams.get('id');
   const roomID = id ? parseInt(id, 10) : 0;
-  const isMobile = useIsMobileContext();
-  const router = useRouter();
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const api = await apiInstance;
-        const res = await api.getChatRooms();
-
-        if (res.data && Array.isArray(res.data)) {
-          const fetchedRooms: ChatRoom[] = res.data.map((item) => ({
-            room_id: item.room_id,
-            target_user_id: item.target_user_id,
-            target_user_name: item.target_user_name,
-            target_user_profile_image: item.target_user_profile_image,
-            last_message: item.last_message,
-            last_message_sent_at: item.last_message_sent_at,
-          }));
-          setChatRooms(fetchedRooms);
-        }
-      } catch (error: unknown) {
-        errorHandler(error);
+  const fetchPosts = async (): Promise<ChatRoom[]> => {
+    try {
+      const api = apiInstance;
+      const res = await api.getChatRooms();
+      if (res.data && Array.isArray(res.data)) {
+        const fetchedRooms: ChatRoom[] = res.data.map((item) => ({
+          room_id: item.room_id,
+          target_user_id: item.target_user_id,
+          target_user_name: item.target_user_name,
+          target_user_profile_image: item.target_user_profile_image,
+          last_message: item.last_message,
+          last_message_sent_at: item.last_message_sent_at,
+        }));
+        return fetchedRooms;
+      } else {
+        return [];
       }
-    };
+    } catch (error: unknown) {
+      return Promise.reject(error);
+    }
+  };
 
-    fetchPosts();
-  }, []);
+  const chatRooms = await fetchPosts();
 
   return (
     <div style={{ display: 'flex' }}>
@@ -74,7 +68,7 @@ export default function RoomList() {
                 <Box
                   key={chatRoom.room_id}
                   onClick={() =>
-                    router.push(`/chat-room-list/${chatRoom.room_id}`)
+                    redirect(`/chat-room-list/${chatRoom.room_id}`)
                   }
                   sx={{
                     display: 'flex',

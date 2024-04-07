@@ -26,7 +26,7 @@ import { useFormState } from 'react-dom';
 import { PostSchema } from '../../types/PostSchema';
 import { z } from 'zod';
 
-export const initialState: State = {
+const initialState: State = {
   error: '',
   fieldErrors: {
     content: '',
@@ -255,6 +255,8 @@ export const CreatePost: React.FC<CreatePostProps> = ({
               <input
                 type="file"
                 id="image-upload"
+                name="postImage"
+                value={postImage ? postImage.name : ''}
                 style={{ display: 'none' }}
                 onChange={handleImageChange}
                 accept="image/*"
@@ -284,7 +286,12 @@ export const CreatePost: React.FC<CreatePostProps> = ({
               Post
             </Button>
           </DialogActions>
-          <input type="hidden" value={book ? book.ISBNcode : ''} />
+          <input
+            type="hidden"
+            id="ISBNcode"
+            name="ISBNcode"
+            value={book ? book.ISBNcode : ''}
+          />
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
             {state.fieldErrors?.content && (
               <span style={{ color: 'red' }}>{state.fieldErrors.content}</span>

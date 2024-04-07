@@ -1,11 +1,10 @@
-'use client';
 import Sidebar from '../../components/Sidebar/Sidebar';
-import { useIsMobileContext } from '../../providers/mobile/isMobile';
-import UserSearchComponent from './UserSearchComponent';
+import UserSearchSection from './UserSearchSection';
 import { Box } from '@mui/material';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 export default function UserSearch() {
-  const isMobile = useIsMobileContext();
+  const isMobile = useMediaQuery('(max-width:650px)');
 
   return (
     <>
@@ -15,13 +14,13 @@ export default function UserSearch() {
             <Sidebar />
           </Box>
           <Box style={{ flex: '0 0 40%', overflowX: 'hidden' }}>
-            <UserSearchComponent />
+            <UserSearchSection />
           </Box>
         </Box>
       ) : (
         <Box style={{ display: 'flex', justifyContent: 'center' }}>
           <Box style={{ flex: '0 0 80%', overflowX: 'hidden' }}>
-            <UserSearchComponent />
+            <UserSearchSection />
           </Box>
         </Box>
       )}

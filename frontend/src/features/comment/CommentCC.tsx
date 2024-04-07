@@ -26,7 +26,7 @@ import { useFormState } from 'react-dom';
 import { createComment } from './CreateCommentAction';
 import { State } from './CreateCommentAction';
 
-export const initialState: State = {
+const initialState: State = {
   error: '',
   fieldErrors: {
     content: '',

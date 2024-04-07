@@ -9,7 +9,6 @@ import MenuIcon from '@mui/icons-material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import { FaBookOpen } from 'react-icons/fa';
-import useLogout from '../../features/logout/logout';
 import { CreatePost } from '../../features/home/CreatePost';
 import HomeIcon from '@mui/icons-material/Home';
 import MailIcon from '@mui/icons-material/Mail';
@@ -21,6 +20,7 @@ import Link from 'next/link';
 import { User } from '../../openapi';
 import axios from 'axios';
 import { useErrorHandler } from 'react-error-boundary';
+import { redirect } from 'next/navigation';
 
 export default function AppHeader() {
   const errorHandler = useErrorHandler();
@@ -62,7 +62,14 @@ export default function AppHeader() {
     setMenuAnchorEl(null);
   };
 
-  const handleLogout = useLogout();
+  const handleLogout = async () => {
+    try {
+      await axios.post('/api/logout');
+    } catch (error: unknown) {
+      errorHandler(error);
+    }
+    redirect('/login');
+  };
 
   return (
     <Box sx={{ flexGrow: 1 }}>

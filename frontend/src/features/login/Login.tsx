@@ -11,7 +11,7 @@ import { useFormState } from 'react-dom';
 import { login } from './SubmitLogin';
 import { State } from './SubmitLogin';
 
-export const initialState: State = {
+const initialState: State = {
   error: '',
   fieldErrors: {
     email: '',

@@ -1,70 +1,31 @@
-'use client';
-import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { apiInstance } from '../../lib/api/apiInstance';
-import { useErrorHandler } from 'react-error-boundary';
-import { useForm } from 'react-hook-form';
-import { User } from '../../openapi';
 import UserAvatar from '../../components/Avatar/UserAvatar';
 import { redirect } from 'next/navigation';
+import { State } from './UserSearchAction';
+import { useFormState } from 'react-dom';
+import { searchUser } from './UserSearchAction';
 
-const searchUserSchema = z.object({
-  keyword: z.string().nonempty(),
-});
+const initialState: State = {
+  error: '',
+  fieldErrors: {
+    keyword: '',
+  },
+  users: [],
+  userNotFound: false,
+};
 
-type FormData = z.infer<typeof searchUserSchema>;
-
-export default function UserSearchComponent() {
-  const { register, handleSubmit } = useForm<FormData>({
-    resolver: zodResolver(searchUserSchema),
-  });
-  const errorHandler = useErrorHandler();
-  const [users, setUsers] = useState<User[]>([]);
-  const [userNotFound, setUserNotFound] = useState<boolean>(false);
-
-  const onSubmit = async (data: FormData) => {
-    try {
-      setUserNotFound(false);
-      const api = await apiInstance;
-      const res = await api.searchUser(data.keyword);
-      if (res.data && Array.isArray(res.data)) {
-        const SearchedUsers: User[] = res.data.map((item) => ({
-          user_id: item.user_id,
-          name: item.name,
-          profile_image: item.profile_image,
-        }));
-        setUsers(SearchedUsers);
-        if (res.data.length === 0) {
-          setUserNotFound(true);
-        }
-      }
-    } catch (error: unknown) {
-      errorHandler(error);
-    }
-  };
+export default function UserSearchSection() {
+  const [state, formAction] = useFormState(searchUser, initialState);
 
   return (
     <Container component="main">
-      <Box
-        component="form"
-        onSubmit={handleSubmit(onSubmit)}
-        noValidate
-        sx={{ mt: '1rem' }}
-      >
+      <form action={formAction}>
         <Box sx={{ display: 'flex' }}>
-          <TextField
-            {...register('keyword')}
-            fullWidth
-            id="keyword"
-            label="Search"
-            name="keyword"
-          />
+          <TextField fullWidth id="keyword" label="Search" name="keyword" />
           <Button
             type="submit"
             sx={{
@@ -82,9 +43,9 @@ export default function UserSearchComponent() {
             検索
           </Button>
         </Box>
-      </Box>
+      </form>
       <Box sx={{ marginTop: '1rem' }}>
-        {users.map((user) => (
+        {state.users.map((user) => (
           <Box
             key={user.user_id}
             onClick={() => redirect(`/user-profile/${user.user_id}`)}
@@ -108,7 +69,7 @@ export default function UserSearchComponent() {
           </Box>
         ))}
       </Box>
-      {userNotFound && (
+      {state.userNotFound && (
         <Typography
           component="div"
           sx={{ fontSize: '1.5rem', marginTop: '1rem' }}

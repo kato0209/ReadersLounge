@@ -7,7 +7,6 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 
 export const Home = async () => {
   const isMobile = useMediaQuery('(max-width:650px)');
-
   const fetchPosts = async () => {
     const api = apiInstance;
     const res = await api.getPosts();
