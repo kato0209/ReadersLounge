@@ -8,6 +8,7 @@ import Typography from '@mui/material/Typography';
 import Room from './Room';
 import { useSearchParams, redirect } from 'next/navigation';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { getAllCookies } from '../../utils/getCookies';
 
 export default async function RoomList() {
   const isMobile = useMediaQuery('(max-width:650px)');
@@ -17,8 +18,9 @@ export default async function RoomList() {
 
   const fetchPosts = async (): Promise<ChatRoom[]> => {
     try {
+      const cookie = getAllCookies();
       const api = apiInstance;
-      const res = await api.getChatRooms();
+      const res = await api.getChatRooms({ headers: { Cookie: cookie } });
       if (res.data && Array.isArray(res.data)) {
         const fetchedRooms: ChatRoom[] = res.data.map((item) => ({
           room_id: item.room_id,

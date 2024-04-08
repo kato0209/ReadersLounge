@@ -5,6 +5,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useSearchParams } from 'next/navigation';
 import { apiInstance } from '../../lib/api/apiInstance';
 import { Connection, Post, User } from '../../openapi';
+import { getAllCookies } from '../../utils/getCookies';
 
 export default async function UserProfile() {
   const isMobile = useMediaQuery('(max-width:650px)');
@@ -15,8 +16,9 @@ export default async function UserProfile() {
 
   const fetchUser = async (userID: number): Promise<User> => {
     try {
+      const cookie = getAllCookies();
       const api = apiInstance;
-      const res = await api.getUser(userID);
+      const res = await api.getUser(userID, { headers: { Cookie: cookie } });
       if (res.data) {
         const targetUser: User = {
           user_id: res.data.user_id,
@@ -37,8 +39,11 @@ export default async function UserProfile() {
     userID: number,
   ): Promise<Connection[]> => {
     try {
+      const cookie = getAllCookies();
       const api = apiInstance;
-      const res = await api.getFollowerConnections(userID);
+      const res = await api.getFollowerConnections(userID, {
+        headers: { Cookie: cookie },
+      });
       if (res.data && res.data.length > 0) {
         const followerConnections: Connection[] = res.data.map((connection) => {
           return {
@@ -61,8 +66,11 @@ export default async function UserProfile() {
     userID: number,
   ): Promise<Connection[]> => {
     try {
+      const cookie = getAllCookies();
       const api = apiInstance;
-      const res = await api.getFollowingConnections(userID);
+      const res = await api.getFollowingConnections(userID, {
+        headers: { Cookie: cookie },
+      });
       if (res.data && res.data.length > 0) {
         const followingConnections: Connection[] = res.data.map(
           (connection) => {
@@ -85,8 +93,11 @@ export default async function UserProfile() {
 
   const fetchPostsOfUser = async (userID: number): Promise<Post[]> => {
     try {
+      const cookie = getAllCookies();
       const api = apiInstance;
-      const res = await api.getPostsOfUser(userID);
+      const res = await api.getPostsOfUser(userID, {
+        headers: { Cookie: cookie },
+      });
       if (res.data && Array.isArray(res.data)) {
         const fetchedPosts: Post[] = res.data.map((item) => ({
           post_id: item.post_id,

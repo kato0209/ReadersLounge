@@ -2,6 +2,7 @@ import { apiInstance } from '../../../lib/api/apiInstance';
 import { type NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { CreateCommentLikeReqBody } from '../../../openapi';
+import { getAllCookies } from '../../../utils/getCookies';
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -16,8 +17,9 @@ export async function GET(request: NextRequest) {
     const req: CreateCommentLikeReqBody = {
       comment_id: Number(commentID),
     };
+    const cookie = getAllCookies();
     const api = apiInstance;
-    await api.createCommentLike(req);
+    await api.createCommentLike(req, { headers: { Cookie: cookie } });
   } catch (error: unknown) {
     return Promise.reject(error);
   }

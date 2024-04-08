@@ -2,6 +2,7 @@
 import { apiInstance } from '../../lib/api/apiInstance';
 import { z } from 'zod';
 import { Book } from '../../openapi';
+import { getAllCookies } from '../../utils/getCookies';
 
 export type State = {
   error?: string;
@@ -33,8 +34,11 @@ export async function searchBook(
   const { keyword, bookGenreID } = validatedFields.data;
 
   try {
+    const cookie = getAllCookies();
     const api = apiInstance;
-    const res = await api.fetchBookData(bookGenreID, keyword);
+    const res = await api.fetchBookData(bookGenreID, keyword, {
+      headers: { Cookie: cookie },
+    });
     if (res.data && Array.isArray(res.data)) {
       if (res.data.length === 0) {
         return { bookNotFound: true };

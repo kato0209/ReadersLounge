@@ -2,12 +2,16 @@ import * as React from 'react';
 import { apiInstance } from '../../lib/api/apiInstance';
 import { Post, Comment } from '../../openapi';
 import { CommentCC } from './CommentCC';
+import { getAllCookies } from '../../utils/getCookies';
 
 export async function CommentSC({ postID }: { postID: number }) {
   const fetchPost = async (postID: number): Promise<Post> => {
     try {
+      const cookie = getAllCookies();
       const api = apiInstance;
-      const res = await api.getPostByPostID(postID);
+      const res = await api.getPostByPostID(postID, {
+        headers: { Cookie: cookie },
+      });
       if (res.data) {
         const post: Post = {
           post_id: res.data.post_id,
@@ -30,8 +34,11 @@ export async function CommentSC({ postID }: { postID: number }) {
 
   const fetchComments = async (postID: number): Promise<Comment[]> => {
     try {
+      const cookie = getAllCookies();
       const api = await apiInstance;
-      const res = await api.getCommentsByPostID(postID);
+      const res = await api.getCommentsByPostID(postID, {
+        headers: { Cookie: cookie },
+      });
       if (res.data) {
         const comments: Comment[] = res.data.map((item) => ({
           comment_id: item.comment_id,
@@ -51,8 +58,9 @@ export async function CommentSC({ postID }: { postID: number }) {
 
   const fetchLikedPostIDs = async (): Promise<number[]> => {
     try {
+      const cookie = getAllCookies();
       const api = await apiInstance;
-      const res = await api.getLikedPostList();
+      const res = await api.getLikedPostList({ headers: { Cookie: cookie } });
       if (res.data && Array.isArray(res.data)) {
         const fetchedLikedPostIDs: number[] = res.data.map(
           (item) => item.post_id,
@@ -68,8 +76,11 @@ export async function CommentSC({ postID }: { postID: number }) {
 
   const fetchLikedCommentIDs = async (): Promise<number[]> => {
     try {
+      const cookie = getAllCookies();
       const api = await apiInstance;
-      const res = await api.getLikedCommentList();
+      const res = await api.getLikedCommentList({
+        headers: { Cookie: cookie },
+      });
       if (res.data && Array.isArray(res.data)) {
         const fetchedLikedCommentIDs: number[] = res.data.map(
           (item) => item.comment_id,

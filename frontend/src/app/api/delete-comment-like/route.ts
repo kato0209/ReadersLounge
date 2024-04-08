@@ -1,6 +1,7 @@
 import { apiInstance } from '../../../lib/api/apiInstance';
 import { type NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import { getAllCookies } from '../../../utils/getCookies';
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -9,8 +10,11 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'postID is required' }, { status: 500 });
   }
   try {
+    const cookie = getAllCookies();
     const api = apiInstance;
-    await api.deletePostLike(Number(commentID));
+    await api.deletePostLike(Number(commentID), {
+      headers: { Cookie: cookie },
+    });
   } catch (error: unknown) {
     return Promise.reject(error);
   }

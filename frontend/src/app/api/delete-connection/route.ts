@@ -1,6 +1,7 @@
 import { apiInstance } from '../../../lib/api/apiInstance';
 import { type NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import { getAllCookies } from '../../../utils/getCookies';
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -12,8 +13,11 @@ export async function GET(request: NextRequest) {
     );
   }
   try {
+    const cookie = getAllCookies();
     const api = apiInstance;
-    await api.deleteConnection(Number(connectionID));
+    await api.deleteConnection(Number(connectionID), {
+      headers: { Cookie: cookie },
+    });
   } catch (error: unknown) {
     return Promise.reject(error);
   }

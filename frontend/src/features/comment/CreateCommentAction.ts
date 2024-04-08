@@ -2,6 +2,7 @@
 import { z } from 'zod';
 import { apiInstance } from '../../lib/api/apiInstance';
 import { ReqCreateCommentBody } from '../../openapi/models';
+import { getAllCookies } from '../../utils/getCookies';
 
 export type State = {
   error?: string;
@@ -38,8 +39,9 @@ export async function createComment(
   };
 
   try {
+    const cookie = getAllCookies();
     const api = apiInstance;
-    await api.createComment(req);
+    await api.createComment(req, { headers: { Cookie: cookie } });
     return {};
   } catch (error: unknown) {
     return Promise.reject(error);

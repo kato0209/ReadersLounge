@@ -39,7 +39,6 @@ export default function AppHeader() {
       errorHandler(error);
     }
   }
-
   React.useEffect(() => {
     fetchLoginUser().then((data) => {
       setUser(data);

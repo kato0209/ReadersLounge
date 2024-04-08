@@ -97,7 +97,6 @@ func (s *Server) Logout(ctx echo.Context) error {
 }
 
 func (s *Server) GoogleOauthCallback(ctx echo.Context, params openapi.GoogleOauthCallbackParams) error {
-
 	cookieState, err := ctx.Cookie("state")
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())

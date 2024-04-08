@@ -1,6 +1,7 @@
 import { apiInstance } from '../../../lib/api/apiInstance';
 import { type NextRequest } from 'next/server';
 import { CreateChatRoomRequest } from '../../../openapi';
+import { getAllCookies } from '../../../utils/getCookies';
 
 export async function GET(request: NextRequest): Promise<number> {
   const searchParams = request.nextUrl.searchParams;
@@ -12,8 +13,9 @@ export async function GET(request: NextRequest): Promise<number> {
     const req: CreateChatRoomRequest = {
       chat_partner_id: Number(chatPartnerID),
     };
+    const cookie = getAllCookies();
     const api = apiInstance;
-    const res = await api.createChatRoom(req);
+    const res = await api.createChatRoom(req, { headers: { Cookie: cookie } });
     if (res.status === 201 && res.data.room_id) {
       return res.data.room_id;
     } else {

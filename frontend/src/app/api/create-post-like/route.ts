@@ -2,6 +2,7 @@ import { apiInstance } from '../../../lib/api/apiInstance';
 import { type NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { CreatePostLikeReqBody } from '../../../openapi';
+import { getAllCookies } from '../../../utils/getCookies';
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -13,8 +14,9 @@ export async function GET(request: NextRequest) {
     const req: CreatePostLikeReqBody = {
       post_id: Number(postID),
     };
+    const cookie = getAllCookies();
     const api = apiInstance;
-    await api.createPostLike(req);
+    await api.createPostLike(req, { headers: { Cookie: cookie } });
   } catch (error: unknown) {
     return Promise.reject(error);
   }

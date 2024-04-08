@@ -94,3 +94,9 @@ button {
 .read-the-docs {
   color: #888;
 }
+
+@media (max-width: 650px) {
+  .isMobile {
+    display: none;
+  }
+}

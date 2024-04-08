@@ -5,6 +5,7 @@ import { AxiosError } from 'axios';
 import { apiInstance } from '../../lib/api/apiInstance';
 import { redirect } from 'next/navigation';
 import { setJwtTokenInCookie } from '../../lib/jwt/setJwtToken';
+import { getAllCookies } from '../../utils/getCookies';
 
 export type State = {
   error?: string;
@@ -65,8 +66,11 @@ export async function signup(state: State, formData: FormData): Promise<State> {
   };
 
   try {
+    const cookie = getAllCookies();
     const api = apiInstance;
-    const res = await api.signup(reqSignupBody);
+    const res = await api.signup(reqSignupBody, {
+      headers: { Cookie: cookie },
+    });
     setJwtTokenInCookie(res);
     redirect('/');
   } catch (error: unknown) {

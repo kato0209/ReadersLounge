@@ -1,6 +1,7 @@
 'use server';
 import { z } from 'zod';
 import { apiInstance } from '../../lib/api/apiInstance';
+import { getAllCookies } from '../../utils/getCookies';
 
 export type State = {
   error?: string;
@@ -54,11 +55,16 @@ export async function profileEdit(
   const { name, profileText, profileImage } = validatedFields.data;
 
   try {
+    const cookie = getAllCookies();
     const api = apiInstance;
     if (profileImage) {
-      await api.updateUser(name, profileImage, profileText);
+      await api.updateUser(name, profileImage, profileText, {
+        headers: { Cookie: cookie },
+      });
     } else {
-      await api.updateUser(name, undefined, profileText);
+      await api.updateUser(name, undefined, profileText, {
+        headers: { Cookie: cookie },
+      });
     }
     return {};
   } catch (error: unknown) {

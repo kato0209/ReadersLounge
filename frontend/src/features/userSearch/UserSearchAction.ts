@@ -2,6 +2,7 @@
 import { z } from 'zod';
 import { apiInstance } from '../../lib/api/apiInstance';
 import { User } from '../../openapi';
+import { getAllCookies } from '../../utils/getCookies';
 
 export type State = {
   error?: string;
@@ -32,8 +33,9 @@ export async function searchUser(
   const { keyword } = validatedFields.data;
 
   try {
+    const cookie = getAllCookies();
     const api = apiInstance;
-    const res = await api.searchUser(keyword);
+    const res = await api.searchUser(keyword, { headers: { Cookie: cookie } });
     if (res.data && Array.isArray(res.data)) {
       if (res.data.length === 0) {
         return { userNotFound: true, users: [] };

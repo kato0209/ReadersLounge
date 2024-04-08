@@ -68,7 +68,6 @@ export const CreatePost: React.FC<CreatePostProps> = ({
       errorHandler(error);
     }
   }
-
   React.useEffect(() => {
     fetchLoginUser().then((data) => {
       setUser(data);

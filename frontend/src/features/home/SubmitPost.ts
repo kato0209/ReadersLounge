@@ -1,6 +1,7 @@
 'use server';
 import { apiInstance } from '../../lib/api/apiInstance';
 import { PostSchema } from '../../types/PostSchema';
+import { getAllCookies } from '../../utils/getCookies';
 
 export type State = {
   error?: string;
@@ -27,12 +28,17 @@ export async function post(state: State, formData: FormData): Promise<State> {
   const { content, rating, ISBNcode, postImage } = validatedFields.data;
 
   try {
+    const cookie = getAllCookies();
     const api = apiInstance;
     if (postImage) {
-      await api.createPost(content, rating, ISBNcode, postImage);
+      await api.createPost(content, rating, ISBNcode, postImage, {
+        headers: { Cookie: cookie },
+      });
       return {};
     } else {
-      await api.createPost(content, rating, ISBNcode);
+      await api.createPost(content, rating, ISBNcode, undefined, {
+        headers: { Cookie: cookie },
+      });
       return {};
     }
   } catch (error: unknown) {
