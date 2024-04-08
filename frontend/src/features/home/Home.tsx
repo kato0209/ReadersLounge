@@ -41,7 +41,10 @@ export const Home = async () => {
           {posts && <PostList propPosts={posts} />}
         </Box>
       </Box>
-      <Box style={{ display: 'flex', justifyContent: 'center' }}>
+      <Box
+        className="isPC"
+        style={{ display: 'flex', justifyContent: 'center' }}
+      >
         <Box style={{ flex: '0 0 80%', overflowX: 'hidden' }}>
           {posts && <PostList propPosts={posts} />}
         </Box>

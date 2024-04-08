@@ -1,53 +1,27 @@
+'use client';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
-import { apiInstance } from '../../lib/api/apiInstance';
-import { ChatRoom } from '../../openapi';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import UserAvatar from '../../components/Avatar/UserAvatar';
 import Typography from '@mui/material/Typography';
 import Room from './Room';
-import { useSearchParams, redirect } from 'next/navigation';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { getAllCookies } from '../../utils/getCookies';
+import { redirect } from 'next/navigation';
+import { ChatRoom, Message } from '../../openapi';
 
-export default async function RoomList() {
-  const isMobile = useMediaQuery('(max-width:650px)');
-  const searchParams = useSearchParams();
-  const id = searchParams.get('id');
-  const roomID = id ? parseInt(id, 10) : 0;
-
-  const fetchPosts = async (): Promise<ChatRoom[]> => {
-    try {
-      const cookie = getAllCookies();
-      const api = apiInstance;
-      const res = await api.getChatRooms({ headers: { Cookie: cookie } });
-      if (res.data && Array.isArray(res.data)) {
-        const fetchedRooms: ChatRoom[] = res.data.map((item) => ({
-          room_id: item.room_id,
-          target_user_id: item.target_user_id,
-          target_user_name: item.target_user_name,
-          target_user_profile_image: item.target_user_profile_image,
-          last_message: item.last_message,
-          last_message_sent_at: item.last_message_sent_at,
-        }));
-        return fetchedRooms;
-      } else {
-        return [];
-      }
-    } catch (error: unknown) {
-      return Promise.reject(error);
-    }
-  };
-
-  const chatRooms = await fetchPosts();
-
+export default async function RoomList({
+  roomID,
+  chatRooms,
+  messages,
+}: {
+  roomID: number;
+  chatRooms: ChatRoom[];
+  messages: Message[];
+}) {
   return (
     <div style={{ display: 'flex' }}>
-      {!isMobile && (
-        <div style={{ flex: '0 0 30%', display: 'flex' }}>
-          <Sidebar />
-        </div>
-      )}
+      <div className="isMobile" style={{ flex: '0 0 30%', display: 'flex' }}>
+        <Sidebar />
+      </div>
       <div
         style={{
           flex: '0 0 35%',
@@ -112,7 +86,7 @@ export default async function RoomList() {
       </div>
       <div style={{ flex: '1', display: 'flex' }}>
         {roomID ? (
-          <Room roomID={roomID} />
+          <Room roomID={roomID} messages={messages} />
         ) : (
           <Container component="main">
             <h3>Select a ChatRoom</h3>

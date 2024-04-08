@@ -1,8 +1,9 @@
 import { apiInstance } from '../../../lib/api/apiInstance';
 import { BookGenreNode } from '../../../openapi';
 import { getAllCookies } from '../../../utils/getCookies';
+import { NextResponse } from 'next/server';
 
-export async function GET(): Promise<BookGenreNode[]> {
+export async function GET(): Promise<NextResponse> {
   try {
     const cookie = getAllCookies();
     const api = apiInstance;
@@ -16,9 +17,9 @@ export async function GET(): Promise<BookGenreNode[]> {
         parent_genre_id: item.parent_genre_id,
         children: item.children,
       }));
-      return fetchedBookGenres;
+      return NextResponse.json({ data: fetchedBookGenres }, { status: 200 });
     } else {
-      return [];
+      return NextResponse.json({ data: [] }, { status: 200 });
     }
   } catch (error: unknown) {
     return Promise.reject(error);

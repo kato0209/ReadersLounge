@@ -1,19 +1,12 @@
 import Sidebar from '../../components/Sidebar/Sidebar';
 import UserProfileComponent from './UserProfileComponent';
 import { Box } from '@mui/material';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { useSearchParams } from 'next/navigation';
 import { apiInstance } from '../../lib/api/apiInstance';
 import { Connection, Post, User } from '../../openapi';
 import { getAllCookies } from '../../utils/getCookies';
+import { PostList } from '../../components/PostList/PostList';
 
-export default async function UserProfile() {
-  const isMobile = useMediaQuery('(max-width:650px)');
-
-  const searchParams = useSearchParams();
-  const id = searchParams.get('id');
-  const userID = id ? parseInt(id, 10) : 0;
-
+export default async function UserProfile({ userID }: { userID: number }) {
   const fetchUser = async (userID: number): Promise<User> => {
     try {
       const cookie = getAllCookies();
@@ -125,32 +118,31 @@ export default async function UserProfile() {
 
   return (
     <>
-      {!isMobile ? (
-        <Box style={{ display: 'flex' }}>
-          <Box style={{ flex: '0 0 30%', display: 'flex' }}>
-            <Sidebar />
-          </Box>
-          <Box style={{ flex: 1, overflowX: 'hidden' }}>
-            <UserProfileComponent
-              user={user}
-              followerConnections={followerConnections}
-              followingConnections={followingConnections}
-              posts={posts}
-            />
-          </Box>
+      <Box className="isMobile" style={{ display: 'flex' }}>
+        <Box style={{ flex: '0 0 30%', display: 'flex' }}>
+          <Sidebar />
         </Box>
-      ) : (
-        <Box style={{ display: 'flex', justifyContent: 'center' }}>
-          <Box style={{ flex: '0 0 100%', overflowX: 'hidden' }}>
-            <UserProfileComponent
-              user={user}
-              followerConnections={followerConnections}
-              followingConnections={followingConnections}
-              posts={posts}
-            />
-          </Box>
+        <Box style={{ flex: 1, overflowX: 'hidden' }}>
+          <UserProfileComponent
+            user={user}
+            followerConnections={followerConnections}
+            followingConnections={followingConnections}
+            posts={posts}
+            postListComponent={<PostList propPosts={posts} />}
+          />
         </Box>
-      )}
+      </Box>
+      <Box style={{ display: 'flex', justifyContent: 'center' }}>
+        <Box style={{ flex: '0 0 100%', overflowX: 'hidden' }}>
+          <UserProfileComponent
+            user={user}
+            followerConnections={followerConnections}
+            followingConnections={followingConnections}
+            posts={posts}
+            postListComponent={<PostList propPosts={posts} />}
+          />
+        </Box>
+      </Box>
     </>
   );
 }

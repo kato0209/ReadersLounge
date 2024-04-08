@@ -51,7 +51,7 @@ export const SearchBook: React.FC<SearchBookProps> = ({ formData }) => {
 
   async function fetchBookGenres() {
     try {
-      const res = await axios.get(`/api/fetch-login-user`);
+      const res = await axios.get(`/api/fetch-book-genres`);
       return res.data;
     } catch (error: unknown) {
       errorHandler(error);

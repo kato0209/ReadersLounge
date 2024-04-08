@@ -1,3 +1,4 @@
+'use client';
 import * as React from 'react';
 import { Connection } from '../../openapi/';
 import { Box, Typography } from '@mui/material';

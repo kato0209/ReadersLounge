@@ -2,7 +2,7 @@ import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { type NextRequest } from 'next/server';
 
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest): Promise<NextResponse> {
   const searchParams = request.nextUrl.searchParams;
   const state = searchParams.get('state');
   if (!state) {

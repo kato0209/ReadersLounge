@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 import { CreateCommentLikeReqBody } from '../../../openapi';
 import { getAllCookies } from '../../../utils/getCookies';
 
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest): Promise<NextResponse> {
   const searchParams = request.nextUrl.searchParams;
   const commentID = searchParams.get('commentID');
   if (!commentID) {
@@ -23,5 +23,5 @@ export async function GET(request: NextRequest) {
   } catch (error: unknown) {
     return Promise.reject(error);
   }
-  return NextResponse.json({ status: 200 });
+  return NextResponse.json({ status: 201 });
 }

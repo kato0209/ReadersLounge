@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { isValidUrl } from '../../utils/isValidUrl';
 import { useErrorHandler } from 'react-error-boundary';
 import { User } from '../../openapi';
@@ -16,7 +16,6 @@ import {
 } from '@mui/material';
 import { EditProfile } from './EditProfile';
 import { ConnectionList } from './ConnectionList';
-import { PostList } from '../../components/PostList/PostList';
 import { Post } from '../../openapi';
 import { redirect } from 'next/navigation';
 import axios from 'axios';
@@ -26,11 +25,13 @@ export default function UserProfileComponent({
   posts,
   followerConnections,
   followingConnections,
+  postListComponent,
 }: {
   user: User;
   posts: Post[];
   followerConnections: Connection[];
   followingConnections: Connection[];
+  postListComponent: React.ReactNode;
 }) {
   const [followingConnection, setFollowingConnection] =
     useState<Connection | null>(null);
@@ -285,7 +286,7 @@ export default function UserProfileComponent({
         </Card>
         {posts && posts.length > 0 && (
           <Box sx={{ flex: 1, maxWidth: 500, width: '100%' }}>
-            <PostList propPosts={posts} />
+            {postListComponent}
           </Box>
         )}
       </Box>
