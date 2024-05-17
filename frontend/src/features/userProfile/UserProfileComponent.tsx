@@ -51,8 +51,8 @@ export default function UserProfileComponent({
     }
   }
   useEffect(() => {
-    fetchLoginUser().then((data) => {
-      setLoginUser(data);
+    fetchLoginUser().then((res) => {
+      setLoginUser(res.data);
     });
   }, []);
 

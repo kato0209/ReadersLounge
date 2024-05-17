@@ -69,8 +69,8 @@ export const CreatePost: React.FC<CreatePostProps> = ({
     }
   }
   React.useEffect(() => {
-    fetchLoginUser().then((data) => {
-      setUser(data);
+    fetchLoginUser().then((res) => {
+      setUser(res.data);
     });
   }, []);
 

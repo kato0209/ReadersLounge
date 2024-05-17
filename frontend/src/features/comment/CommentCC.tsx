@@ -65,8 +65,8 @@ export function CommentCC({
     }
   }
   React.useEffect(() => {
-    fetchLoginUser().then((data) => {
-      setUser(data);
+    fetchLoginUser().then((res) => {
+      setUser(res.data);
     });
   }, []);
 

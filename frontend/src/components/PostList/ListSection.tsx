@@ -21,6 +21,7 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { User } from '../../openapi';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
+import { PostLike } from '../../openapi';
 
 const PostListContainer = {
   display: 'flex',
@@ -38,17 +39,20 @@ const PostListContainer = {
 
 type ListSectionProps = {
   propPosts: Post[];
-  likedPostIDs: number[];
+  initialLikedPostIDs: number[];
 };
 export const ListSection: React.FC<ListSectionProps> = ({
   propPosts,
-  likedPostIDs,
+  initialLikedPostIDs,
 }) => {
   const errorHandler = useErrorHandler();
   const [postAnchorEl, setPostAnchorEl] = React.useState<null | HTMLElement>(
     null,
   );
   const [selectedPostID, setSelectedPostID] = React.useState<number>(0);
+  const [likedPostIDs, setLikedPostIDs] =
+    React.useState<number[]>(initialLikedPostIDs);
+  const [posts, setPosts] = React.useState<Post[]>(propPosts);
 
   const [user, setUser] = React.useState<User | null>(null);
   const router = useRouter();
@@ -61,9 +65,10 @@ export const ListSection: React.FC<ListSectionProps> = ({
       errorHandler(error);
     }
   }
+
   React.useEffect(() => {
-    fetchLoginUser().then((data) => {
-      setUser(data);
+    fetchLoginUser().then((res) => {
+      setUser(res.data);
     });
   }, []);
 
@@ -85,6 +90,9 @@ export const ListSection: React.FC<ListSectionProps> = ({
     if (selectedPostID > 0) {
       try {
         await axios.get(`/api/delete-post?selectedPostId=${selectedPostID}`);
+        setPosts((currentPosts) =>
+          currentPosts.filter((post) => post.post_id !== selectedPostID),
+        );
       } catch (error: unknown) {
         errorHandler(error);
       }
@@ -93,7 +101,26 @@ export const ListSection: React.FC<ListSectionProps> = ({
 
   const handleLikeClick = async (postID: number) => {
     try {
-      await axios.get(`/api/create-post-like?postID=${postID}`);
+      const res = await axios.get(`/api/create-post-like?postID=${postID}`);
+      if (res.status === 200 && res.data) {
+        const newLike: PostLike = {
+          post_like_id: res.data.postLike.post_like_id,
+          user_id: user!.user_id,
+        };
+        setLikedPostIDs([...likedPostIDs, postID]);
+        setPosts((currentPosts) =>
+          currentPosts.map((post) =>
+            post.post_id === postID
+              ? {
+                  ...post,
+                  likes: Array.isArray(post.likes)
+                    ? [...post.likes, newLike]
+                    : [newLike],
+                }
+              : post,
+          ),
+        );
+      }
     } catch (error: unknown) {
       errorHandler(error);
     }
@@ -101,7 +128,22 @@ export const ListSection: React.FC<ListSectionProps> = ({
 
   const handleUnLikeClick = async (postID: number) => {
     try {
-      await axios.get(`/api/delete-post-like?postID=${postID}`);
+      const res = await axios.get(`/api/delete-post-like?postID=${postID}`);
+      if (res.status === 200 && res.data) {
+        setLikedPostIDs(likedPostIDs.filter((id) => id !== postID));
+        setPosts((currentPosts) =>
+          currentPosts.map((post) =>
+            post.post_id === postID
+              ? {
+                  ...post,
+                  likes: post.likes?.filter(
+                    (like) => like.user_id !== user?.user_id,
+                  ),
+                }
+              : post,
+          ),
+        );
+      }
     } catch (error: unknown) {
       errorHandler(error);
     }
@@ -113,9 +155,9 @@ export const ListSection: React.FC<ListSectionProps> = ({
 
   return (
     <Box sx={PostListContainer}>
-      {propPosts.length > 0 ? (
+      {posts.length > 0 ? (
         <>
-          {propPosts.map((post) => (
+          {posts.map((post) => (
             <Card
               sx={{
                 width: '100%',

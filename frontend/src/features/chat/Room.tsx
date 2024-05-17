@@ -35,8 +35,8 @@ export default function RoomClientComponent(props: RoomProps) {
     }
   }
   useEffect(() => {
-    fetchLoginUser().then((data) => {
-      setUser(data);
+    fetchLoginUser().then((res) => {
+      setUser(res.data);
     });
   }, []);
 

@@ -28,5 +28,7 @@ export const PostList: React.FC<PostListProps> = async ({ propPosts }) => {
 
   const likedPostIDs = await fetchLikedPostIDs();
 
-  return <ListSection propPosts={propPosts} likedPostIDs={likedPostIDs} />;
+  return (
+    <ListSection propPosts={propPosts} initialLikedPostIDs={likedPostIDs} />
+  );
 };

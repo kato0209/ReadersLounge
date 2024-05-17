@@ -12,9 +12,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
     const cookie = getAllCookies();
     const api = apiInstance;
-    await api.deletePostLike(Number(postID), { headers: { Cookie: cookie } });
+    const res = await api.deletePostLike(Number(postID), {
+      headers: { Cookie: cookie },
+    });
+    return NextResponse.json({ postLike: res.data });
   } catch (error: unknown) {
     return Promise.reject(error);
   }
-  return NextResponse.json({ status: 204 });
 }
