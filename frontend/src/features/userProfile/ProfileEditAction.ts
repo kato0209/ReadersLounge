@@ -48,8 +48,15 @@ export async function profileEdit(
     profileImage: formData.get('profileImage'),
   });
 
-  if (!validatedFields.success) {
-    throw validatedFields.error.flatten().fieldErrors;
+  if (validatedFields.success === false) {
+    return {
+      fieldErrors: {
+        name: validatedFields.error.flatten().fieldErrors.name[0],
+        profileText: validatedFields.error.flatten().fieldErrors.profileText[0],
+        profileImage:
+          validatedFields.error.flatten().fieldErrors.profileImage[0],
+      },
+    };
   }
 
   const { name, profileText, profileImage } = validatedFields.data;

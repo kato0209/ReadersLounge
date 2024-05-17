@@ -19,11 +19,19 @@ func (s *Server) CreateConnection(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, err.Error())
 	}
 
-	if err := s.cnu.CreateConnection(ctx, userID, CreateConnectionBody.TargetUserId); err != nil {
+	connection, err := s.cnu.CreateConnection(ctx, userID, CreateConnectionBody.TargetUserId); 
+	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.NoContent(http.StatusCreated)
+	res := openapi.Connection{
+		ConnectionId:           connection.ConnectionID,
+		TargetUserId:           connection.Follower.UserID,
+		TargetUserName:         connection.Follower.Name,
+		TargetUserProfileImage: connection.Follower.ProfileImage.ClassifyPathType(),
+	}
+
+	return ctx.JSON(http.StatusCreated, res)
 }
 
 func (s *Server) DeleteConnection(ctx echo.Context, connectionId int) error {

@@ -44,9 +44,12 @@ export default function UserSearchSection() {
             検索
           </Button>
         </Box>
+        {state.fieldErrors?.keyword && (
+          <span style={{ color: 'red' }}>{state.fieldErrors?.keyword}</span>
+        )}
       </form>
       <Box sx={{ marginTop: '1rem' }}>
-        {state.users.map((user) => (
+        {state.users?.map((user) => (
           <Box
             key={user.user_id}
             onClick={() => redirect(`/user-profile/${user.user_id}`)}

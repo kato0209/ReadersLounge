@@ -26,8 +26,13 @@ export async function login(state: State, formData: FormData): Promise<State> {
     password: formData.get('password'),
   });
 
-  if (!validatedFields.success) {
-    throw validatedFields.error.flatten().fieldErrors;
+  if (validatedFields.success === false) {
+    return {
+      fieldErrors: {
+        email: validatedFields.error.flatten().fieldErrors.email[0],
+        password: validatedFields.error.flatten().fieldErrors.password[0],
+      },
+    };
   }
 
   const { email, password } = validatedFields.data;

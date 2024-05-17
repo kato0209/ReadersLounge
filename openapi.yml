@@ -397,6 +397,11 @@ paths:
       responses:
         "201":
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Connection"
+
   /follows/{connectionId}:
     delete:
       security:

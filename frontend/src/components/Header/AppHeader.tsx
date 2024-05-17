@@ -123,7 +123,6 @@ export default function AppHeader() {
             >
               <Link href="/home" passHref>
                 <MenuItem
-                  component="a"
                   sx={{
                     display: 'flex',
                     color: 'black',
@@ -136,7 +135,6 @@ export default function AppHeader() {
               </Link>
               <Link href="/user-search" passHref>
                 <MenuItem
-                  component="a"
                   sx={{
                     display: 'flex',
                     color: 'black',
@@ -149,7 +147,6 @@ export default function AppHeader() {
               </Link>
               <Link href="/chat-room-list" passHref>
                 <MenuItem
-                  component="a"
                   sx={{
                     display: 'flex',
                     color: 'black',
@@ -162,7 +159,6 @@ export default function AppHeader() {
               </Link>
               <Link href="/search-book" passHref>
                 <MenuItem
-                  component="a"
                   sx={{
                     display: 'flex',
                     color: 'black',
@@ -178,7 +174,6 @@ export default function AppHeader() {
           </>
           <Link href="/home" passHref>
             <Box
-              component="a"
               sx={{
                 display: 'flex',
                 alignItems: 'center',

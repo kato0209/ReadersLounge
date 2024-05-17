@@ -9,8 +9,8 @@ export type State = {
   fieldErrors?: {
     keyword?: string;
   };
-  users: User[];
-  userNotFound: boolean;
+  users?: User[];
+  userNotFound?: boolean;
 };
 
 export async function searchUser(
@@ -22,12 +22,16 @@ export async function searchUser(
   });
 
   const validatedFields = searchUserSchema.safeParse({
-    content: formData.get('content'),
-    postID: Number(formData.get('postID')),
+    keyword: formData.get('keyword'),
   });
 
-  if (!validatedFields.success) {
-    throw validatedFields.error.flatten().fieldErrors;
+  if (validatedFields.success === false) {
+    console.log(validatedFields.error.flatten().fieldErrors);
+    return {
+      fieldErrors: {
+        keyword: validatedFields.error.flatten().fieldErrors.keyword[0],
+      },
+    };
   }
 
   const { keyword } = validatedFields.data;

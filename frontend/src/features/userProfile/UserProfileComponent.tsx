@@ -17,24 +17,32 @@ import {
 import { EditProfile } from './EditProfile';
 import { ConnectionList } from './ConnectionList';
 import { Post } from '../../openapi';
-import { redirect } from 'next/navigation';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 
 export default function UserProfileComponent({
   user,
   posts,
-  followerConnections,
-  followingConnections,
+  initialFollowerConnections,
+  initialFollowingConnections,
   postListComponent,
 }: {
   user: User;
   posts: Post[];
-  followerConnections: Connection[];
-  followingConnections: Connection[];
+  initialFollowerConnections: Connection[];
+  initialFollowingConnections: Connection[];
   postListComponent: React.ReactNode;
 }) {
+  const router = useRouter();
   const [followingConnection, setFollowingConnection] =
     useState<Connection | null>(null);
+
+  const [followerConnections, setfollowerConnections] = useState<Connection[]>(
+    initialFollowerConnections,
+  );
+  const [followingConnections] = useState<Connection[]>(
+    initialFollowingConnections,
+  );
   const errorHandler = useErrorHandler();
   const [activeConnectionList, setActiveConnectionList] = useState<
     string | null
@@ -57,22 +65,24 @@ export default function UserProfileComponent({
   }, []);
 
   useEffect(() => {
-    const connection = followerConnections.find(
-      (connection) => connection.target_user_id === loginUser?.user_id,
-    );
-    if (connection) {
-      setFollowingConnection(connection);
-    } else {
-      setFollowingConnection(null);
+    if (loginUser) {
+      const connection = followerConnections.find(
+        (connection) => connection.target_user_id === loginUser.user_id,
+      );
+      if (connection) {
+        setFollowingConnection(connection);
+      } else {
+        setFollowingConnection(null);
+      }
     }
-  }, [followerConnections]);
+  }, [followerConnections, loginUser]);
 
   const handleMessageClick = async (chatPartnerID: number) => {
     try {
-      const roomID = await axios.get(
+      const res = await axios.get(
         `/api/create-chat-room?chatPartnerID=${chatPartnerID}`,
       );
-      redirect(`/chat-room-list/${roomID}`);
+      router.push(`/chat-room-list/${res.data.roomID}`);
     } catch (error: unknown) {
       errorHandler(error);
     }
@@ -80,7 +90,19 @@ export default function UserProfileComponent({
 
   const handleFollowClick = async (connectionID: number) => {
     try {
-      await axios.get(`/api/create-connection?connectionID=${connectionID}`);
+      const res = await axios.get(
+        `/api/create-connection?connectionID=${connectionID}`,
+      );
+      if (res.status === 200) {
+        const newConnection: Connection = {
+          connection_id: res.data.connection.connection_id,
+          target_user_id: res.data.connection.target_user_id,
+          target_user_name: res.data.connection.target_user_name,
+          target_user_profile_image:
+            res.data.connection.target_user_profile_image,
+        };
+        setfollowerConnections([...followerConnections, newConnection]);
+      }
     } catch (error: unknown) {
       errorHandler(error);
     }
@@ -88,7 +110,15 @@ export default function UserProfileComponent({
 
   const handleUnFollowClick = async (connectionID: number) => {
     try {
-      await axios.get(`/api/delete-connection?connectionID=${connectionID}`);
+      const res = await axios.get(
+        `/api/delete-connection?connectionID=${connectionID}`,
+      );
+      if (res.status === 200) {
+        const newFollowerConnections = followerConnections.filter(
+          (connection) => connection.connection_id !== connectionID,
+        );
+        setfollowerConnections(newFollowerConnections);
+      }
     } catch (error: unknown) {
       errorHandler(error);
     }
@@ -264,7 +294,7 @@ export default function UserProfileComponent({
                   onClick={handleFollowerClick}
                 >
                   <Typography variant="body2" color="text.secondary">
-                    {followerConnections.length} Followers
+                    {followerConnections?.length} Followers
                   </Typography>
                 </Box>
                 <Box
@@ -277,7 +307,7 @@ export default function UserProfileComponent({
                   onClick={handleFollowingClick}
                 >
                   <Typography variant="body2" color="text.secondary">
-                    {followingConnections.length} Following
+                    {followingConnections?.length} Following
                   </Typography>
                 </Box>
               </Box>

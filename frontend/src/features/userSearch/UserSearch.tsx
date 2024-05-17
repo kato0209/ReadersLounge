@@ -5,7 +5,7 @@ import { Box } from '@mui/material';
 export default function UserSearch() {
   return (
     <>
-      <Box className="isMobile" style={{ display: 'flex' }}>
+      <Box className="isMobile" style={{ display: 'flex', marginTop: '1rem' }}>
         <Box style={{ flex: '0 0 30%', display: 'flex' }}>
           <Sidebar />
         </Box>
@@ -15,7 +15,7 @@ export default function UserSearch() {
       </Box>
       <Box
         className="isPC"
-        style={{ display: 'flex', justifyContent: 'center' }}
+        style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem' }}
       >
         <Box style={{ flex: '0 0 80%', overflowX: 'hidden' }}>
           <UserSearchSection />

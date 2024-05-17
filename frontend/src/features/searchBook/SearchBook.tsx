@@ -114,7 +114,7 @@ export const SearchBook: React.FC<SearchBookProps> = ({ formData }) => {
   );
 
   return (
-    <Container component="main">
+    <Container component="main" sx={{ mt: 2 }}>
       <form action={formAction}>
         <Box sx={{ display: 'flex' }}>
           <TextField

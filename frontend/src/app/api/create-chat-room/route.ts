@@ -17,8 +17,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const cookie = getAllCookies();
     const api = apiInstance;
     const res = await api.createChatRoom(req, { headers: { Cookie: cookie } });
-    if (res.status === 201 && res.data.room_id) {
-      return NextResponse.json({ data: res.data.room_id }, { status: 201 });
+    if (res.status === 201 && res.data) {
+      return NextResponse.json({ roomID: res.data }, { status: 201 });
     } else {
       return Promise.reject(new Error('Failed to create chat room'));
     }

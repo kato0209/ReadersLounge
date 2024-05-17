@@ -5,7 +5,7 @@ import Sidebar from '../../components/Sidebar/Sidebar';
 import UserAvatar from '../../components/Avatar/UserAvatar';
 import Typography from '@mui/material/Typography';
 import Room from './Room';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { ChatRoom, Message } from '../../openapi';
 
 export default async function RoomList({
@@ -17,6 +17,7 @@ export default async function RoomList({
   chatRooms: ChatRoom[];
   messages: Message[];
 }) {
+  const router = useRouter();
   return (
     <div style={{ display: 'flex' }}>
       <div className="isMobile" style={{ flex: '0 0 30%', display: 'flex' }}>
@@ -44,7 +45,7 @@ export default async function RoomList({
                 <Box
                   key={chatRoom.room_id}
                   onClick={() =>
-                    redirect(`/chat-room-list/${chatRoom.room_id}`)
+                    router.push(`/chat-room-list/${chatRoom.room_id}`)
                   }
                   sx={{
                     display: 'flex',

@@ -125,19 +125,22 @@ export default async function UserProfile({ userID }: { userID: number }) {
         <Box style={{ flex: 1, overflowX: 'hidden' }}>
           <UserProfileComponent
             user={user}
-            followerConnections={followerConnections}
-            followingConnections={followingConnections}
+            initialFollowerConnections={followerConnections}
+            initialFollowingConnections={followingConnections}
             posts={posts}
             postListComponent={<PostList propPosts={posts} />}
           />
         </Box>
       </Box>
-      <Box style={{ display: 'flex', justifyContent: 'center' }}>
+      <Box
+        className="isPC"
+        style={{ display: 'flex', justifyContent: 'center' }}
+      >
         <Box style={{ flex: '0 0 100%', overflowX: 'hidden' }}>
           <UserProfileComponent
             user={user}
-            followerConnections={followerConnections}
-            followingConnections={followingConnections}
+            initialFollowerConnections={followerConnections}
+            initialFollowingConnections={followingConnections}
             posts={posts}
             postListComponent={<PostList propPosts={posts} />}
           />

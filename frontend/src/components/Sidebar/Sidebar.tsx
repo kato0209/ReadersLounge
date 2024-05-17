@@ -30,7 +30,6 @@ export default function Sidebar() {
         <Link href="/home" passHref>
           <ListItem
             button
-            component="a"
             sx={{
               borderRadius: '50px',
               color: 'black',
@@ -48,7 +47,6 @@ export default function Sidebar() {
         <Link href="/user-search" passHref>
           <ListItem
             button
-            component="a"
             sx={{
               borderRadius: '50px',
               color: 'black',
@@ -66,7 +64,6 @@ export default function Sidebar() {
         <Link href="/chat-room-list" passHref>
           <ListItem
             button
-            component="a"
             sx={{
               borderRadius: '50px',
               color: 'black',
@@ -84,7 +81,6 @@ export default function Sidebar() {
         <Link href="/search-book" passHref>
           <ListItem
             button
-            component="a"
             sx={{
               borderRadius: '50px',
               color: 'black',

@@ -27,8 +27,13 @@ export async function searchBook(
     bookGenreID: formData.get('bookGenreID'),
   });
 
-  if (!validatedFields.success) {
-    throw validatedFields.error.flatten().fieldErrors;
+  if (validatedFields.success === false) {
+    return {
+      fieldErrors: {
+        keyword: validatedFields.error.flatten().fieldErrors.keyword[0],
+        bookGenreID: validatedFields.error.flatten().fieldErrors.bookGenreID[0],
+      },
+    };
   }
 
   const { keyword, bookGenreID } = validatedFields.data;

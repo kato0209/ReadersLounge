@@ -1362,7 +1362,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createConnection(createConnectionRequest?: CreateConnectionRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async createConnection(createConnectionRequest?: CreateConnectionRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Connection>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createConnection(createConnectionRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -1731,7 +1731,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createConnection(createConnectionRequest?: CreateConnectionRequest, options?: any): AxiosPromise<void> {
+        createConnection(createConnectionRequest?: CreateConnectionRequest, options?: any): AxiosPromise<Connection> {
             return localVarFp.createConnection(createConnectionRequest, options).then((request) => request(axios, basePath));
         },
         /**

@@ -5,15 +5,17 @@ import { apiInstance } from '../../../../lib/api/apiInstance';
 import { ChatRoom, Message } from '../../../../openapi';
 import { getAllCookies } from '../../../../utils/getCookies';
 
-export default async function ChatRoomListPage(params: {
-  [key: string]: string | undefined;
+export default async function ChatRoomListPage({
+  params,
+}: {
+  params: { id: string };
 }) {
   if (!authenticate()) {
     redirect('/login');
   }
 
   const roomID = Number(params.id);
-  const fetchPosts = async (): Promise<ChatRoom[]> => {
+  const fetchRooms = async (): Promise<ChatRoom[]> => {
     try {
       const cookie = getAllCookies();
       const api = apiInstance;
@@ -59,7 +61,7 @@ export default async function ChatRoomListPage(params: {
     }
   };
 
-  const chatRooms = await fetchPosts();
+  const chatRooms = await fetchRooms();
   if (roomID) {
     const messages = await fetchMessages(roomID);
     return (
