@@ -70,6 +70,11 @@ export const ListSection: React.FC<ListSectionProps> = ({
     fetchLoginUser().then((res) => {
       setUser(res.data);
     });
+    const handlePopState = () => {
+      window.location.reload();
+    };
+
+    window.addEventListener('popstate', handlePopState);
   }, []);
 
   const handleSettingClick = (

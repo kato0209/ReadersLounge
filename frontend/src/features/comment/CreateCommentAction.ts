@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { apiInstance } from '../../lib/api/apiInstance';
 import { ReqCreateCommentBody } from '../../openapi/models';
 import { getAllCookies } from '../../utils/getCookies';
+import { redirect } from 'next/navigation';
 
 export type State = {
   error?: string;
@@ -28,8 +29,17 @@ export async function createComment(
     postID: Number(formData.get('postID')),
   });
 
-  if (!validatedFields.success) {
-    throw validatedFields.error.flatten().fieldErrors;
+  if (validatedFields.success === false) {
+    return {
+      fieldErrors: {
+        content: validatedFields.error.flatten().fieldErrors.content
+          ? validatedFields.error.flatten().fieldErrors.content[0]
+          : undefined,
+        postID: validatedFields.error.flatten().fieldErrors.postID
+          ? validatedFields.error.flatten().fieldErrors.postID[0]
+          : undefined,
+      },
+    };
   }
 
   const { content, postID } = validatedFields.data;
@@ -42,7 +52,7 @@ export async function createComment(
     const cookie = getAllCookies();
     const api = apiInstance;
     await api.createComment(req, { headers: { Cookie: cookie } });
-    return {};
+    redirect('/post/' + postID);
   } catch (error: unknown) {
     return Promise.reject(error);
   }

@@ -13,7 +13,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Rating from '@mui/material/Rating';
 import { useErrorHandler } from 'react-error-boundary';
-import { Post, Comment } from '../../openapi';
+import { Post, Comment, CommentLike } from '../../openapi';
 import { isValidUrl } from '../../utils/isValidUrl';
 import Link from '@mui/material/Link';
 import { Menu, MenuItem } from '@mui/material';
@@ -25,6 +25,8 @@ import axios from 'axios';
 import { useFormState } from 'react-dom';
 import { createComment } from './CreateCommentAction';
 import { State } from './CreateCommentAction';
+import { useRouter } from 'next/navigation';
+import { PostLike } from '../../openapi';
 
 const initialState: State = {
   error: '',
@@ -36,15 +38,16 @@ const initialState: State = {
 
 export function CommentCC({
   post,
-  comments,
-  likedPostIDs,
-  likedCommentIDs,
+  initialComments,
+  initialLikedPostIDs,
+  initialLikedCommentIDs,
 }: {
   post: Post;
-  comments: Comment[];
-  likedPostIDs: number[];
-  likedCommentIDs: number[];
+  initialComments: Comment[];
+  initialLikedPostIDs: number[];
+  initialLikedCommentIDs: number[];
 }) {
+  const router = useRouter();
   const [state, formAction] = useFormState(createComment, initialState);
   const errorHandler = useErrorHandler();
   const [postAnchorEl, setPostAnchorEl] = React.useState<null | HTMLElement>(
@@ -55,6 +58,13 @@ export function CommentCC({
   const [selectedPostID, setSelectedPostID] = React.useState<number>(0);
   const [selectedCommentID, setSelectedCommentID] = React.useState<number>(0);
   const [user, setUser] = React.useState<User | null>(null);
+  const [comments, setComments] = React.useState<Comment[]>(initialComments);
+  const [likedCommentIDs, setLikedCommentIDs] = React.useState<number[]>(
+    initialLikedCommentIDs,
+  );
+
+  const [likedPostIDs, setLikedPostIDs] =
+    React.useState<number[]>(initialLikedPostIDs);
 
   async function fetchLoginUser() {
     try {
@@ -101,6 +111,9 @@ export function CommentCC({
     if (selectedPostID > 0) {
       try {
         await axios.get(`/api/delete-post?selectedPostId=${selectedPostID}`);
+        setPostAnchorEl(null);
+        setSelectedPostID(0);
+        router.back();
       } catch (error: unknown) {
         errorHandler(error);
       }
@@ -113,6 +126,13 @@ export function CommentCC({
         await axios.get(
           `/api/delete-comment?selectedCommentId=${selectedCommentID}`,
         );
+        setComments((currentComments) =>
+          currentComments.filter(
+            (comment) => comment.comment_id !== selectedCommentID,
+          ),
+        );
+        setCommentAnchorEl(null);
+        setSelectedCommentID(0);
       } catch (error: unknown) {
         errorHandler(error);
       }
@@ -121,7 +141,21 @@ export function CommentCC({
 
   const handlePostLikeClick = async (postID: number) => {
     try {
-      await axios.get(`/api/create-post-like?postID=${postID}`);
+      const res = await axios.get(`/api/create-post-like?postID=${postID}`);
+      if (res.status === 200 && res.data) {
+        const newLike: PostLike = {
+          post_like_id: res.data.postLike.post_like_id,
+          user_id: user!.user_id,
+        };
+        setLikedPostIDs([...likedPostIDs, postID]);
+        if (post) {
+          if (post.likes) {
+            post.likes.push(newLike);
+          } else {
+            post.likes = [newLike];
+          }
+        }
+      }
     } catch (error: unknown) {
       errorHandler(error);
     }
@@ -129,7 +163,17 @@ export function CommentCC({
 
   const handlePostUnLikeClick = async (postID: number) => {
     try {
-      await axios.get(`/api/delete-post-like?postID=${postID}`);
+      const res = await axios.get(`/api/delete-post-like?postID=${postID}`);
+      if (res.status === 200 && res.data) {
+        setLikedPostIDs(likedPostIDs.filter((id) => id !== postID));
+        if (post) {
+          if (post.likes) {
+            post.likes = post.likes.filter(
+              (like) => like.user_id !== user?.user_id,
+            );
+          }
+        }
+      }
     } catch (error: unknown) {
       errorHandler(error);
     }
@@ -137,7 +181,31 @@ export function CommentCC({
 
   const handleCommentLikeClick = async (commentID: number) => {
     try {
-      await axios.get(`/api/create-comment-like?commentID=${commentID}`);
+      const res = await axios.get(
+        `/api/create-comment-like?commentID=${commentID}`,
+      );
+      if (res.status === 200 && res.data) {
+        const newLike: CommentLike = {
+          comment_like_id: res.data.comment_like_id,
+          user_id: user!.user_id,
+        };
+        setLikedCommentIDs((currentLikedCommentIDs) => [
+          ...currentLikedCommentIDs,
+          commentID,
+        ]);
+        setComments((currentComments) =>
+          currentComments.map((comment) =>
+            comment.comment_id === commentID
+              ? {
+                  ...comment,
+                  likes: Array.isArray(comment.likes)
+                    ? [...comment.likes, newLike]
+                    : [newLike],
+                }
+              : comment,
+          ),
+        );
+      }
     } catch (error: unknown) {
       errorHandler(error);
     }
@@ -145,7 +213,26 @@ export function CommentCC({
 
   const handleCommentUnLikeClick = async (commentID: number) => {
     try {
-      await axios.get(`/api/delete-comment-like?commentID=${commentID}`);
+      const res = await axios.get(
+        `/api/delete-comment-like?commentID=${commentID}`,
+      );
+      if (res.status === 200 && res.data) {
+        setLikedCommentIDs((currentLikedCommentIDs) =>
+          currentLikedCommentIDs.filter((id) => id !== commentID),
+        );
+        setComments((currentComments) =>
+          currentComments.map((comment) => {
+            if (comment.comment_id === commentID) {
+              if (comment.likes) {
+                comment.likes = comment.likes.filter(
+                  (like) => like.user_id !== user?.user_id,
+                );
+              }
+            }
+            return comment;
+          }),
+        );
+      }
     } catch (error: unknown) {
       errorHandler(error);
     }

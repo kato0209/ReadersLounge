@@ -19,9 +19,14 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     };
     const cookie = getAllCookies();
     const api = apiInstance;
-    await api.createCommentLike(req, { headers: { Cookie: cookie } });
+    const res = await api.createCommentLike(req, {
+      headers: { Cookie: cookie },
+    });
+    if (res.status === 201) {
+      const comment_like_id = res.data;
+      return NextResponse.json({ comment_like_id: comment_like_id });
+    }
   } catch (error: unknown) {
     return Promise.reject(error);
   }
-  return NextResponse.json({ status: 201 });
 }

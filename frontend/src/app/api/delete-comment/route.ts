@@ -5,7 +5,7 @@ import { getAllCookies } from '../../../utils/getCookies';
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const searchParams = request.nextUrl.searchParams;
-  const selectedCommentID = searchParams.get('selectedCommentID');
+  const selectedCommentID = searchParams.get('selectedCommentId');
   if (!selectedCommentID) {
     return NextResponse.json(
       { error: 'selectedPostId is required' },
@@ -15,11 +15,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
     const cookie = getAllCookies();
     const api = apiInstance;
-    await api.deletePost(Number(selectedCommentID), {
+    await api.deleteComment(Number(selectedCommentID), {
       headers: { Cookie: cookie },
     });
+    return NextResponse.json({ status: 204 });
   } catch (error: unknown) {
     return Promise.reject(error);
   }
-  return NextResponse.json({ status: 204 });
 }

@@ -102,9 +102,9 @@ export async function CommentSC({ postID }: { postID: number }) {
   return (
     <CommentCC
       post={post}
-      comments={comments}
-      likedPostIDs={likedPostIDs}
-      likedCommentIDs={likedCommentIDs}
+      initialComments={comments}
+      initialLikedPostIDs={likedPostIDs}
+      initialLikedCommentIDs={likedCommentIDs}
     />
   );
 }

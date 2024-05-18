@@ -20,9 +20,10 @@ import Link from 'next/link';
 import { User } from '../../openapi';
 import axios from 'axios';
 import { useErrorHandler } from 'react-error-boundary';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 export default function AppHeader() {
+  const router = useRouter();
   const errorHandler = useErrorHandler();
   const [profileAnchorEl, setProfileAnchorEl] =
     React.useState<null | HTMLElement>(null);
@@ -64,11 +65,11 @@ export default function AppHeader() {
 
   const handleLogout = async () => {
     try {
-      await axios.post('/api/logout');
+      await axios.post(`/api/logout`);
+      router.push('/login');
     } catch (error: unknown) {
       errorHandler(error);
     }
-    redirect('/login');
   };
 
   return (

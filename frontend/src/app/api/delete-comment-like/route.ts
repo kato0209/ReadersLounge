@@ -12,7 +12,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
     const cookie = getAllCookies();
     const api = apiInstance;
-    await api.deletePostLike(Number(commentID), {
+    await api.deleteCommentLike(Number(commentID), {
       headers: { Cookie: cookie },
     });
   } catch (error: unknown) {

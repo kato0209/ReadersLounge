@@ -4,6 +4,7 @@ import (
 	"backend/controller/openapi"
 	"backend/models"
 	"backend/utils"
+	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -100,6 +101,7 @@ func (s *Server) CreateComment(ctx echo.Context) error {
 }
 
 func (s *Server) DeleteComment(ctx echo.Context, commentId int) error {
+	fmt.Println(commentId)
 	if err := s.cmu.DeleteComment(ctx, commentId); err != nil {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
