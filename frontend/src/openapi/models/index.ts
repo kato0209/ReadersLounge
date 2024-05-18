@@ -20,4 +20,5 @@ export * from './req-create-comment-body';
 export * from './req-login-body';
 export * from './req-signup-body';
 export * from './send-message-req-body';
+export * from './update-user201-response';
 export * from './user';

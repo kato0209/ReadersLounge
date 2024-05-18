@@ -93,6 +93,7 @@ export const ListSection: React.FC<ListSectionProps> = ({
         setPosts((currentPosts) =>
           currentPosts.filter((post) => post.post_id !== selectedPostID),
         );
+        handleSettingClose();
       } catch (error: unknown) {
         errorHandler(error);
       }

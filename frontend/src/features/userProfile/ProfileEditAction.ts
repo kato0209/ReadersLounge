@@ -2,9 +2,10 @@
 import { z } from 'zod';
 import { apiInstance } from '../../lib/api/apiInstance';
 import { getAllCookies } from '../../utils/getCookies';
+import { redirect } from 'next/navigation';
 
 export type State = {
-  error?: string;
+  error?: boolean;
   fieldErrors?: {
     name?: string;
     profileText?: string;
@@ -26,12 +27,12 @@ export async function profileEdit(
       message: 'プロフィールは255文字以内で入力してください',
     }),
     profileImage: z
-      .instanceof(File)
+      .any()
       .optional()
       .refine(
         (file) => {
           return (
-            file === undefined ||
+            file.name === 'undefined' ||
             (IMAGE_TYPES.includes(file.type) &&
               file.name.split('.').pop()?.toLowerCase() !== 'jpg')
           );
@@ -44,17 +45,22 @@ export async function profileEdit(
 
   const validatedFields = ProfileSchema.safeParse({
     name: formData.get('name'),
-    profileText: Number(formData.get('profileText')),
+    profileText: formData.get('profileText'),
     profileImage: formData.get('profileImage'),
   });
 
   if (validatedFields.success === false) {
+    const fieldErrors = validatedFields.error.flatten().fieldErrors;
     return {
+      error: true,
       fieldErrors: {
-        name: validatedFields.error.flatten().fieldErrors.name[0],
-        profileText: validatedFields.error.flatten().fieldErrors.profileText[0],
-        profileImage:
-          validatedFields.error.flatten().fieldErrors.profileImage[0],
+        name: fieldErrors.name ? fieldErrors.name[0] : undefined,
+        profileText: fieldErrors.profileText
+          ? fieldErrors.profileText[0]
+          : undefined,
+        profileImage: fieldErrors.profileImage
+          ? fieldErrors.profileImage[0]
+          : undefined,
       },
     };
   }
@@ -64,16 +70,18 @@ export async function profileEdit(
   try {
     const cookie = getAllCookies();
     const api = apiInstance;
-    if (profileImage) {
-      await api.updateUser(name, profileImage, profileText, {
+    let res;
+    if (profileImage.name !== 'undefined') {
+      res = await api.updateUser(name, profileImage, profileText, {
         headers: { Cookie: cookie },
       });
     } else {
-      await api.updateUser(name, undefined, profileText, {
+      res = await api.updateUser(name, undefined, profileText, {
         headers: { Cookie: cookie },
       });
     }
-    return {};
+    const userID = Number(res.data);
+    redirect('/user-profile/' + userID);
   } catch (error: unknown) {
     return Promise.reject(error);
   }

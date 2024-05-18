@@ -214,7 +214,7 @@ func (s *Server) UpdateUser(ctx echo.Context) error {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.NoContent(http.StatusNoContent)
+	return ctx.JSON(http.StatusCreated, userID)
 }
 
 func (s *Server) SearchUser(ctx echo.Context, params openapi.SearchUserParams) error {

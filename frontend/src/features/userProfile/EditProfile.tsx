@@ -1,6 +1,6 @@
 'use client';
 import * as React from 'react';
-import { Box, Typography, Button, Avatar, Stack } from '@mui/material';
+import { Typography, Button, Avatar, Stack } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import IconButton from '@mui/material/IconButton';
@@ -15,7 +15,7 @@ import { State } from './ProfileEditAction';
 import { profileEdit } from './ProfileEditAction';
 
 const initialState: State = {
-  error: '',
+  error: false,
   fieldErrors: {
     name: '',
     profileText: '',
@@ -33,9 +33,7 @@ export const EditProfile: React.FC<EditProfileProps> = ({ user }) => {
     React.useState(false);
   const [imagePreview, setImagePreview] = React.useState<string | null>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
-  const [profileImage, setProfileImage] = React.useState<File | undefined>(
-    undefined,
-  );
+  const formRef = React.useRef<HTMLFormElement>(null);
 
   const handleOpen = () => {
     setOpenUpdateProfileDialog(true);
@@ -45,10 +43,15 @@ export const EditProfile: React.FC<EditProfileProps> = ({ user }) => {
     setOpenUpdateProfileDialog(false);
   };
 
+  const handleSubmit = () => {
+    if (formRef.current) {
+      formRef.current.requestSubmit();
+    }
+  };
+
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
-      setProfileImage(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
@@ -88,145 +91,148 @@ export const EditProfile: React.FC<EditProfileProps> = ({ user }) => {
       >
         Edit profile
       </Button>
-      <form action={formAction}>
-        <Dialog
-          open={openUpdateProfileDialog}
-          onClose={handleClose}
-          fullWidth
+
+      <Dialog
+        open={openUpdateProfileDialog}
+        onClose={handleClose}
+        fullWidth
+        sx={{
+          '& .MuiDialog-paper': {
+            backgroundColor: '#EFEBE5',
+          },
+        }}
+      >
+        <DialogTitle
           sx={{
-            '& .MuiDialog-paper': {
-              backgroundColor: '#EFEBE5',
-            },
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
           }}
         >
-          <DialogTitle
+          <IconButton
+            aria-label="close"
+            onClick={handleClose}
             sx={{
+              marginRight: 1,
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+          <Typography sx={{ fontSize: '1.4rem', fontWeight: 'bold' }}>
+            Edit Profile
+          </Typography>
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: '#FF7E73',
+              color: '#fff',
+              '&:hover': {
+                backgroundColor: '#E56A67',
+              },
+            }}
+            onClick={handleSubmit}
+          >
+            Save
+          </Button>
+        </DialogTitle>
+        <DialogContent>
+          <form
+            action={formAction}
+            ref={formRef}
+            style={{
+              flex: 'auto',
+              marginTop: '2rem',
               display: 'flex',
-              justifyContent: 'space-between',
+              flexDirection: 'column',
               alignItems: 'center',
             }}
           >
-            <IconButton
-              aria-label="close"
-              onClick={handleClose}
-              sx={{
-                marginRight: 1,
-              }}
-            >
-              <CloseIcon />
-            </IconButton>
-            <Typography sx={{ fontSize: '1.4rem', fontWeight: 'bold' }}>
-              Edit Profile
-            </Typography>
-            <Button
-              variant="contained"
-              sx={{
-                backgroundColor: '#FF7E73',
-                color: '#fff',
-                '&:hover': {
-                  backgroundColor: '#E56A67',
-                },
-              }}
-              type="submit"
-            >
-              Save
-            </Button>
-          </DialogTitle>
-          <DialogContent>
-            <Box
-              component="form"
-              noValidate
-              sx={{
-                flex: 'auto',
-                marginTop: '2rem',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-              }}
-            >
-              <label htmlFor="image-upload">
-                <input
-                  ref={inputRef}
-                  type="file"
-                  value={profileImage ? profileImage.name : ''}
-                  id="image-upload"
-                  name="profileImage"
-                  style={{ display: 'none' }}
-                  onChange={handleImageChange}
-                  accept="image/*"
-                />
-                <Button
-                  sx={{ width: 128, height: 128, borderRadius: '50%' }}
-                  onClick={handleImageButtonClick}
+            <label htmlFor="image-upload">
+              <input
+                ref={inputRef}
+                type="file"
+                id="image-upload"
+                name="profileImage"
+                style={{ display: 'none' }}
+                onChange={handleImageChange}
+                accept="image/*"
+              />
+              <Button
+                sx={{ width: 128, height: 128, borderRadius: '50%' }}
+                onClick={handleImageButtonClick}
+              >
+                <Stack
+                  direction="row"
+                  justifyContent="center"
+                  alignItems="center"
                 >
-                  <Stack
-                    direction="row"
-                    justifyContent="center"
-                    alignItems="center"
-                  >
-                    {imagePreview ? (
-                      <Avatar
-                        sx={{
-                          width: 128,
-                          height: 128,
-                          border: '4px solid',
-                          borderColor: 'background.paper',
-                        }}
-                        src={imagePreview}
-                      />
-                    ) : (
-                      <Avatar
-                        sx={{
-                          width: 128,
-                          height: 128,
-                          border: '4px solid',
-                          borderColor: 'background.paper',
-                        }}
-                        src={
-                          isValidUrl(user.profile_image)
-                            ? user.profile_image
-                            : `data:image/png;base64,${user.profile_image}`
-                        }
-                      />
-                    )}
-                    <AddAPhotoIcon
+                  {imagePreview ? (
+                    <Avatar
                       sx={{
-                        position: 'absolute',
-                        color: 'rgba(255, 255, 255, 1)',
-                        fontSize: 'large',
+                        width: 128,
+                        height: 128,
+                        border: '4px solid',
+                        borderColor: 'background.paper',
                       }}
+                      src={imagePreview}
                     />
-                  </Stack>
-                </Button>
-              </label>
-              <TextField
-                margin="normal"
-                fullWidth
-                name="name"
-                label="Name"
-                defaultValue={user.name}
-                id="name"
-              />
-              {state.fieldErrors?.name && (
-                <span style={{ color: 'red' }}>{state.fieldErrors?.name}</span>
-              )}
-              <TextField
-                margin="normal"
-                fullWidth
-                name="profileText"
-                label="Profile"
-                defaultValue={user.profile_text}
-                id="profileText"
-              />
-              {state.fieldErrors?.profileText && (
-                <span style={{ color: 'red' }}>
-                  {state.fieldErrors?.profileText}
-                </span>
-              )}
-            </Box>
-          </DialogContent>
-        </Dialog>
-      </form>
+                  ) : (
+                    <Avatar
+                      sx={{
+                        width: 128,
+                        height: 128,
+                        border: '4px solid',
+                        borderColor: 'background.paper',
+                      }}
+                      src={
+                        isValidUrl(user.profile_image)
+                          ? user.profile_image
+                          : `data:image/png;base64,${user.profile_image}`
+                      }
+                    />
+                  )}
+                  <AddAPhotoIcon
+                    sx={{
+                      position: 'absolute',
+                      color: 'rgba(255, 255, 255, 1)',
+                      fontSize: 'large',
+                    }}
+                  />
+                </Stack>
+              </Button>
+            </label>
+            {state.fieldErrors?.profileImage && (
+              <span style={{ color: 'red' }}>
+                {state.fieldErrors?.profileImage}
+              </span>
+            )}
+            <TextField
+              margin="normal"
+              fullWidth
+              name="name"
+              label="Name"
+              defaultValue={user.name}
+              id="name"
+            />
+            {state.fieldErrors?.name && (
+              <span style={{ color: 'red' }}>{state.fieldErrors?.name}</span>
+            )}
+            <TextField
+              margin="normal"
+              fullWidth
+              name="profileText"
+              label="Profile"
+              defaultValue={user.profile_text}
+              id="profileText"
+            />
+            {state.fieldErrors?.profileText && (
+              <span style={{ color: 'red' }}>
+                {state.fieldErrors?.profileText}
+              </span>
+            )}
+          </form>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };

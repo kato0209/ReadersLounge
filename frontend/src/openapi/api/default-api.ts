@@ -60,6 +60,8 @@ import { ReqLoginBody } from '../models';
 // @ts-ignore
 import { ReqSignupBody } from '../models';
 // @ts-ignore
+import { UpdateUser201Response } from '../models';
+// @ts-ignore
 import { User } from '../models';
 /**
  * DefaultApi - axios parameter creator
@@ -1670,7 +1672,7 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async updateUser(name?: string, profileImage?: File, profileText?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+        async updateUser(name?: string, profileImage?: File, profileText?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UpdateUser201Response>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.updateUser(name, profileImage, profileText, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -2011,7 +2013,7 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        updateUser(name?: string, profileImage?: File, profileText?: string, options?: any): AxiosPromise<void> {
+        updateUser(name?: string, profileImage?: File, profileText?: string, options?: any): AxiosPromise<UpdateUser201Response> {
             return localVarFp.updateUser(name, profileImage, profileText, options).then((request) => request(axios, basePath));
         },
     };

@@ -12,6 +12,7 @@ export async function GET(): Promise<NextResponse> {
       user_id: res.data.user_id,
       name: res.data.name,
       profile_image: res.data.profile_image,
+      profile_text: res.data.profile_text,
     };
     return NextResponse.json({ data: user }, { status: 200 });
   } catch (error: unknown) {

@@ -2,6 +2,7 @@
 import { apiInstance } from '../../lib/api/apiInstance';
 import { PostSchema } from '../../types/PostSchema';
 import { getAllCookies } from '../../utils/getCookies';
+import { redirect } from 'next/navigation';
 
 export type State = {
   error?: string;
@@ -16,13 +17,28 @@ export type State = {
 export async function post(state: State, formData: FormData): Promise<State> {
   const validatedFields = PostSchema.safeParse({
     content: formData.get('content'),
-    rating: formData.get('rating'),
+    rating: Number(formData.get('rating')),
     ISBNcode: formData.get('ISBNcode'),
-    postImage: formData.get('postImage'),
+    postImage: formData.get('postImage') || undefined,
   });
 
-  if (!validatedFields.success) {
-    throw validatedFields.error.flatten().fieldErrors;
+  if (validatedFields.success === false) {
+    return {
+      fieldErrors: {
+        content: validatedFields.error.flatten().fieldErrors.content
+          ? validatedFields.error.flatten().fieldErrors.content[0]
+          : undefined,
+        rating: validatedFields.error.flatten().fieldErrors.rating
+          ? validatedFields.error.flatten().fieldErrors.rating[0]
+          : undefined,
+        ISBNcode: validatedFields.error.flatten().fieldErrors.ISBNcode
+          ? validatedFields.error.flatten().fieldErrors.ISBNcode[0]
+          : undefined,
+        postImage: validatedFields.error.flatten().fieldErrors.postImage
+          ? validatedFields.error.flatten().fieldErrors.postImage[0]
+          : undefined,
+      },
+    };
   }
 
   const { content, rating, ISBNcode, postImage } = validatedFields.data;
@@ -34,13 +50,12 @@ export async function post(state: State, formData: FormData): Promise<State> {
       await api.createPost(content, rating, ISBNcode, postImage, {
         headers: { Cookie: cookie },
       });
-      return {};
     } else {
       await api.createPost(content, rating, ISBNcode, undefined, {
         headers: { Cookie: cookie },
       });
-      return {};
     }
+    redirect('/home');
   } catch (error: unknown) {
     return Promise.reject(error);
   }

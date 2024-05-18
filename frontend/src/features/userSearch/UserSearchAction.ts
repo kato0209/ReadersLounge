@@ -26,7 +26,6 @@ export async function searchUser(
   });
 
   if (validatedFields.success === false) {
-    console.log(validatedFields.error.flatten().fieldErrors);
     return {
       fieldErrors: {
         keyword: validatedFields.error.flatten().fieldErrors.keyword[0],

@@ -53,7 +53,9 @@ export const CreatePost: React.FC<CreatePostProps> = ({
   const [imagePreview, setImagePreview] = React.useState<string | null>(null);
   const [content, setContent] = React.useState<string>(formData?.content || '');
   const [rating, setRating] = React.useState<number>(formData?.rating || 0);
-  const [ISBNcode] = React.useState<string>(formData?.ISBNcode || '');
+  const [ISBNcode, setISBNcode] = React.useState<string>(
+    formData?.ISBNcode || '',
+  );
   const [postImage, setPostImage] = React.useState<File | undefined>(
     formData?.postImage || undefined,
   );
@@ -73,6 +75,23 @@ export const CreatePost: React.FC<CreatePostProps> = ({
       setUser(res.data);
     });
   }, []);
+
+  React.useEffect(() => {
+    if (book) {
+      setISBNcode(book.ISBNcode);
+    }
+  }, [book]);
+
+  React.useEffect(() => {
+    if (formData?.postImage) {
+      setPostImage(formData.postImage);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(formData.postImage);
+    }
+  }, [formData?.postImage]);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -107,6 +126,17 @@ export const CreatePost: React.FC<CreatePostProps> = ({
 
   const handleClose = () => {
     setOpenCreatePostDialog(false);
+  };
+
+  const handleSubmit = () => {
+    const formData = new FormData();
+    formData.append('content', content);
+    formData.append('rating', rating.toString());
+    formData.append('ISBNcode', ISBNcode);
+    if (postImage) {
+      formData.append('postImage', postImage);
+    }
+    formAction(formData);
   };
 
   return (
@@ -152,7 +182,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({
         >
           <CloseIcon />
         </IconButton>
-        <form action={formAction}>
+        <form>
           <DialogContent
             sx={{
               flex: 'auto',
@@ -255,7 +285,6 @@ export const CreatePost: React.FC<CreatePostProps> = ({
                 type="file"
                 id="image-upload"
                 name="postImage"
-                value={postImage ? postImage.name : ''}
                 style={{ display: 'none' }}
                 onChange={handleImageChange}
                 accept="image/*"
@@ -265,7 +294,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({
               </IconButton>
             </label>
             <Button
-              type="submit"
+              onClick={handleSubmit}
               disabled={!content || !rating || !ISBNcode}
               sx={{
                 borderRadius: '50px',
@@ -285,12 +314,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({
               Post
             </Button>
           </DialogActions>
-          <input
-            type="hidden"
-            id="ISBNcode"
-            name="ISBNcode"
-            value={book ? book.ISBNcode : ''}
-          />
+          <input type="hidden" id="ISBNcode" name="ISBNcode" value={ISBNcode} />
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
             {state.fieldErrors?.content && (
               <span style={{ color: 'red' }}>{state.fieldErrors.content}</span>

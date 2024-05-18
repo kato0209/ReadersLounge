@@ -18,6 +18,7 @@ export async function searchBook(
   state: State,
   formData: FormData,
 ): Promise<State> {
+  console.log(888);
   const searchBookSchema = z.object({
     keyword: z.string().optional(),
     bookGenreID: z.string().optional(),
@@ -37,6 +38,7 @@ export async function searchBook(
   }
 
   const { keyword, bookGenreID } = validatedFields.data;
+  console.log(999, keyword, bookGenreID);
 
   try {
     const cookie = getAllCookies();
@@ -59,6 +61,7 @@ export async function searchBook(
         item_url: item.item_url,
         image: item.image,
       }));
+      console.log(fetchedBooks);
       return { fetchedBooks: fetchedBooks };
     } else {
       return Promise.reject(new Error('Failed to fetch book data'));

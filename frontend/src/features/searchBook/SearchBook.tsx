@@ -58,13 +58,17 @@ export const SearchBook: React.FC<SearchBookProps> = ({ formData }) => {
     }
   }
   React.useEffect(() => {
-    fetchBookGenres().then((data) => {
-      setBookGenreNodes(data);
+    fetchBookGenres().then((res) => {
+      setBookGenreNodes(res.data);
     });
   }, []);
 
   const handleGenreDisplay = () => {
     setHasGenre(!hasGenre);
+  };
+
+  const closeGenreDisplay = () => {
+    setHasGenre(false);
   };
 
   const handleGenreSelect = (bookGenreName: string, bookGenreID: string) => {
@@ -131,6 +135,7 @@ export const SearchBook: React.FC<SearchBookProps> = ({ formData }) => {
           />
           <Button
             type="submit"
+            onClick={closeGenreDisplay}
             sx={{
               backgroundColor: '#FF7E73',
               color: '#fff',

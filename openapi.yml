@@ -115,8 +115,15 @@ paths:
               $ref: "#/components/schemas/UpdateUserReqBody"
         required: true
       responses:
-        "204":
+        "201":
           description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: integer
 
   /user/{userId}:
     get:
