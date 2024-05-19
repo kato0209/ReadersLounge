@@ -12,6 +12,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     name: 'state',
     value: state,
     path: '/',
+    domain: process.env.COOKIE_DOMAIN,
+    expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
   });
   return NextResponse.json({ status: 200 });
 }

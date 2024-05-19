@@ -3,6 +3,7 @@ name: ReadersLounge Lint
 on:
   push:
     branches:
+      - main
       - develop
     paths:
       - ".github/workflows/lint.yml"
