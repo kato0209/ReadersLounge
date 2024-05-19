@@ -46,14 +46,24 @@ export async function signup(state: State, formData: FormData): Promise<State> {
     confirmationPassword: formData.get('confirmationPassword'),
   });
 
-  if (!validatedFields.success) {
-    const errors = validatedFields.error.flatten().fieldErrors;
+  if (validatedFields.success === false) {
+    const fieldErrors = validatedFields.error.flatten().fieldErrors;
+    const emailError = fieldErrors?.email ? fieldErrors.email[0] : undefined;
+    const usernameError = fieldErrors?.username
+      ? fieldErrors.username[0]
+      : undefined;
+    const passwordError = fieldErrors?.password
+      ? fieldErrors.password[0]
+      : undefined;
+    const confirmationPasswordError = fieldErrors?.confirmationPassword
+      ? fieldErrors.confirmationPassword[0]
+      : undefined;
     return {
       fieldErrors: {
-        email: errors.email?.[0],
-        username: errors.username?.[0],
-        password: errors.password?.[0],
-        confirmationPassword: errors.confirmationPassword?.[0],
+        email: emailError,
+        username: usernameError,
+        password: passwordError,
+        confirmationPassword: confirmationPasswordError,
       },
     };
   }

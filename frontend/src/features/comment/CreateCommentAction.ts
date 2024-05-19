@@ -30,14 +30,15 @@ export async function createComment(
   });
 
   if (validatedFields.success === false) {
+    const fieldErrors = validatedFields.error.flatten().fieldErrors;
+    const contentError = fieldErrors?.content
+      ? fieldErrors.content[0]
+      : undefined;
+    const postIDError = fieldErrors?.postID ? fieldErrors.postID[0] : undefined;
     return {
       fieldErrors: {
-        content: validatedFields.error.flatten().fieldErrors.content
-          ? validatedFields.error.flatten().fieldErrors.content[0]
-          : undefined,
-        postID: validatedFields.error.flatten().fieldErrors.postID
-          ? validatedFields.error.flatten().fieldErrors.postID[0]
-          : undefined,
+        content: contentError,
+        postID: postIDError,
       },
     };
   }

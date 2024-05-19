@@ -51,16 +51,19 @@ export async function profileEdit(
 
   if (validatedFields.success === false) {
     const fieldErrors = validatedFields.error.flatten().fieldErrors;
+    const nameError = fieldErrors.name ? fieldErrors.name[0] : undefined;
+    const profileTextError = fieldErrors.profileText
+      ? fieldErrors.profileText[0]
+      : undefined;
+    const profileImageError = fieldErrors.profileImage
+      ? fieldErrors.profileImage[0]
+      : undefined;
     return {
       error: true,
       fieldErrors: {
-        name: fieldErrors.name ? fieldErrors.name[0] : undefined,
-        profileText: fieldErrors.profileText
-          ? fieldErrors.profileText[0]
-          : undefined,
-        profileImage: fieldErrors.profileImage
-          ? fieldErrors.profileImage[0]
-          : undefined,
+        name: nameError,
+        profileText: profileTextError,
+        profileImage: profileImageError,
       },
     };
   }

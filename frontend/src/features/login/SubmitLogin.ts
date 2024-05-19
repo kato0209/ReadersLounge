@@ -27,10 +27,15 @@ export async function login(state: State, formData: FormData): Promise<State> {
   });
 
   if (validatedFields.success === false) {
+    const fieldErrors = validatedFields.error.flatten().fieldErrors;
+    const emailError = fieldErrors?.email ? fieldErrors.email[0] : undefined;
+    const passwordError = fieldErrors?.password
+      ? fieldErrors.password[0]
+      : undefined;
     return {
       fieldErrors: {
-        email: validatedFields.error.flatten().fieldErrors.email[0],
-        password: validatedFields.error.flatten().fieldErrors.password[0],
+        email: emailError,
+        password: passwordError,
       },
     };
   }

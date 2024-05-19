@@ -26,9 +26,13 @@ export async function searchUser(
   });
 
   if (validatedFields.success === false) {
+    const fieldErrors = validatedFields.error.flatten().fieldErrors;
+    const keywordError = fieldErrors?.keyword
+      ? fieldErrors.keyword[0]
+      : undefined;
     return {
       fieldErrors: {
-        keyword: validatedFields.error.flatten().fieldErrors.keyword[0],
+        keyword: keywordError,
       },
     };
   }

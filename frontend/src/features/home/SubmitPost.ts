@@ -23,20 +23,24 @@ export async function post(state: State, formData: FormData): Promise<State> {
   });
 
   if (validatedFields.success === false) {
+    const fieldErrors = validatedFields.error.flatten().fieldErrors;
+    const contentError = fieldErrors?.content
+      ? fieldErrors.content[0]
+      : undefined;
+    const ratingError = fieldErrors?.rating ? fieldErrors.rating[0] : undefined;
+    const ISBNcodeError = fieldErrors?.ISBNcode
+      ? fieldErrors.ISBNcode[0]
+      : undefined;
+    const postImageError = fieldErrors?.postImage
+      ? fieldErrors.postImage[0]
+      : undefined;
+
     return {
       fieldErrors: {
-        content: validatedFields.error.flatten().fieldErrors.content
-          ? validatedFields.error.flatten().fieldErrors.content[0]
-          : undefined,
-        rating: validatedFields.error.flatten().fieldErrors.rating
-          ? validatedFields.error.flatten().fieldErrors.rating[0]
-          : undefined,
-        ISBNcode: validatedFields.error.flatten().fieldErrors.ISBNcode
-          ? validatedFields.error.flatten().fieldErrors.ISBNcode[0]
-          : undefined,
-        postImage: validatedFields.error.flatten().fieldErrors.postImage
-          ? validatedFields.error.flatten().fieldErrors.postImage[0]
-          : undefined,
+        content: contentError,
+        rating: ratingError,
+        ISBNcode: ISBNcodeError,
+        postImage: postImageError,
       },
     };
   }

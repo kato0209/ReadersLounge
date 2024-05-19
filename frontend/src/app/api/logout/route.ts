@@ -15,4 +15,5 @@ export async function POST(): Promise<NextResponse> {
   } catch (error: unknown) {
     return Promise.reject(error);
   }
+  return NextResponse.json({ error: 'Failed to logout' });
 }
