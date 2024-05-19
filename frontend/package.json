@@ -22,7 +22,7 @@
     "@mui/material": "^5.14.18",
     "@mui/x-tree-view": "^6.17.0",
     "@openapitools/openapi-generator-cli": "^2.7.0",
-    "axios": "^1.5.1",
+    "axios": "^1.6.0",
     "isurl": "^4.0.2",
     "next": "^14.1.1",
     "react": "^18.2.0",
