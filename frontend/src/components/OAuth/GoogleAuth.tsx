@@ -1,22 +1,26 @@
-import { useState, useEffect } from 'react';
+'use client';
 import Link from '@mui/material/Link';
-import { getGoogleAuthUrl } from '../../utils/getGoogleAuthUrl';
+import { getGoogleAuthUrl } from '../../lib/auth/oauth/getGoogleAuthUrl';
 import { FcGoogle } from 'react-icons/fc';
-import { useCookies } from 'react-cookie';
+import axios from 'axios';
 import { generateRandomState } from '../../utils/generateRandomState';
+import { useEffect, useState } from 'react';
+import { useErrorHandler } from 'react-error-boundary';
 
 export default function GoogleAuth() {
-  const [, setCookie] = useCookies(['state']);
+  const errorHandler = useErrorHandler();
+  async function setStateToCookie(state: string) {
+    try {
+      await axios.get(`/api/set-state?state=${state}`);
+    } catch (error: unknown) {
+      errorHandler(error);
+    }
+  }
   const [state, setState] = useState<string>('');
-
   useEffect(() => {
     const state = generateRandomState(10);
+    setStateToCookie(state);
     setState(state);
-
-    const now = new Date();
-    const oneDay = 24 * 60 * 60 * 1000;
-    const expires = new Date(now.getTime() + oneDay);
-    setCookie('state', state, { path: '/', expires: expires });
   }, []);
 
   return (

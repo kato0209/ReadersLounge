@@ -1,29 +1,26 @@
 import Sidebar from '../../components/Sidebar/Sidebar';
-import { useIsMobileContext } from '../../providers/mobile/isMobile';
-import UserSearchComponent from './UserSearchComponent';
+import UserSearchSection from './UserSearchSection';
 import { Box } from '@mui/material';
 
 export default function UserSearch() {
-  const isMobile = useIsMobileContext();
-
   return (
     <>
-      {!isMobile ? (
-        <Box style={{ display: 'flex' }}>
-          <Box style={{ flex: '0 0 30%', display: 'flex' }}>
-            <Sidebar />
-          </Box>
-          <Box style={{ flex: '0 0 40%', overflowX: 'hidden' }}>
-            <UserSearchComponent />
-          </Box>
+      <Box className="isMobile" style={{ display: 'flex', marginTop: '1rem' }}>
+        <Box style={{ flex: '0 0 30%', display: 'flex' }}>
+          <Sidebar />
         </Box>
-      ) : (
-        <Box style={{ display: 'flex', justifyContent: 'center' }}>
-          <Box style={{ flex: '0 0 80%', overflowX: 'hidden' }}>
-            <UserSearchComponent />
-          </Box>
+        <Box style={{ flex: '0 0 40%', overflowX: 'hidden' }}>
+          <UserSearchSection />
         </Box>
-      )}
+      </Box>
+      <Box
+        className="isPC"
+        style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem' }}
+      >
+        <Box style={{ flex: '0 0 80%', overflowX: 'hidden' }}>
+          <UserSearchSection />
+        </Box>
+      </Box>
     </>
   );
 }

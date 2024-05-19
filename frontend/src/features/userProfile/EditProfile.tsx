@@ -1,70 +1,39 @@
+'use client';
 import * as React from 'react';
-import { Box, Typography, Button, Avatar, Stack } from '@mui/material';
+import { Typography, Button, Avatar, Stack } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import { isValidUrl } from '../../utils/isValidUrl';
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
 import TextField from '@mui/material/TextField';
 import { User } from '../../openapi';
-import { useErrorHandler } from 'react-error-boundary';
-import { apiInstance } from '../../lib/api/apiInstance';
 import DialogTitle from '@mui/material/DialogTitle';
+import { useFormState } from 'react-dom';
+import { State } from './ProfileEditAction';
+import { profileEdit } from './ProfileEditAction';
+
+const initialState: State = {
+  error: false,
+  fieldErrors: {
+    name: '',
+    profileText: '',
+    profileImage: '',
+  },
+};
 
 type EditProfileProps = {
   user: User;
-  fetchUser: () => Promise<void>;
 };
 
-const IMAGE_TYPES = ['image/jpeg', 'image/png'];
-
-const ProfileSchema = z.object({
-  name: z.string().max(20, {
-    message: '名前は20文字以内で入力してください',
-  }),
-  profileText: z.string().max(255, {
-    message: 'プロフィールは255文字以内で入力してください',
-  }),
-  profileImage: z
-    .instanceof(File)
-    .optional()
-    .refine(
-      (file) => {
-        return (
-          file === undefined ||
-          (IMAGE_TYPES.includes(file.type) &&
-            file.name.split('.').pop()?.toLowerCase() !== 'jpg')
-        );
-      },
-      {
-        message: '.jpegもしくは.pngのみ可能です',
-      },
-    ),
-});
-
-type FormData = z.infer<typeof ProfileSchema>;
-
-export const EditProfile: React.FC<EditProfileProps> = ({
-  user,
-  fetchUser,
-}) => {
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors },
-  } = useForm<FormData>({
-    resolver: zodResolver(ProfileSchema),
-  });
+export const EditProfile: React.FC<EditProfileProps> = ({ user }) => {
+  const [state, formAction] = useFormState(profileEdit, initialState);
   const [openUpdateProfileDialog, setOpenUpdateProfileDialog] =
     React.useState(false);
-  const errorHandler = useErrorHandler();
   const [imagePreview, setImagePreview] = React.useState<string | null>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
+  const formRef = React.useRef<HTMLFormElement>(null);
 
   const handleOpen = () => {
     setOpenUpdateProfileDialog(true);
@@ -74,10 +43,15 @@ export const EditProfile: React.FC<EditProfileProps> = ({
     setOpenUpdateProfileDialog(false);
   };
 
+  const handleSubmit = () => {
+    if (formRef.current) {
+      formRef.current.requestSubmit();
+    }
+  };
+
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
-      setValue('profileImage', file, { shouldValidate: true });
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
@@ -88,21 +62,6 @@ export const EditProfile: React.FC<EditProfileProps> = ({
 
   const handleImageButtonClick = () => {
     inputRef.current?.click();
-  };
-
-  const onSubmit = async (data: FormData) => {
-    try {
-      const api = await apiInstance;
-      if (data.profileImage) {
-        await api.updateUser(data.name, data.profileImage, data.profileText);
-      } else {
-        await api.updateUser(data.name, undefined, data.profileText);
-      }
-      handleClose();
-      await fetchUser();
-    } catch (error: unknown) {
-      errorHandler(error);
-    }
   };
 
   return (
@@ -132,6 +91,7 @@ export const EditProfile: React.FC<EditProfileProps> = ({
       >
         Edit profile
       </Button>
+
       <Dialog
         open={openUpdateProfileDialog}
         onClose={handleClose}
@@ -170,16 +130,16 @@ export const EditProfile: React.FC<EditProfileProps> = ({
                 backgroundColor: '#E56A67',
               },
             }}
-            onClick={handleSubmit(onSubmit)}
+            onClick={handleSubmit}
           >
             Save
           </Button>
         </DialogTitle>
         <DialogContent>
-          <Box
-            component="form"
-            noValidate
-            sx={{
+          <form
+            action={formAction}
+            ref={formRef}
+            style={{
               flex: 'auto',
               marginTop: '2rem',
               display: 'flex',
@@ -192,6 +152,7 @@ export const EditProfile: React.FC<EditProfileProps> = ({
                 ref={inputRef}
                 type="file"
                 id="image-upload"
+                name="profileImage"
                 style={{ display: 'none' }}
                 onChange={handleImageChange}
                 accept="image/*"
@@ -240,8 +201,12 @@ export const EditProfile: React.FC<EditProfileProps> = ({
                 </Stack>
               </Button>
             </label>
+            {state.fieldErrors?.profileImage && (
+              <span style={{ color: 'red' }}>
+                {state.fieldErrors?.profileImage}
+              </span>
+            )}
             <TextField
-              {...register('name')}
               margin="normal"
               fullWidth
               name="name"
@@ -249,11 +214,10 @@ export const EditProfile: React.FC<EditProfileProps> = ({
               defaultValue={user.name}
               id="name"
             />
-            {errors.name && (
-              <span style={{ color: 'red' }}>{errors.name.message}</span>
+            {state.fieldErrors?.name && (
+              <span style={{ color: 'red' }}>{state.fieldErrors?.name}</span>
             )}
             <TextField
-              {...register('profileText')}
               margin="normal"
               fullWidth
               name="profileText"
@@ -261,10 +225,12 @@ export const EditProfile: React.FC<EditProfileProps> = ({
               defaultValue={user.profile_text}
               id="profileText"
             />
-            {errors.profileText && (
-              <span style={{ color: 'red' }}>{errors.profileText.message}</span>
+            {state.fieldErrors?.profileText && (
+              <span style={{ color: 'red' }}>
+                {state.fieldErrors?.profileText}
+              </span>
             )}
-          </Box>
+          </form>
         </DialogContent>
       </Dialog>
     </>

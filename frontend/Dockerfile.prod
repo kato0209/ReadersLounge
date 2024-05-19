@@ -4,14 +4,9 @@ RUN apt-get update && apt-get install -y openjdk-11-jre-headless && rm -rf /var/
 
 WORKDIR /readers-lounge/frontend
 COPY package*.json ./
-RUN npm install
 COPY . .
+RUN npm install
 EXPOSE 80
 RUN npm run build
 
-FROM nginx:1.15-alpine
-
-COPY --from=release /readers-lounge/frontend/dist /usr/share/nginx/html
-COPY nginx /etc/nginx/conf.d/
-
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["npm", "start"]

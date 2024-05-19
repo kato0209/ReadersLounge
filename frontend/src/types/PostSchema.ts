@@ -9,7 +9,7 @@ export const PostSchema = z.object({
   rating: z.number().positive(),
   ISBNcode: z.string().nonempty('本が選択されていません'),
   postImage: z
-    .instanceof(File)
+    .any()
     .optional()
     .refine(
       (file) => {

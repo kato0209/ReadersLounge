@@ -1,3 +1,4 @@
+'use client';
 import * as React from 'react';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
@@ -5,11 +6,6 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
 import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { apiInstance } from '../../lib/api/apiInstance';
-import { useErrorHandler } from 'react-error-boundary';
-import { useForm } from 'react-hook-form';
-import { Book } from '../../openapi';
 import { BookList } from './BookList';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -20,13 +16,21 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import Chip from '@mui/material/Chip';
 import { PostSchema } from '../../types/PostSchema';
+import { useFormState } from 'react-dom';
+import { searchBook } from './SearchBookAction';
+import { State } from './SearchBookAction';
+import { useErrorHandler } from 'react-error-boundary';
+import axios from 'axios';
 
-const searchBookSchema = z.object({
-  keyword: z.string().optional(),
-  bookGenreID: z.string().optional(),
-});
-
-type FormData = z.infer<typeof searchBookSchema>;
+const initialState: State = {
+  error: '',
+  fieldErrors: {
+    keyword: '',
+    bookGenreID: '',
+  },
+  fetchedBooks: [],
+  bookNotFound: false,
+};
 
 type PostFormData = z.infer<typeof PostSchema>;
 type SearchBookProps = {
@@ -34,34 +38,48 @@ type SearchBookProps = {
 };
 
 export const SearchBook: React.FC<SearchBookProps> = ({ formData }) => {
-  const { register, handleSubmit, setValue } = useForm<FormData>({
-    resolver: zodResolver(searchBookSchema),
-  });
-  const errorHandler = useErrorHandler();
-  const [books, setBooks] = React.useState<Book[]>([]);
+  const [state, formAction] = useFormState(searchBook, initialState);
+  const [hasGenre, setHasGenre] = React.useState<boolean>(false);
+  const [selectedGenre, setSelectedGenre] = React.useState<string>('');
+  const [bookGenreID, setBookGenreID] = React.useState<string | undefined>(
+    undefined,
+  );
   const [bookGenreNodes, setBookGenreNodes] = React.useState<BookGenreNode[]>(
     [],
   );
-  const [hasGenre, setHasGenre] = React.useState<boolean>(false);
-  const [selectedGenre, setSelectedGenre] = React.useState<string>('');
-  const [bookNotFound, setBookNotFound] = React.useState<boolean>(false);
+  const errorHandler = useErrorHandler();
 
+  async function fetchBookGenres() {
+    try {
+      const res = await axios.get(`/api/fetch-book-genres`);
+      return res.data;
+    } catch (error: unknown) {
+      errorHandler(error);
+    }
+  }
   React.useEffect(() => {
-    const fetchBookGenres = async () => {
-      try {
-        const api = await apiInstance;
-        const res = await api.getBooksGenres();
-
-        if (res.data && Array.isArray(res.data)) {
-          setBookGenreNodes(res.data);
-        }
-      } catch (error: unknown) {
-        errorHandler(error);
-      }
-    };
-
-    fetchBookGenres();
+    fetchBookGenres().then((res) => {
+      setBookGenreNodes(res.data);
+    });
   }, []);
+
+  const handleGenreDisplay = () => {
+    setHasGenre(!hasGenre);
+  };
+
+  const closeGenreDisplay = () => {
+    setHasGenre(false);
+  };
+
+  const handleGenreSelect = (bookGenreName: string, bookGenreID: string) => {
+    setSelectedGenre(bookGenreName);
+    setBookGenreID(bookGenreID);
+  };
+
+  const handleGenreDelete = () => {
+    setSelectedGenre('');
+    setBookGenreID(bookGenreID);
+  };
 
   const renderTree = (nodes: BookGenreNode) => (
     <TreeItem
@@ -99,65 +117,25 @@ export const SearchBook: React.FC<SearchBookProps> = ({ formData }) => {
     </TreeItem>
   );
 
-  const onSubmit = async (data: FormData) => {
-    try {
-      const api = await apiInstance;
-      const res = await api.fetchBookData(data.bookGenreID, data.keyword);
-      if (res.data && Array.isArray(res.data)) {
-        const fetchedBooks: Book[] = res.data.map((item) => ({
-          book_id: item.book_id,
-          ISBNcode: item.ISBNcode,
-          title: item.title,
-          author: item.author,
-          price: item.price,
-          publisher: item.publisher,
-          published_at: item.published_at,
-          item_url: item.item_url,
-          image: item.image,
-        }));
-        setBooks(fetchedBooks);
-        setHasGenre(false);
-        if (res.data.length === 0) {
-          setBookNotFound(true);
-        }
-      }
-    } catch (error: unknown) {
-      errorHandler(error);
-    }
-  };
-
-  const handleGenreDisplay = () => {
-    setHasGenre(!hasGenre);
-  };
-
-  const handleGenreSelect = (bookGenreName: string, bookGenreID: string) => {
-    setSelectedGenre(bookGenreName);
-    setValue('bookGenreID', bookGenreID, { shouldValidate: true });
-  };
-
-  const handleGenreDelete = () => {
-    setSelectedGenre('');
-    setValue('bookGenreID', undefined, { shouldValidate: true });
-  };
-
   return (
-    <Container component="main">
-      <Box
-        component="form"
-        onSubmit={handleSubmit(onSubmit)}
-        noValidate
-        sx={{ mt: '1rem' }}
-      >
+    <Container component="main" sx={{ mt: 2 }}>
+      <form action={formAction}>
         <Box sx={{ display: 'flex' }}>
           <TextField
-            {...register('keyword')}
             fullWidth
             id="keyword"
             label="本のタイトル"
             name="keyword"
           />
+          <input
+            type="hidden"
+            id="bookGenreID"
+            name="bookGenreID"
+            value={bookGenreID}
+          />
           <Button
             type="submit"
+            onClick={closeGenreDisplay}
             sx={{
               backgroundColor: '#FF7E73',
               color: '#fff',
@@ -173,7 +151,7 @@ export const SearchBook: React.FC<SearchBookProps> = ({ formData }) => {
             検索
           </Button>
         </Box>
-      </Box>
+      </form>
       <Box sx={{ mt: '2rem' }}>
         <Box sx={{ display: 'flex', textAlign: 'center' }}>
           <Button
@@ -208,8 +186,8 @@ export const SearchBook: React.FC<SearchBookProps> = ({ formData }) => {
           </TreeView>
         )}
       </Box>
-      <BookList books={books} formData={formData} />
-      {bookNotFound && (
+      <BookList books={state.fetchedBooks ?? []} formData={formData} />
+      {state.bookNotFound && (
         <Typography
           component="div"
           sx={{ fontSize: '1.5rem', marginTop: '1rem' }}

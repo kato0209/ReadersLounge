@@ -1,3 +1,4 @@
+'use client';
 import TextField from '@mui/material/TextField';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
@@ -5,72 +6,21 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import SubmitButton from '../../components/Button/SubmitButton';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { useErrorHandler } from 'react-error-boundary';
-import { ReqLoginBody } from '../../openapi/models';
-import { apiInstance } from '../../lib/api/apiInstance';
-import { AxiosError } from 'axios';
-import { useAuthUserContext } from '../../lib/auth/auth';
-import { User } from '../../openapi';
-import { useNavigate } from 'react-router-dom';
 import PortalLogo from '../../components/Logo/PortalLogo';
-import GoogleAuth from '../../components/OAuth/GoogleAuth';
+import { useFormState } from 'react-dom';
+import { login } from './SubmitLogin';
+import { State } from './SubmitLogin';
 
-const LoginSchema = z.object({
-  email: z.string().nonempty('メールアドレスは必須です'),
-  password: z.string().nonempty('パスワードは必須です'),
-});
+const initialState: State = {
+  error: '',
+  fieldErrors: {
+    email: '',
+    password: '',
+  },
+};
 
-type FormData = z.infer<typeof LoginSchema>;
-
-export default function Login() {
-  const {
-    register,
-    handleSubmit,
-    setError,
-    formState: { errors },
-  } = useForm<FormData>({
-    resolver: zodResolver(LoginSchema),
-  });
-
-  const navigate = useNavigate();
-  const errorHandler = useErrorHandler();
-  const { login } = useAuthUserContext();
-
-  const onSubmit = async (data: FormData) => {
-    const reqLoginBody: ReqLoginBody = {
-      identifier: data.email,
-      credential: data.password,
-    };
-
-    try {
-      const api = await apiInstance;
-      const res = await api.login(reqLoginBody);
-      const user: User = {
-        user_id: res.data.user_id,
-        name: res.data.name,
-        profile_image: res.data.profile_image,
-      };
-      login(user);
-      navigate('/');
-    } catch (error: unknown) {
-      if (error instanceof AxiosError) {
-        if (error.response && error.response.status === 500) {
-          setError('password', {
-            type: 'manual',
-            message: 'メールアドレスまたはパスワードが間違っています',
-          });
-        } else {
-          errorHandler(error);
-        }
-      } else {
-        errorHandler(error);
-      }
-    }
-  };
-
+export default function Login({ GoogleAuth }: { GoogleAuth: React.ReactNode }) {
+  const [state, formAction] = useFormState(login, initialState);
   return (
     <Container component="main" maxWidth="xs">
       <Box
@@ -85,14 +35,8 @@ export default function Login() {
         <Typography component="h1" variant="h5" sx={{ mt: 1 }}>
           Login
         </Typography>
-        <Box
-          component="form"
-          onSubmit={handleSubmit(onSubmit)}
-          noValidate
-          sx={{ mt: 1 }}
-        >
+        <form action={formAction}>
           <TextField
-            {...register('email')}
             required
             fullWidth
             id="email"
@@ -101,11 +45,7 @@ export default function Login() {
             autoComplete="email"
             autoFocus
           />
-          {errors.email && (
-            <span style={{ color: 'red' }}>{errors.email.message}</span>
-          )}
           <TextField
-            {...register('password')}
             margin="normal"
             required
             fullWidth
@@ -115,9 +55,7 @@ export default function Login() {
             id="password"
             autoComplete="current-password"
           />
-          {errors.password && (
-            <span style={{ color: 'red' }}>{errors.password.message}</span>
-          )}
+          {state.error && <span style={{ color: 'red' }}>{state.error}</span>}
           <SubmitButton content="LOGIN" />
           <Grid container justifyContent="flex-end">
             <Grid item>
@@ -133,8 +71,8 @@ export default function Login() {
           >
             Login with another provider
           </Typography>
-          <GoogleAuth />
-        </Box>
+          {GoogleAuth}
+        </form>
       </Box>
     </Container>
   );

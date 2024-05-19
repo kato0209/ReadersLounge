@@ -20,16 +20,6 @@ func NewRouter(server *controller.Server) *echo.Echo {
 		AllowMethods:     []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
 		AllowCredentials: true,
 	}))
-	e.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
-		CookiePath:   "/",
-		CookieDomain: os.Getenv("API_DOMAIN"),
-		//CookieDomain: "localhost",
-		//CookieSameSite: http.SameSiteNoneMode,
-		CookieHTTPOnly: true,
-		//CookieSecure:   false,
-		CookieSameSite: http.SameSiteDefaultMode,
-		CookieMaxAge:   24 * 60 * 60,
-	}))
 
 	openapi.RegisterHandlers(e, server)
 
@@ -37,7 +27,7 @@ func NewRouter(server *controller.Server) *echo.Echo {
 		SigningKey:  []byte(os.Getenv("JWT_SECRET")),
 		TokenLookup: "cookie:jwt_token",
 		Skipper: func(c echo.Context) bool {
-			skipPaths := []string{"/health", "/csrftoken", "/signup", "/login", "/logout", "/oauth/google", "/oauth/google/callback"}
+			skipPaths := []string{"/health", "/set-state", "/signup", "/login", "/logout", "/oauth/google", "/oauth/google/callback"}
 
 			path := c.Path()
 

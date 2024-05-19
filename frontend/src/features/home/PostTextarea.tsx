@@ -69,6 +69,7 @@ const PostTextarea = React.forwardRef<HTMLTextAreaElement, PostTextareaProps>(
     return (
       <Textarea
         ref={ref}
+        name="content"
         onChange={onChange}
         value={value}
         maxLength={255}

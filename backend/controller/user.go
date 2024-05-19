@@ -97,7 +97,6 @@ func (s *Server) Logout(ctx echo.Context) error {
 }
 
 func (s *Server) GoogleOauthCallback(ctx echo.Context, params openapi.GoogleOauthCallbackParams) error {
-
 	cookieState, err := ctx.Cookie("state")
 	if err != nil {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
@@ -215,7 +214,7 @@ func (s *Server) UpdateUser(ctx echo.Context) error {
 		return ctx.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.NoContent(http.StatusNoContent)
+	return ctx.JSON(http.StatusCreated, userID)
 }
 
 func (s *Server) SearchUser(ctx echo.Context, params openapi.SearchUserParams) error {

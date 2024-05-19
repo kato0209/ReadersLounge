@@ -7,7 +7,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import MailIcon from '@mui/icons-material/Mail';
 import { CreatePost } from '../../features/home/CreatePost';
 import SearchIcon from '@mui/icons-material/Search';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import PersonSearchIcon from '@mui/icons-material/PersonSearch';
 
 export default function Sidebar() {
@@ -27,70 +27,74 @@ export default function Sidebar() {
       anchor="left"
     >
       <List sx={{ width: '60%' }}>
-        <ListItem
-          button
-          component={Link}
-          to="/"
-          sx={{
-            borderRadius: '50px',
-            '&:hover': {
+        <Link href="/home" passHref>
+          <ListItem
+            button
+            sx={{
+              borderRadius: '50px',
               color: 'black',
-            },
-          }}
-        >
-          <ListItemIcon>
-            <HomeIcon />
-          </ListItemIcon>
-          <ListItemText primary="Home" />
-        </ListItem>
-        <ListItem
-          button
-          component={Link}
-          sx={{
-            borderRadius: '50px',
-            '&:hover': {
+              '&:hover': {
+                color: 'black',
+              },
+            }}
+          >
+            <ListItemIcon>
+              <HomeIcon />
+            </ListItemIcon>
+            <ListItemText primary="Home" />
+          </ListItem>
+        </Link>
+        <Link href="/user-search" passHref>
+          <ListItem
+            button
+            sx={{
+              borderRadius: '50px',
               color: 'black',
-            },
-          }}
-          to="/user-search"
-        >
-          <ListItemIcon>
-            <PersonSearchIcon />
-          </ListItemIcon>
-          <ListItemText primary="User Search" />
-        </ListItem>
-        <ListItem
-          button
-          component={Link}
-          sx={{
-            borderRadius: '50px',
-            '&:hover': {
+              '&:hover': {
+                color: 'black',
+              },
+            }}
+          >
+            <ListItemIcon>
+              <PersonSearchIcon />
+            </ListItemIcon>
+            <ListItemText primary="User Search" />
+          </ListItem>
+        </Link>
+        <Link href="/chat-room-list" passHref>
+          <ListItem
+            button
+            sx={{
+              borderRadius: '50px',
               color: 'black',
-            },
-          }}
-          to="/chat-room-list"
-        >
-          <ListItemIcon>
-            <MailIcon />
-          </ListItemIcon>
-          <ListItemText primary="Messages" />
-        </ListItem>
-        <ListItem
-          button
-          component={Link}
-          sx={{
-            borderRadius: '50px',
-            '&:hover': {
+              '&:hover': {
+                color: 'black',
+              },
+            }}
+          >
+            <ListItemIcon>
+              <MailIcon />
+            </ListItemIcon>
+            <ListItemText primary="Messages" />
+          </ListItem>
+        </Link>
+        <Link href="/search-book" passHref>
+          <ListItem
+            button
+            sx={{
+              borderRadius: '50px',
               color: 'black',
-            },
-          }}
-          to="/search-book"
-        >
-          <ListItemIcon>
-            <SearchIcon />
-          </ListItemIcon>
-          <ListItemText primary="Book Search" />
-        </ListItem>
+              '&:hover': {
+                color: 'black',
+              },
+            }}
+          >
+            <ListItemIcon>
+              <SearchIcon />
+            </ListItemIcon>
+            <ListItemText primary="Book Search" />
+          </ListItem>
+        </Link>
         <CreatePost displayString="Post" />
       </List>
     </Drawer>

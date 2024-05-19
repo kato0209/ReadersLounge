@@ -9,7 +9,7 @@ import (
 )
 
 type IConnectionRepository interface {
-	CreateConnection(ctx echo.Context, followerID, followingID int) error
+	CreateConnection(ctx echo.Context, followerID, followingID int) (models.Connection, error)
 	DeleteConnection(ctx echo.Context, connectionId int) error
 	GetFollowingConnections(ctx echo.Context, userID int, followingList *[]models.Connection) error
 	GetFollowerConnections(ctx echo.Context, userID int, followerList *[]models.Connection) error
@@ -23,14 +23,35 @@ func NewConnectionRepository(db *sqlx.DB) IConnectionRepository {
 	return &connectionRepository{db}
 }
 
-func (cr *connectionRepository) CreateConnection(ctx echo.Context, followerID, followingID int) error {
-	query := `INSERT INTO connections (follower_id, following_id) VALUES ($1, $2);`
-	_, err := cr.db.ExecContext(ctx.Request().Context(), query, followerID, followingID)
+func (cr *connectionRepository) CreateConnection(ctx echo.Context, followerID, followingID int) (models.Connection, error) {
+	query := `WITH inserted_connection AS (
+				INSERT INTO connections (follower_id, following_id) 
+				VALUES ($1, $2) 
+				RETURNING connection_id, follower_id
+			)
+			SELECT 
+				ic.connection_id, 
+				u.user_id, 
+				ud.name, 
+				ud.profile_image
+			FROM 
+				inserted_connection ic
+			JOIN 
+				user_details ud ON ic.follower_id = ud.user_id
+			JOIN 
+				users u ON ud.user_id = u.user_id`
+	
+	var connection models.Connection
+	err := cr.db.QueryRowContext(ctx.Request().Context(), query, followerID, followingID).Scan(
+		&connection.ConnectionID,
+		&connection.Follower.UserID,
+		&connection.Follower.Name,
+		&connection.Follower.ProfileImage.FileName,
+	)
 	if err != nil {
-		return err
+		return models.Connection{}, err
 	}
-
-	return nil
+	return connection, nil
 }
 
 func (cr *connectionRepository) DeleteConnection(ctx echo.Context, connectionId int) error {

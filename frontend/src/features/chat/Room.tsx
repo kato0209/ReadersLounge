@@ -1,7 +1,7 @@
+'use client';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
-import { apiInstance } from '../../lib/api/apiInstance';
 import { useErrorHandler } from 'react-error-boundary';
 import { Message } from '../../openapi';
 import { SendMessageReqBody } from '../../openapi';
@@ -9,27 +9,43 @@ import SendIcon from '@mui/icons-material/Send';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import ReconnectingWebSocket from 'reconnecting-websocket';
-import { useAuthUserContext } from '../../lib/auth/auth';
 import { Typography, Paper } from '@mui/material';
+import { User } from '../../openapi';
+import axios from 'axios';
 
 type RoomProps = {
   roomID: number;
+  messages: Message[];
 };
 
-export default function Room(props: RoomProps) {
+export default function RoomClientComponent(props: RoomProps) {
   const errorHandler = useErrorHandler();
   const [input, setInput] = useState<string>('');
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>(props.messages);
   const socketRef = useRef<ReconnectingWebSocket | null>(null);
   const isConnectedRef = useRef<boolean>(false);
-  const { user } = useAuthUserContext();
+  const [user, setUser] = useState<User | null>(null);
+
+  async function fetchLoginUser() {
+    try {
+      const res = await axios.get(`/api/fetch-login-user`);
+      return res.data;
+    } catch (error: unknown) {
+      errorHandler(error);
+    }
+  }
+  useEffect(() => {
+    fetchLoginUser().then((res) => {
+      setUser(res.data);
+    });
+  }, []);
 
   useEffect(() => {
     const connect = (): Promise<ReconnectingWebSocket> => {
       isConnectedRef.current = false;
       return new Promise((resolve, reject) => {
         socketRef.current = new ReconnectingWebSocket(
-          `${import.meta.env.VITE_WEBSOCKET_URL}/chats?room_id=${props.roomID}`,
+          `${process.env.NEXT_PUBLIC_WEBSOCKET_URL}/chats?room_id=${props.roomID}`,
         );
 
         if (socketRef.current) {
@@ -68,29 +84,6 @@ export default function Room(props: RoomProps) {
         socketRef.current?.close();
       }
     };
-  }, [props.roomID]);
-
-  useEffect(() => {
-    const fetchMessages = async () => {
-      try {
-        const api = await apiInstance;
-        const res = await api.getMessages(props.roomID);
-
-        if (res.data && Array.isArray(res.data)) {
-          const fetchedMessages: Message[] = res.data.map((item) => ({
-            message_id: item.message_id,
-            user_id: item.user_id,
-            content: item.content,
-            sent_at: item.sent_at,
-          }));
-          setMessages(fetchedMessages);
-        }
-      } catch (error: unknown) {
-        errorHandler(error);
-      }
-    };
-
-    fetchMessages();
   }, [props.roomID]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -139,7 +132,7 @@ export default function Room(props: RoomProps) {
                 sx={{
                   display: 'flex',
                   justifyContent:
-                    message.user_id === user.user_id
+                    message.user_id === user?.user_id
                       ? 'flex-end'
                       : 'flex-start',
                 }}
@@ -148,7 +141,7 @@ export default function Room(props: RoomProps) {
                   sx={{
                     display: 'flex',
                     flexDirection:
-                      message.user_id === user.user_id ? 'row-reverse' : 'row',
+                      message.user_id === user?.user_id ? 'row-reverse' : 'row',
                     alignItems: 'center',
                   }}
                 >
@@ -156,10 +149,10 @@ export default function Room(props: RoomProps) {
                     variant="outlined"
                     sx={{
                       p: 2,
-                      ml: message.user_id === user.user_id ? 0 : 1,
-                      mr: message.user_id === user.user_id ? 1 : 0,
+                      ml: message.user_id === user?.user_id ? 0 : 1,
+                      mr: message.user_id === user?.user_id ? 1 : 0,
                       borderRadius:
-                        message.user_id === user.user_id
+                        message.user_id === user?.user_id
                           ? '20px 20px 5px 20px'
                           : '20px 20px 20px 5px',
                     }}
@@ -172,7 +165,7 @@ export default function Room(props: RoomProps) {
                 style={{
                   display: 'flex',
                   justifyContent:
-                    message.user_id === user.user_id
+                    message.user_id === user?.user_id
                       ? 'flex-end'
                       : 'flex-start',
                   fontSize: '0.7rem',

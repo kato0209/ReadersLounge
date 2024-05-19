@@ -17,7 +17,6 @@ import (
 )
 
 func main() {
-
 	if os.Getenv("ENV") == "dev" {
 		_, err := openapi.GetSwagger()
 		if err != nil {

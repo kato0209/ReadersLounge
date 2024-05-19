@@ -8,10 +8,9 @@ import (
 )
 
 const (
-	X_CSRF_TOKENScopes = "X_CSRF_TOKEN.Scopes"
-	Google_authScopes  = "google_auth.Scopes"
-	JwtAuthScopes      = "jwtAuth.Scopes"
-	StateScopes        = "state.Scopes"
+	Google_authScopes = "google_auth.Scopes"
+	JwtAuthScopes     = "jwtAuth.Scopes"
+	StateScopes       = "state.Scopes"
 )
 
 // Book defines model for Book.
@@ -132,11 +131,6 @@ type ReqSignupBody struct {
 	Credential *string `json:"credential,omitempty"`
 	Identifier *string `json:"identifier,omitempty"`
 	Username   *string `json:"username,omitempty"`
-}
-
-// ResCsrfToken defines model for ResCsrfToken.
-type ResCsrfToken struct {
-	CsrfToken *string `json:"csrf_token,omitempty"`
 }
 
 // SendMessageReqBody defines model for SendMessageReqBody.

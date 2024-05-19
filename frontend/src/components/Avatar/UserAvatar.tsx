@@ -1,10 +1,10 @@
 import Avatar from '@mui/material/Avatar';
 import { isValidUrl } from '../../utils/isValidUrl';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 
 function UserAvatar(props: { image: string; userID: number }) {
   return (
-    <Link to={`/user-profile/${props.userID}`}>
+    <Link href={`/user-profile/${props.userID}`}>
       <Avatar
         src={
           isValidUrl(props.image)

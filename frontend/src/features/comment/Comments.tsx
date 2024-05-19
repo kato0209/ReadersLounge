@@ -1,30 +1,27 @@
 import Sidebar from '../../components/Sidebar/Sidebar';
-import { useIsMobileContext } from '../../providers/mobile/isMobile';
 import { Box } from '@mui/material';
-import { CommentComponent } from './CommentComponent';
+import { CommentSC } from './Comment';
 
-export default function Comments() {
-  const isMobile = useIsMobileContext();
-
+export default function Comments({ postID }: { postID: number }) {
   return (
     <>
-      {!isMobile ? (
-        <Box style={{ display: 'flex' }}>
-          <Box style={{ flex: '0 0 30%', display: 'flex' }}>
-            <Sidebar />
-          </Box>
-          <Box style={{ flex: '0 0 40%', overflowX: 'hidden' }}>
-            <CommentComponent />
-          </Box>
-          <Box style={{ flex: '0 0 30%' }}></Box>
+      <Box className="isMobile" style={{ display: 'flex' }}>
+        <Box style={{ flex: '0 0 30%', display: 'flex' }}>
+          <Sidebar />
         </Box>
-      ) : (
-        <Box style={{ display: 'flex', justifyContent: 'center' }}>
-          <Box style={{ flex: '0 0 80%', overflowX: 'hidden' }}>
-            <CommentComponent />
-          </Box>
+        <Box style={{ flex: '0 0 40%', overflowX: 'hidden' }}>
+          <CommentSC postID={postID} />
         </Box>
-      )}
+        <Box style={{ flex: '0 0 30%' }}></Box>
+      </Box>
+      <Box
+        className="isPC"
+        style={{ display: 'flex', justifyContent: 'center' }}
+      >
+        <Box style={{ flex: '0 0 80%', overflowX: 'hidden' }}>
+          <CommentSC postID={postID} />
+        </Box>
+      </Box>
     </>
   );
 }

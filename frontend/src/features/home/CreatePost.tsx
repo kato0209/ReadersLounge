@@ -1,3 +1,4 @@
+'use client';
 import * as React from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -7,25 +8,35 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import { useAuthUserContext } from '../../lib/auth/auth';
 import Avatar from '@mui/material/Avatar';
 import { isValidUrl } from '../../utils/isValidUrl';
 import Box from '@mui/material/Box';
 import PostTextarea from './PostTextarea';
 import Rating from '@mui/material/Rating';
 import ImageIcon from '@mui/icons-material/Image';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { apiInstance } from '../../lib/api/apiInstance';
 import { useErrorHandler } from 'react-error-boundary';
 import { Book } from '../../openapi';
 import ImportContactsIcon from '@mui/icons-material/ImportContacts';
 import { BookSearchDialog } from './BookSearchDialog';
+import { User } from '../../openapi';
+import axios from 'axios';
+import { post } from './SubmitPost';
+import { State } from './SubmitPost';
+import { useFormState } from 'react-dom';
 import { PostSchema } from '../../types/PostSchema';
+import { z } from 'zod';
+
+const initialState: State = {
+  error: '',
+  fieldErrors: {
+    content: '',
+    rating: '',
+    ISBNcode: '',
+    postImage: '',
+  },
+};
 
 type FormData = z.infer<typeof PostSchema>;
-
 type CreatePostProps = {
   displayString: string;
   book?: Book;
@@ -37,35 +48,43 @@ export const CreatePost: React.FC<CreatePostProps> = ({
   book,
   formData,
 }) => {
+  const [state, formAction] = useFormState(post, initialState);
   const [openCreatePostDialog, setOpenCreatePostDialog] = React.useState(false);
-  const { user } = useAuthUserContext();
   const [imagePreview, setImagePreview] = React.useState<string | null>(null);
+  const [content, setContent] = React.useState<string>(formData?.content || '');
+  const [rating, setRating] = React.useState<number>(formData?.rating || 0);
+  const [ISBNcode, setISBNcode] = React.useState<string>(
+    formData?.ISBNcode || '',
+  );
+  const [postImage, setPostImage] = React.useState<File | undefined>(
+    formData?.postImage || undefined,
+  );
+  const [user, setUser] = React.useState<User | null>(null);
+  const errorHandler = useErrorHandler();
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    getValues,
-    formState: { errors },
-  } = useForm<FormData>({
-    resolver: zodResolver(PostSchema),
-  });
+  async function fetchLoginUser() {
+    try {
+      const res = await axios.get(`/api/fetch-login-user`);
+      return res.data;
+    } catch (error: unknown) {
+      errorHandler(error);
+    }
+  }
+  React.useEffect(() => {
+    fetchLoginUser().then((res) => {
+      setUser(res.data);
+    });
+  }, []);
 
   React.useEffect(() => {
-    if (formData?.content) {
-      setValue('content', formData.content);
+    if (book) {
+      setISBNcode(book.ISBNcode);
     }
-  }, [formData?.content]);
-
-  React.useEffect(() => {
-    if (formData?.content) {
-      setValue('rating', formData.rating);
-    }
-  }, [formData?.rating]);
+  }, [book]);
 
   React.useEffect(() => {
     if (formData?.postImage) {
-      setValue('postImage', formData.postImage);
+      setPostImage(formData.postImage);
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
@@ -74,37 +93,10 @@ export const CreatePost: React.FC<CreatePostProps> = ({
     }
   }, [formData?.postImage]);
 
-  React.useEffect(() => {
-    if (book) {
-      setValue('ISBNcode', book.ISBNcode);
-    }
-  }, [book]);
-
-  const errorHandler = useErrorHandler();
-
-  const onSubmit = async (data: FormData) => {
-    try {
-      const api = await apiInstance;
-      if (data.postImage) {
-        await api.createPost(
-          data.content,
-          data.rating,
-          data.ISBNcode,
-          data.postImage,
-        );
-      } else {
-        await api.createPost(data.content, data.rating, data.ISBNcode);
-      }
-      window.location.reload();
-    } catch (error: unknown) {
-      errorHandler(error);
-    }
-  };
-
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
-      setValue('postImage', file, { shouldValidate: true });
+      setPostImage(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
@@ -114,18 +106,18 @@ export const CreatePost: React.FC<CreatePostProps> = ({
   };
 
   const handleImageRemove = () => {
-    setValue('postImage', undefined, { shouldValidate: true });
+    setPostImage(undefined);
     setImagePreview(null);
   };
 
   const handleRatingChange = (newValue: number) => {
-    setValue('rating', newValue, { shouldValidate: true });
+    setRating(newValue);
   };
 
   const handlePostTextChange = (
     event: React.ChangeEvent<HTMLTextAreaElement>,
   ) => {
-    setValue('content', event.target.value, { shouldValidate: true });
+    setContent(event.target.value);
   };
 
   const handleOpen = () => {
@@ -134,6 +126,17 @@ export const CreatePost: React.FC<CreatePostProps> = ({
 
   const handleClose = () => {
     setOpenCreatePostDialog(false);
+  };
+
+  const handleSubmit = () => {
+    const formData = new FormData();
+    formData.append('content', content);
+    formData.append('rating', rating.toString());
+    formData.append('ISBNcode', ISBNcode);
+    if (postImage) {
+      formData.append('postImage', postImage);
+    }
+    formAction(formData);
   };
 
   return (
@@ -179,7 +182,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({
         >
           <CloseIcon />
         </IconButton>
-        <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
+        <form>
           <DialogContent
             sx={{
               flex: 'auto',
@@ -201,16 +204,12 @@ export const CreatePost: React.FC<CreatePostProps> = ({
             <Box sx={{ display: 'flex', alignItems: 'start', gap: 2 }}>
               <Avatar
                 src={
-                  isValidUrl(user.profile_image)
-                    ? user.profile_image
-                    : `data:image/png;base64,${user.profile_image}`
+                  isValidUrl(user?.profile_image)
+                    ? user?.profile_image
+                    : `data:image/png;base64,${user?.profile_image}`
                 }
               ></Avatar>
-              <PostTextarea
-                {...register('content')}
-                onChange={handlePostTextChange}
-                value={getValues('content')}
-              />
+              <PostTextarea onChange={handlePostTextChange} value={content} />
             </Box>
             {imagePreview && (
               <Box
@@ -246,9 +245,9 @@ export const CreatePost: React.FC<CreatePostProps> = ({
                     <CloseIcon />
                   </IconButton>
                 </Box>
-                {errors.postImage && (
+                {state.fieldErrors?.postImage && (
                   <span style={{ color: 'red', textAlign: 'center' }}>
-                    {errors.postImage.message}
+                    {state.fieldErrors.postImage}
                   </span>
                 )}
               </Box>
@@ -258,24 +257,26 @@ export const CreatePost: React.FC<CreatePostProps> = ({
             <Box>
               <Rating
                 name="rating"
-                value={Number(getValues('rating'))}
+                value={Number(rating)}
                 onChange={(event, newValue) => {
                   handleRatingChange(Number(newValue));
                 }}
               />
               <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                {errors.rating && (
-                  <span style={{ color: 'red' }}>{errors.rating.message}</span>
+                {state.fieldErrors?.rating && (
+                  <span style={{ color: 'red' }}>
+                    {state.fieldErrors.rating}
+                  </span>
                 )}
               </Box>
             </Box>
             {!book && (
               <BookSearchDialog
                 formData={{
-                  content: getValues('content'),
-                  rating: getValues('rating'),
-                  ISBNcode: getValues('ISBNcode'),
-                  postImage: getValues('postImage'),
+                  content: content,
+                  rating: rating,
+                  ISBNcode: ISBNcode,
+                  postImage: postImage,
                 }}
               />
             )}
@@ -283,6 +284,7 @@ export const CreatePost: React.FC<CreatePostProps> = ({
               <input
                 type="file"
                 id="image-upload"
+                name="postImage"
                 style={{ display: 'none' }}
                 onChange={handleImageChange}
                 accept="image/*"
@@ -292,12 +294,8 @@ export const CreatePost: React.FC<CreatePostProps> = ({
               </IconButton>
             </label>
             <Button
-              type="submit"
-              disabled={
-                !getValues('content') ||
-                !getValues('rating') ||
-                !getValues('ISBNcode')
-              }
+              onClick={handleSubmit}
+              disabled={!content || !rating || !ISBNcode}
               sx={{
                 borderRadius: '50px',
                 backgroundColor: '#FF7E73',
@@ -316,22 +314,18 @@ export const CreatePost: React.FC<CreatePostProps> = ({
               Post
             </Button>
           </DialogActions>
-          <input
-            {...register('ISBNcode')}
-            type="hidden"
-            value={book ? book.ISBNcode : ''}
-          />
+          <input type="hidden" id="ISBNcode" name="ISBNcode" value={ISBNcode} />
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-            {errors.content && (
-              <span style={{ color: 'red' }}>{errors.content.message}</span>
+            {state.fieldErrors?.content && (
+              <span style={{ color: 'red' }}>{state.fieldErrors.content}</span>
             )}
           </Box>
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-            {errors.ISBNcode && (
-              <span style={{ color: 'red' }}>{errors.ISBNcode.message}</span>
+            {state.fieldErrors?.ISBNcode && (
+              <span style={{ color: 'red' }}>{state.fieldErrors.ISBNcode}</span>
             )}
           </Box>
-        </Box>
+        </form>
       </Dialog>
     </React.Fragment>
   );

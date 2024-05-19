@@ -10,7 +10,7 @@ import (
 )
 
 type IConnectionUsecase interface {
-	CreateConnection(ctx echo.Context, followerID, followingID int) error
+	CreateConnection(ctx echo.Context, followerID, followingID int) (models.Connection, error)
 	DeleteConnection(ctx echo.Context, connectionId int) error
 	GetFollowingConnections(ctx echo.Context, userID int) ([]models.Connection, error)
 	GetFollowerConnections(ctx echo.Context, userID int) ([]models.Connection, error)
@@ -24,12 +24,21 @@ func NewConnectionUsecase(br repository.IConnectionRepository) IConnectionUsecas
 	return &connectionUsecase{br}
 }
 
-func (cu *connectionUsecase) CreateConnection(ctx echo.Context, followerID, followingID int) error {
-	if err := cu.cr.CreateConnection(ctx, followerID, followingID); err != nil {
-		return err
+func (cu *connectionUsecase) CreateConnection(ctx echo.Context, followerID, followingID int) (models.Connection, error) {
+	connection, err := cu.cr.CreateConnection(ctx, followerID, followingID); 
+	if err != nil {
+		return models.Connection{}, err
 	}
 
-	return nil
+	if !utils.IsRemotePath((connection.Follower.ProfileImage.FileName)) {
+		profileImage, err := utils.LoadImage(ctx, (connection.Follower.ProfileImage.FileName))
+		if err != nil {
+			return models.Connection{}, errors.WithStack(err)
+		}
+		connection.Follower.ProfileImage.EncodedImage = &profileImage
+	}
+
+	return connection, nil
 }
 
 func (cu *connectionUsecase) DeleteConnection(ctx echo.Context, connectionId int) error {

@@ -1,57 +1,28 @@
-import { useState, useEffect } from 'react';
+'use client';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
-import { apiInstance } from '../../lib/api/apiInstance';
-import { useErrorHandler } from 'react-error-boundary';
-import { ChatRoom } from '../../openapi';
 import Sidebar from '../../components/Sidebar/Sidebar';
-import { useIsMobileContext } from '../../providers/mobile/isMobile';
 import UserAvatar from '../../components/Avatar/UserAvatar';
 import Typography from '@mui/material/Typography';
 import Room from './Room';
-import { useParams } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
+import { ChatRoom, Message } from '../../openapi';
 
-export default function RoomList() {
-  const errorHandler = useErrorHandler();
-  const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
-  const { id } = useParams<{ id: string }>();
-  const roomID = id ? parseInt(id, 10) : 0;
-  const isMobile = useIsMobileContext();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const api = await apiInstance;
-        const res = await api.getChatRooms();
-
-        if (res.data && Array.isArray(res.data)) {
-          const fetchedRooms: ChatRoom[] = res.data.map((item) => ({
-            room_id: item.room_id,
-            target_user_id: item.target_user_id,
-            target_user_name: item.target_user_name,
-            target_user_profile_image: item.target_user_profile_image,
-            last_message: item.last_message,
-            last_message_sent_at: item.last_message_sent_at,
-          }));
-          setChatRooms(fetchedRooms);
-        }
-      } catch (error: unknown) {
-        errorHandler(error);
-      }
-    };
-
-    fetchPosts();
-  }, []);
-
+export default async function RoomList({
+  roomID,
+  chatRooms,
+  messages,
+}: {
+  roomID: number;
+  chatRooms: ChatRoom[];
+  messages: Message[];
+}) {
+  const router = useRouter();
   return (
     <div style={{ display: 'flex' }}>
-      {!isMobile && (
-        <div style={{ flex: '0 0 30%', display: 'flex' }}>
-          <Sidebar />
-        </div>
-      )}
+      <div className="isMobile" style={{ flex: '0 0 30%', display: 'flex' }}>
+        <Sidebar />
+      </div>
       <div
         style={{
           flex: '0 0 35%',
@@ -74,7 +45,7 @@ export default function RoomList() {
                 <Box
                   key={chatRoom.room_id}
                   onClick={() =>
-                    navigate(`/chat-room-list/${chatRoom.room_id}`)
+                    router.push(`/chat-room-list/${chatRoom.room_id}`)
                   }
                   sx={{
                     display: 'flex',
@@ -116,7 +87,7 @@ export default function RoomList() {
       </div>
       <div style={{ flex: '1', display: 'flex' }}>
         {roomID ? (
-          <Room roomID={roomID} />
+          <Room roomID={roomID} messages={messages} />
         ) : (
           <Container component="main">
             <h3>Select a ChatRoom</h3>
